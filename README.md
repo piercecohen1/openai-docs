@@ -73,7 +73,6 @@ rg "function calling" docs/llms-full.txt
 ## Updating
 
 ```bash
-cd /Users/piercecohen/claude-code/openai-docs
 bash download.sh --force   # Re-fetch URL list from llms.txt
 ```
 
