@@ -1,16 +1,19 @@
 # OpenAI API Docs Mirror
 
-Local mirror of the OpenAI API reference documentation from [developers.openai.com](https://developers.openai.com/api/reference), downloaded as raw markdown via the `llms.txt` index.
+Local mirror of the OpenAI API documentation from [developers.openai.com](https://developers.openai.com), downloaded as raw markdown via `llms.txt` indexes.
 
 ## Scrape Info
 
 | | |
 |---|---|
 | **Last scraped** | February 26, 2026 |
-| **Pages downloaded** | 225 |
-| **Source** | [developers.openai.com/api/reference/llms.txt](https://developers.openai.com/api/reference/llms.txt) |
+| **Total pages** | 347 |
+| **API reference** | 225 pages ([llms.txt](https://developers.openai.com/api/reference/llms.txt)) |
+| **Guides** | 122 pages ([llms.txt](https://developers.openai.com/api/docs/llms.txt)) |
 
-## Sections
+## API Reference (`reference/`)
+
+Endpoint schemas, request/response formats, and method signatures.
 
 | Directory | Pages |
 |-----------|-------|
@@ -21,10 +24,23 @@ Local mirror of the OpenAI API reference documentation from [developers.openai.c
 | `chat-completions/` | 1 |
 | `administration/` | 1 |
 
+## Guides (`guides/`)
+
+Conceptual docs, tutorials, and how-to guides.
+
+| Directory | Pages |
+|-----------|-------|
+| `(top-level)` | 9 |
+| `guides/` | 97 |
+| `actions/` | 7 |
+| `assistants/` | 6 |
+| `tutorials/` | 2 |
+| `gpts/` | 1 |
+
 ## Directory Structure
 
 ```
-docs
+reference
 ├── administration
 ├── chat-completions
 ├── realtime-beta
@@ -52,6 +68,14 @@ docs
 │   ├── videos
 │   └── webhooks
 └── responses
+guides
+├── actions
+├── assistants
+│   └── tools
+├── gpts
+├── guides
+│   └── safety-checks
+└── tutorials
 ```
 
 ## Usage
@@ -59,23 +83,28 @@ docs
 Search with ripgrep:
 
 ```bash
-rg "chat completions" docs/
-rg "embeddings" docs/resources/
-rg "fine-tuning" docs/resources/
+# Search API reference
+rg "chat completions" reference/
+rg "embeddings" reference/resources/
+
+# Search guides
+rg "function calling" guides/
+rg "structured outputs" guides/guides/
 ```
 
-Full-text search across the entire API reference:
+Full-text search across all docs:
 
 ```bash
-rg "function calling" docs/llms-full.txt
+rg "tool_choice" reference/llms-full.txt
+rg "streaming" guides/llms-full.txt
 ```
 
 ## Updating
 
 ```bash
-bash download.sh --force   # Re-fetch URL list from llms.txt
+bash download.sh --force   # Re-fetch URL lists from llms.txt
 ```
 
 ## How It Works
 
-The OpenAI API reference site publishes an index at `llms.txt` with direct `.md` URLs for every page. The download script fetches this index, extracts all URLs, and downloads them with 10 parallel connections. Directory structure is preserved (files nested up to 7 levels deep under `resources/`). Additionally, `llms-full.txt` (a single-file concatenation of all docs) is downloaded for full-text search.
+The OpenAI developer site publishes `llms.txt` indexes with direct `.md` URLs for every page. The download script fetches both indexes (API reference + guides), extracts all URLs, and downloads them with 10 parallel connections. Directory structure is preserved. Each section also gets a `llms-full.txt` (single-file concatenation) for full-text search.
