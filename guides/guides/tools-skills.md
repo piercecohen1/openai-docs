@@ -36,7 +36,7 @@ import OpenAI from "openai";
 const client = new OpenAI();
 
 const response = await client.responses.create({
-  model: "gpt-5.2",
+  model: "gpt-5.4",
   tools: [
     {
       type: "shell",
@@ -61,7 +61,7 @@ from openai import OpenAI
 client = OpenAI()
 
 response = client.responses.create(
-    model="gpt-5.2",
+    model="gpt-5.4",
     tools=[
         {
             "type": "shell",
@@ -87,7 +87,10 @@ Once a skill is mounted, the model can decide when to use it. If you want more d
 
 ## Use skills with local shell mode
 
-Skills also work with local shell mode. The skill selection and prompt behavior are the same as hosted shell mode, but command execution and filesystem access are still handled by your local runtime.
+Skills also work with local shell mode, but local shell and hosted shell do not accept the same skill attachment formats.
+
+- Hosted shell supports uploaded `skill_reference` attachments, including curated skills and explicit versions.
+- Local shell does not support `skill_reference` attachments. Instead, provide skill files from local file paths in the runtime you control.
 
 Use the [Shell guide](https://developers.openai.com/api/docs/guides/tools-shell) for local shell execution details.
 
@@ -99,20 +102,23 @@ import OpenAI from "openai";
 const client = new OpenAI();
 
 const response = await client.responses.create({
-  model: "gpt-5.2",
+  model: "gpt-5.4",
   tools: [
     {
       type: "shell",
       environment: {
         type: "local",
         skills: [
-          { type: "skill_reference", skill_id: "<skill_id>" },
-          { type: "skill_reference", skill_id: "<skill_id>", version: 2 },
+          {
+            name: "csv-insights",
+            description: "Summarize CSV files and produce a markdown report.",
+            path: "<path-to-skill-folder>",
+          },
         ],
       },
     },
   ],
-  input: "Use the configured skills and run locally to summarize today's CSV reports in this repo.",
+  input: "Use the csv-insights skill and run locally to summarize today's CSV reports in this repo.",
 });
 
 console.log(response.output_text);
@@ -124,20 +130,23 @@ from openai import OpenAI
 client = OpenAI()
 
 response = client.responses.create(
-    model="gpt-5.2",
+    model="gpt-5.4",
     tools=[
         {
             "type": "shell",
             "environment": {
                 "type": "local",
                 "skills": [
-                    {"type": "skill_reference", "skill_id": "<skill_id>"},
-                    {"type": "skill_reference", "skill_id": "<skill_id>", "version": 2},
+                    {
+                        "name": "csv-insights",
+                        "description": "Summarize CSV files and produce a markdown report.",
+                        "path": "<path-to-skill-folder>",
+                    }
                 ],
             },
         }
     ],
-    input="Use the configured skills and run locally to summarize today's CSV reports in this repo.",
+    input="Use the csv-insights skill and run locally to summarize today's CSV reports in this repo.",
 )
 
 print(response.output_text)

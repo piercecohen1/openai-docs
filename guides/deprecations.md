@@ -18,6 +18,19 @@ We use the term "legacy" to refer to models and endpoints that no longer receive
 
 All deprecations are listed below, with the most recent announcements at the top.
 
+### 2026-03-24: Sora 2 video generation models and Videos API
+
+On March 24th, 2026, we notified developers using the Videos API and Sora 2 video generation model aliases and snapshots of their deprecation and removal from the API on September 24, 2026.
+
+| Shutdown date | Model / system          | Recommended replacement |
+| ------------- | ----------------------- | ----------------------- |
+| 2026-09-24    | Videos API              | ---                     |
+| 2026-09-24    | `sora-2`                | ---                     |
+| 2026-09-24    | `sora-2-pro`            | ---                     |
+| 2026-09-24    | `sora-2-2025-10-06`     | ---                     |
+| 2026-09-24    | `sora-2-2025-12-08`     | ---                     |
+| 2026-09-24    | `sora-2-pro-2025-10-06` | ---                     |
+
 ### 2025-11-18: chatgpt-4o-latest snapshot
 
 On November 18th, 2025, we notified developers using `chatgpt-4o-latest` model snapshot of its deprecation and removal from the API on February 17, 2026.
@@ -47,27 +60,27 @@ On November 14th, 2025, we notified developers using DALL·E model snapshots of 
 
 To improve reliability and make it easier for developers to choose the right models, we are deprecating a set of older OpenAI models with declining usage over the next six to twelve months. Access to these models will be shut down on the dates below.
 
-| Shutdown date | Model / system                                                                                                             | Recommended replacement         |
-| ------------- | -------------------------------------------------------------------------------------------------------------------------- | ------------------------------- |
-| 2026‑03‑26    | `gpt-4-0314`                                                                                                               | `gpt-5` or `gpt-4.1*`           |
-| 2026‑03‑26    | `gpt-4-1106-preview`                                                                                                       | `gpt-5` or `gpt-4.1*`           |
-| 2026‑03‑26    | `gpt-4-0125-preview` (including `gpt-4-turbo-preview` and `gpt-4-turbo-preview-completions`, which point to this snapshot) | `gpt-5` or `gpt-4.1*`           |
-| 2026-09-28    | `gpt-3.5-turbo-instruct`                                                                                                   | `gpt-5-mini` or `gpt-4.1-mini*` |
-| 2026-09-28    | `babbage-002`                                                                                                              | `gpt-5-mini` or `gpt-4.1-mini*` |
-| 2026-09-28    | `davinci-002`                                                                                                              | `gpt-5-mini` or `gpt-4.1-mini*` |
-| 2026-09-28    | `gpt-3.5-turbo-1106`                                                                                                       | `gpt-5-mini` or `gpt-4.1-mini*` |
+| Shutdown date | Model / system                                                                                                             | Recommended replacement        |
+| ------------- | -------------------------------------------------------------------------------------------------------------------------- | ------------------------------ |
+| 2026‑03‑26    | `gpt-4-0314`                                                                                                               | `gpt-5` or `gpt-4.1*`          |
+| 2026‑03‑26    | `gpt-4-1106-preview`                                                                                                       | `gpt-5` or `gpt-4.1*`          |
+| 2026‑03‑26    | `gpt-4-0125-preview` (including `gpt-4-turbo-preview` and `gpt-4-turbo-preview-completions`, which point to this snapshot) | `gpt-5` or `gpt-4.1*`          |
+| 2026-09-28    | `gpt-3.5-turbo-instruct`                                                                                                   | `gpt-5.4-mini` or `gpt-5-mini` |
+| 2026-09-28    | `babbage-002`                                                                                                              | `gpt-5.4-mini` or `gpt-5-mini` |
+| 2026-09-28    | `davinci-002`                                                                                                              | `gpt-5.4-mini` or `gpt-5-mini` |
+| 2026-09-28    | `gpt-3.5-turbo-1106`                                                                                                       | `gpt-5.4-mini` or `gpt-5-mini` |
 
 \*For tasks that are especially latency sensitive and don't require reasoning
 
 ### 2025-09-15: Realtime API Beta
 
-The Realtime API Beta will be deprecated and removed from the API on March 24, 2026.
+The Realtime API Beta will be deprecated and removed from the API on May 7, 2026.
 
 There are a few key differences between the interfaces in the Realtime beta API and the released GA API. See [the migration guide](https://developers.openai.com/api/docs/guides/realtime#beta-to-ga-migration) to learn more about how to migrate your current beta integration.
 
 | Shutdown date | Model / system           | Recommended replacement |
 | ------------- | ------------------------ | ----------------------- |
-| 2026‑03‑24    | OpenAI-Beta: realtime=v1 | Realtime API            |
+| 2026‑05‑07    | OpenAI-Beta: realtime=v1 | Realtime API            |
 
 ### 2025-08-20: Assistants API
 
@@ -87,12 +100,12 @@ In September, 2025, we notified developers using gpt-4o-realtime-preview models 
 
 | Shutdown date | Model / system                     | Recommended replacement |
 | ------------- | ---------------------------------- | ----------------------- |
-| 2026-03-24    | gpt-4o-realtime-preview            | gpt-realtime            |
-| 2026-03-24    | gpt-4o-realtime-preview-2025-06-03 | gpt-realtime            |
-| 2026-03-24    | gpt-4o-realtime-preview-2024-12-17 | gpt-realtime            |
-| 2026-03-24    | gpt-4o-mini-realtime-preview       | gpt-realtime-mini       |
-| 2026-03-24    | gpt-4o-audio-preview               | gpt-audio               |
-| 2026-03-24    | gpt-4o-mini-audio-preview          | gpt-audio-mini          |
+| 2026-05-07    | gpt-4o-realtime-preview            | gpt-realtime-1.5        |
+| 2026-05-07    | gpt-4o-realtime-preview-2025-06-03 | gpt-realtime-1.5        |
+| 2026-05-07    | gpt-4o-realtime-preview-2024-12-17 | gpt-realtime-1.5        |
+| 2026-05-07    | gpt-4o-mini-realtime-preview       | gpt-realtime-mini       |
+| 2026-05-07    | gpt-4o-audio-preview               | gpt-audio-1.5           |
+| 2026-05-07    | gpt-4o-mini-audio-preview          | gpt-audio-mini          |
 
 ### 2025-06-10: gpt-4o-realtime-preview-2024-10-01
 
@@ -100,7 +113,7 @@ On June 10th, 2025, we notified developers using gpt-4o-realtime-preview-2024-10
 
 | Shutdown date | Model / system                     | Recommended replacement |
 | ------------- | ---------------------------------- | ----------------------- |
-| 2025-10-10    | gpt-4o-realtime-preview-2024-10-01 | gpt-realtime            |
+| 2025-10-10    | gpt-4o-realtime-preview-2024-10-01 | gpt-realtime-1.5        |
 
 ### 2025-06-10: gpt-4o-audio-preview-2024-10-01
 
@@ -108,7 +121,7 @@ On June 10th, 2025, we notified developers using `gpt-4o-audio-preview-2024-10-0
 
 | Shutdown date | Model / system                    | Recommended replacement |
 | ------------- | --------------------------------- | ----------------------- |
-| 2025-10-10    | `gpt-4o-audio-preview-2024-10-01` | `gpt-audio`             |
+| 2025-10-10    | `gpt-4o-audio-preview-2024-10-01` | `gpt-audio-1.5`         |
 
 ### 2025-04-28: text-moderation
 

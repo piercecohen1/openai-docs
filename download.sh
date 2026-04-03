@@ -1,6 +1,6 @@
 #!/bin/bash
 # Downloads all OpenAI API docs as markdown from llms.txt indexes
-# Fetches both API reference (/api/reference/) and guides (/api/docs/)
+# Fetches API reference (/api/reference/), guides (/api/docs/), and Codex (/codex/)
 # Usage: ./download.sh [--force]
 
 set -euo pipefail
@@ -121,11 +121,21 @@ download_section "guides" \
   "$SCRIPT_DIR/guides" \
   "/tmp/openai-docs-guides-urls.txt"
 
+> "$FAILED_LOG"
+
+# Download Codex docs
+download_section "codex" \
+  "https://developers.openai.com/codex" \
+  'https://developers\.openai\.com/codex/[^ )]*\.md' \
+  "https://developers.openai.com/codex/" \
+  "$SCRIPT_DIR/codex" \
+  "/tmp/openai-docs-codex-urls.txt"
+
 # Generate README with scrape metadata
 SCRAPE_DATE="$(date '+%B %-d, %Y')"
 SCRAPE_SHORT="$(date '+%-m-%-d-%y')"
-TOTAL_PAGES=$((reference_TOTAL + guides_TOTAL))
-TOTAL_DOWNLOADED=$((reference_DOWNLOADED + guides_DOWNLOADED))
+TOTAL_PAGES=$((reference_TOTAL + guides_TOTAL + codex_TOTAL))
+TOTAL_DOWNLOADED=$((reference_DOWNLOADED + guides_DOWNLOADED + codex_DOWNLOADED))
 
 # Count pages per section for a given directory
 section_table() {
@@ -160,6 +170,7 @@ Local mirror of the OpenAI API documentation from [developers.openai.com](https:
 | **Total pages** | $TOTAL_DOWNLOADED |
 | **API reference** | $reference_DOWNLOADED pages ([llms.txt](https://developers.openai.com/api/reference/llms.txt)) |
 | **Guides** | $guides_DOWNLOADED pages ([llms.txt](https://developers.openai.com/api/docs/llms.txt)) |
+| **Codex** | $codex_DOWNLOADED pages ([llms.txt](https://developers.openai.com/codex/llms.txt)) |
 
 ## API Reference (\`reference/\`)
 
@@ -177,11 +188,20 @@ Conceptual docs, tutorials, and how-to guides.
 |-----------|-------|
 $(section_table "$SCRIPT_DIR/guides")
 
+## Codex (\`codex/\`)
+
+Codex CLI, IDE extension, cloud, SDK, and product documentation.
+
+| Directory | Pages |
+|-----------|-------|
+$(section_table "$SCRIPT_DIR/codex")
+
 ## Directory Structure
 
 \`\`\`
 $(tree "$SCRIPT_DIR/reference" -d -L 2 --noreport 2>/dev/null | sed 's|'"$SCRIPT_DIR/reference"'|reference|' || find "$SCRIPT_DIR/reference" -type d -maxdepth 2 | sed "s|$SCRIPT_DIR/reference|reference|" | sort)
 $(tree "$SCRIPT_DIR/guides" -d -L 2 --noreport 2>/dev/null | sed 's|'"$SCRIPT_DIR/guides"'|guides|' || find "$SCRIPT_DIR/guides" -type d -maxdepth 2 | sed "s|$SCRIPT_DIR/guides|guides|" | sort)
+$(tree "$SCRIPT_DIR/codex" -d -L 2 --noreport 2>/dev/null | sed 's|'"$SCRIPT_DIR/codex"'|codex|' || find "$SCRIPT_DIR/codex" -type d -maxdepth 2 | sed "s|$SCRIPT_DIR/codex|codex|" | sort)
 \`\`\`
 
 ## Usage
@@ -213,7 +233,7 @@ bash download.sh --force   # Re-fetch URL lists from llms.txt
 
 ## How It Works
 
-The OpenAI developer site publishes \`llms.txt\` indexes with direct \`.md\` URLs for every page. The download script fetches both indexes (API reference + guides), extracts all URLs, and downloads them with $MAX_PARALLEL parallel connections. Directory structure is preserved. Each section also gets a \`llms-full.txt\` (single-file concatenation) for full-text search.
+The OpenAI developer site publishes \`llms.txt\` indexes with direct \`.md\` URLs for every page. The download script fetches all three indexes (API reference, guides, and Codex), extracts all URLs, and downloads them with $MAX_PARALLEL parallel connections. Directory structure is preserved. Each section also gets a \`llms-full.txt\` (single-file concatenation) for full-text search.
 EOF
 
 echo ""

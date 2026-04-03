@@ -1,409 +1,529 @@
 # Pricing
 
-Starting March 31, 2026, container usage will be billed per 20-minute session.
-  Rates by memory tier are unchanged. See [container usage
-  pricing](#container-usage-pricing).
+import {
+  GroupedPricingTable,
+  PricingTable,
+  pricingHtml,
+  pricingTooltipHeading,
+  TextTokenPricingTables,
+  withDataSharing,
+  withLegacy,
+} from "./pricing.jsx";
 
-<div className="-mb-6">
-  
+<style
+  is:global
+  set:html={`
+    article table th,
+    article table td {
+      font-size: 14px;
+    }
 
-Text tokens
+    :root {
+      --pricing-section-spacing: 60px;
+    }
 
+    @media (min-width: 768px) {
+      .pricing-switcher-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        grid-template-rows: auto auto;
+        column-gap: 1.5rem;
+        align-items: start;
+      }
 
-</div>
+      .pricing-switcher-layout .content-switcher-root {
+        display: contents;
+      }
 
-<small className="float-left pt-3">Prices per 1M tokens.</small>
+      .pricing-switcher-layout .pricing-switcher-header {
+        grid-column: 1;
+        grid-row: 1;
+        align-self: start;
+      }
 
+      .pricing-switcher-layout .content-switcher-selector {
+        grid-column: 2;
+        grid-row: 1;
+        margin-bottom: 0;
+        margin-top: 0;
+        align-self: start;
+      }
 
+      .pricing-switcher-layout .content-switcher-panes {
+        grid-column: 1 / -1;
+        grid-row: 2;
+      }
+    }
 
-<div data-content-switcher-pane data-value="batch" hidden>
-    <div class="hidden">Batch</div>
+    .pricing-section-heading .anchor-heading-wrapper {
+      margin-top: 0;
+      margin-bottom: 0;
+    }
 
-    </div>
-  <div data-content-switcher-pane data-value="flex" hidden>
-    <div class="hidden">Flex</div>
+    .pricing-section-heading .anchor-heading {
+      margin-top: 0;
+      margin-bottom: 0;
+    }
 
-    </div>
-  <div data-content-switcher-pane data-value="standard">
-    <div class="hidden">Standard</div>
+    .pricing-section-heading .anchor-heading > p {
+      margin: 0;
+    }
 
-    </div>
-  <div data-content-switcher-pane data-value="priority" hidden>
-    <div class="hidden">Priority</div>
+    .pricing-section-heading .anchor-heading {
+      display: block;
+    }
 
-    </div>
+    .pricing-switcher-header {
+      display: flex;
+      flex-direction: column;
+    }
 
+    .pricing-section-meta,
+    .pricing-switcher-meta {
+      display: block;
+      margin-top: 4px;
+      font-size: 14px;
+      line-height: 20px;
+      color: var(--color-text-secondary);
+    }
 
+    .pricing-switcher-subheading {
+      display: block;
+      margin-top: 4px;
+      font-size: 16px;
+      line-height: 24px;
+      color: var(--color-text-primary);
+    }
 
-<small>
-    For faster processing of API requests, try the [priority processing service
-    tier](https://developers.openai.com/api/docs/guides/priority-processing). For lower prices with higher latency,
-    try the [flex processing tier](https://developers.openai.com/api/docs/guides/flex-processing).
+    .pricing-section-tip {
+      margin-top: 16px;
+      margin-bottom: 20px;
+    }
 
-    Large numbers of API requests which are not time-sensitive can use the
-    [Batch API](https://developers.openai.com/api/docs/guides/batch) for additional savings as well.
+    .pricing-subsection {
+      margin-top: var(--pricing-section-spacing);
+    }
 
-    While reasoning tokens are not visible via the API, they still occupy space in
-    the model's context window and are billed as output tokens.
+    .pricing-switcher-layout + .pricing-switcher-layout {
+      margin-top: var(--pricing-section-spacing);
+    }
 
-    For gpt-image-1.5, Text output tokens include model reasoning tokens.
+    .pricing-multimodal-subsection {
+      margin-top: 28px;
+    }
 
-</small>
+    .pricing-switcher-layout.pricing-multimodal-subsection + .pricing-switcher-layout.pricing-multimodal-subsection {
+      margin-top: 28px;
+    }
+  `}
+/>
 
-<br />
-
-<div className="-mb-6">
-  
-
-Image tokens
-
-
-</div>
-
-<small className="float-left pt-3">Prices per 1M tokens.</small>
-
-
-
-<div data-content-switcher-pane data-value="batch" hidden>
-    <div class="hidden">Batch</div>
-
-    </div>
-  <div data-content-switcher-pane data-value="standard">
-    <div class="hidden">Standard</div>
-
-    </div>
-
-
-
-<br />
-
-<div className="-mb-6">
-  
-
-Audio tokens
-
-
-</div>
-
-<small>Prices per 1M tokens.</small>
-
-<br />
-
-<div className="-mb-6">
-  
-
-Video
-
-
-</div>
-
-<small>Prices per second.</small>
-
-<br />
-
-<div className="-mb-6">
-  
-
-Fine-tuning
-
-
-</div>
-
-<small className="float-left pt-3">Prices per 1M tokens.</small>
-
-
-
-<div data-content-switcher-pane data-value="batch" hidden>
-        <div class="hidden">Batch</div>
+<div className="pricing-switcher-layout">
+  <div className="pricing-switcher-header pricing-section-heading">
     
+
+Flagship models
+
+
+    <div className="pricing-switcher-subheading">Our latest models</div>
+    <small className="pricing-switcher-meta">Prices per 1M tokens.</small>
+  </div>
+
+  
+
+<div data-content-switcher-pane data-value="standard">
+      <div class="hidden">Standard</div>
+
+      <TextTokenPricingTables
+        client:load
+        tier="standard"
+        latestSectionLabel={null}
+        allModelsFootnote={pricingHtml(
+          'Regional processing (data residency) endpoints are charged a 10% uplift for <code>gpt-5.4</code>, <code>gpt-5.4-mini</code>, <code>gpt-5.4-nano</code>, and <code>gpt-5.4-pro</code>. See our <a href="/api/docs/guides/your-data">Your data</a> guide for supported regions and processing details.'
+        )}
+        rows={[
+          ["gpt-5.4 (<272K context length)", 2.5, 0.25, 15],
+          ["gpt-5.4-mini", 0.75, 0.075, 4.5],
+          ["gpt-5.4-nano", 0.2, 0.02, 1.25],
+          ["gpt-5.4-pro (<272K context length)", 30, "", 180],
+          ["gpt-5.2", 1.75, 0.175, 14],
+          ["gpt-5.2-pro", 21, "-", 168],
+          ["gpt-5.1", 1.25, 0.125, 10],
+          ["gpt-5", 1.25, 0.125, 10],
+          ["gpt-5-mini", 0.25, 0.025, 2],
+          ["gpt-5-nano", 0.05, 0.005, 0.4],
+          ["gpt-5-pro", 15, null, 120],
+          ["gpt-4.1", 2, 0.5, 8],
+          ["gpt-4.1-mini", 0.4, 0.1, 1.6],
+          ["gpt-4.1-nano", 0.1, 0.025, 0.4],
+          ["gpt-4o", 2.5, 1.25, 10],
+          ["gpt-4o-2024-05-13", 5, null, 15],
+          ["gpt-4o-mini", 0.15, 0.075, 0.6],
+          ["o1", 15, 7.5, 60],
+          ["o1-pro", 150, null, 600],
+          ["o3-pro", 20, null, 80],
+          ["o3", 2, 0.5, 8],
+          ["o4-mini", 1.1, 0.275, 4.4],
+          ["o3-mini", 1.1, 0.55, 4.4],
+          ["o1-mini", 1.1, 0.55, 4.4],
+          ["gpt-4-turbo-2024-04-09", 10, null, 30],
+          ["gpt-4-0125-preview", 10, null, 30],
+          ["gpt-4-1106-preview", 10, null, 30],
+          ["gpt-4-1106-vision-preview", 10, null, 30],
+          ["gpt-4-0613", 30, null, 60],
+          ["gpt-4-0314", 30, null, 60],
+          ["gpt-4-32k", 60, null, 120],
+          ["gpt-3.5-turbo", 0.5, null, 1.5],
+          ["gpt-3.5-turbo-0125", 0.5, null, 1.5],
+          ["gpt-3.5-turbo-1106", 1, null, 2],
+          ["gpt-3.5-turbo-0613", 1.5, null, 2],
+          ["gpt-3.5-0301", 1.5, null, 2],
+          ["gpt-3.5-turbo-instruct", 1.5, null, 2],
+          ["gpt-3.5-turbo-16k-0613", 3, null, 4],
+          ["davinci-002", 2, null, 2],
+          ["babbage-002", 0.4, null, 0.4],
+        ]}
+      />
+    </div>
+    <div data-content-switcher-pane data-value="batch" hidden>
+      <div class="hidden">Batch</div>
+
+      <TextTokenPricingTables
+        client:load
+        tier="batch"
+        latestSectionLabel={null}
+        allModelsFootnote={pricingHtml(
+          'Regional processing (data residency) endpoints are charged a 10% uplift for <code>gpt-5.4</code>, <code>gpt-5.4-mini</code>, <code>gpt-5.4-nano</code>, and <code>gpt-5.4-pro</code>. See our <a href="/api/docs/guides/your-data">Your data</a> guide for supported regions and processing details.'
+        )}
+        rows={[
+          ["gpt-5.4 (<272K context length)", 1.25, 0.13, 7.5],
+          ["gpt-5.4-mini", 0.375, 0.0375, 2.25],
+          ["gpt-5.4-nano", 0.1, 0.01, 0.625],
+          ["gpt-5.4-pro (<272K context length)", 15, "", 90],
+          ["gpt-5.2", 0.875, 0.0875, 7],
+          ["gpt-5.2-pro", 10.5, "-", 84],
+          ["gpt-5.1", 0.625, 0.0625, 5],
+          ["gpt-5", 0.625, 0.0625, 5],
+          ["gpt-5-mini", 0.125, 0.0125, 1],
+          ["gpt-5-nano", 0.025, 0.0025, 0.2],
+          ["gpt-5-pro", 7.5, "-", 60],
+          ["gpt-4.1", 1, "-", 4],
+          ["gpt-4.1-mini", 0.2, "-", 0.8],
+          ["gpt-4.1-nano", 0.05, "-", 0.2],
+          ["gpt-4o", 1.25, "-", 5],
+          ["gpt-4o-2024-05-13", 2.5, null, 7.5],
+          ["gpt-4o-mini", 0.075, "-", 0.3],
+          ["o1", 7.5, "-", 30],
+          ["o1-pro", 75, "-", 300],
+          ["o3-pro", 10, "-", 40],
+          ["o3", 1, "-", 4],
+          ["o4-mini", 0.55, "-", 2.2],
+          ["o3-mini", 0.55, "-", 2.2],
+          ["o1-mini", 0.55, "-", 2.2],
+          ["gpt-4-turbo-2024-04-09", 5, null, 15],
+          ["gpt-4-0125-preview", 5, null, 15],
+          ["gpt-4-1106-preview", 5, null, 15],
+          ["gpt-4-1106-vision-preview", 5, null, 15],
+          ["gpt-4-0613", 15, null, 30],
+          ["gpt-4-0314", 15, null, 30],
+          ["gpt-4-32k", 30, null, 60],
+          ["gpt-3.5-turbo-0125", 0.25, null, 0.75],
+          ["gpt-3.5-turbo-1106", 1, null, 2],
+          ["gpt-3.5-turbo-0613", 1.5, null, 2],
+          ["gpt-3.5-0301", 1.5, null, 2],
+          ["gpt-3.5-turbo-16k-0613", 1.5, null, 2],
+          ["davinci-002", 1, null, 1],
+          ["babbage-002", 0.2, null, 0.2],
+        ]}
+      />
+    </div>
+    <div data-content-switcher-pane data-value="flex" hidden>
+      <div class="hidden">Flex</div>
+
+      <TextTokenPricingTables
+        client:load
+        tier="flex"
+        latestSectionLabel={null}
+        allModelsFootnote={pricingHtml(
+          'Regional processing (data residency) endpoints are charged a 10% uplift for <code>gpt-5.4</code>, <code>gpt-5.4-mini</code>, <code>gpt-5.4-nano</code>, and <code>gpt-5.4-pro</code>. See our <a href="/api/docs/guides/your-data">Your data</a> guide for supported regions and processing details.'
+        )}
+        rows={[
+          ["gpt-5.4 (<272K context length)", 1.25, 0.13, 7.5],
+          ["gpt-5.4-mini", 0.375, 0.0375, 2.25],
+          ["gpt-5.4-nano", 0.1, 0.01, 0.625],
+          ["gpt-5.4-pro (<272K context length)", 15, "", 90],
+          ["gpt-5.2", 0.875, 0.0875, 7],
+          ["gpt-5.1", 0.625, 0.0625, 5],
+          ["gpt-5", 0.625, 0.0625, 5],
+          ["gpt-5-mini", 0.125, 0.0125, 1],
+          ["gpt-5-nano", 0.025, 0.0025, 0.2],
+          ["o3", 1, 0.25, 4],
+          ["o4-mini", 0.55, 0.138, 2.2],
+        ]}
+      />
+    </div>
+    <div data-content-switcher-pane data-value="priority" hidden>
+      <div class="hidden">Priority</div>
+
+      <TextTokenPricingTables
+        client:load
+        tier="priority"
+        latestSectionLabel={null}
+        allModelsFootnote={pricingHtml(
+          'Regional processing (data residency) endpoints are charged a 10% uplift for <code>gpt-5.4</code>, <code>gpt-5.4-mini</code>, <code>gpt-5.4-nano</code>, and <code>gpt-5.4-pro</code>. See our <a href="/api/docs/guides/your-data">Your data</a> guide for supported regions and processing details.'
+        )}
+        rows={[
+          ["gpt-5.4 (<272K context length)", 5, 0.5, 30],
+          ["gpt-5.4-mini", 1.5, 0.15, 9],
+          ["gpt-5.2", 3.5, 0.35, 28],
+          ["gpt-5.1", 2.5, 0.25, 20],
+          ["gpt-5", 2.5, 0.25, 20],
+          ["gpt-5-mini", 0.45, 0.045, 3.6],
+          ["gpt-4.1", 3.5, 0.875, 14],
+          ["gpt-4.1-mini", 0.7, 0.175, 2.8],
+          ["gpt-4.1-nano", 0.2, 0.05, 0.8],
+          ["gpt-4o", 4.25, 2.125, 17],
+          ["gpt-4o-2024-05-13", 8.75, null, 26.25],
+          ["gpt-4o-mini", 0.25, 0.125, 1],
+          ["o3", 3.5, 0.875, 14],
+          ["o4-mini", 2, 0.5, 8],
+        ]}
+      />
+    </div>
+
+
 </div>
-  <div data-content-switcher-pane data-value="standard">
-        <div class="hidden">Standard</div>
+
+<div className="pricing-switcher-layout">
+  <div className="pricing-switcher-header pricing-section-heading">
     
+
+Multimodal models
+
+
+  </div>
 </div>
 
-
-
-<small>
-  Tokens used for model grading in reinforcement fine-tuning are billed at that
-  model's per-token rate. Inference discounts are available if you enable data
-  sharing when creating the fine-tune job. [Learn
-  more](https://help.openai.com/en/articles/10306912-sharing-feedback-evaluation-and-fine-tuning-data-and-api-inputs-and-outputs-with-openai#h_c93188c569).
-</small>
-
-<br />
-
-<div className="-mb-6">
+<div className="pricing-subsection pricing-section-heading pricing-multimodal-subsection">
   
 
-Built-in tools
+Realtime and audio generation models
 
 
 </div>
-
-<div id="container-usage-pricing"></div>
-
-| Tool                                                                                                                                                                                       | Cost                                                                                                                                                                               |
-| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Container usage (including [Hosted Shell](https://developers.openai.com/api/docs/guides/tools-shell#hosted-shell-quickstart) and [Code Interpreter](https://developers.openai.com/api/docs/guides/tools-code-interpreter)) <br />Now                 | 1 GB (default): \$0.03 / container<br />4 GB: \$0.12 / container<br />16 GB: \$0.48 / container<br />64 GB: \$1.92 / container                                                     |
-| Container usage (including [Hosted Shell](https://developers.openai.com/api/docs/guides/tools-shell#hosted-shell-quickstart) and [Code Interpreter](https://developers.openai.com/api/docs/guides/tools-code-interpreter)) <br />Starting March 31st | 1 GB (default): \$0.03 / 20 minutes / container<br />4 GB: \$0.12 / 20 minutes / container<br />16 GB: \$0.48 / 20 minutes / container<br />64 GB: \$1.92 / 20 minutes / container |
-| File search storage                                                                                                                                                                        | \$0.10 / GB per day (1GB free)                                                                                                                                                     |
-| File search tool call <br /><small>Responses API only</small>                                                                                                                              | \$2.50 / 1k calls                                                                                                                                                                  |
-| Web search (all models) <br /><small>[1]</small>                                                                                                                                           | \$10.00 / 1k calls + search content tokens billed at model rates                                                                                                                   |
-| Web search preview (reasoning models, including gpt-5, o-series) <br /><small></small>                                                                                                     | \$10.00 / 1k calls + search content tokens billed at model rates                                                                                                                   |
-| Web search preview (non-reasoning models) <br /><small></small>                                                                                                                            | \$25.00 / 1k calls + search content tokens are free                                                                                                                                |
-
-<small>
-The tokens used for built-in tools are billed at the chosen model's per-token rates.
-GB refers to binary gigabytes of storage (also known as gibibyte), where 1GB is 2^30 bytes.
-
-**Web search:**
-There are two components that contribute to the cost of using the web search tool:
-(1) tool calls and (2) search content tokens.
-Tool calls are billed per 1000 calls, according to the tool version and model type. The billing dashboard and invoices will report these line items as “web search tool calls.”
-
-Search content tokens are tokens retrieved from the search index and fed to the model alongside your prompt to generate an answer. These are billed at the model’s input token rate, unless otherwise specified.
-
-\[1\] For `gpt-4o-mini` and `gpt-4.1-mini` with the web search non-preview tool, search content tokens are charged as a fixed block of 8,000 input tokens per call.
-
-</small>
-
-<br />
-
-<div className="-mb-6">
-  
-
-AgentKit
-
-
-</div>
-
-<p>
-  Build, deploy, and optimize production-grade agents with Agent Builder,
-  ChatKit, and Evals. You pay only for the compute and data you actually use.
-</p>
-
-<br />
-
-<div className="-mb-6">
-  
-
-Transcription and speech generation
-
-
-</div>
-
-<small>Prices per 1M tokens.</small>
-
-#### Text tokens
-
-| Model                     | Input  | Output  | Estimated cost   |
-| ------------------------- | ------ | ------- | ---------------- |
-| gpt-4o-mini-tts           | \$0.60 | -       | \$0.015 / minute |
-| gpt-4o-transcribe         | \$2.50 | \$10.00 | \$0.006 / minute |
-| gpt-4o-transcribe-diarize | \$2.50 | \$10.00 | \$0.006 / minute |
-| gpt-4o-mini-transcribe    | \$1.25 | \$5.00  | \$0.003 / minute |
-
-#### Audio tokens
-
-| Model                     | Input  | Output  | Estimated cost   |
-| ------------------------- | ------ | ------- | ---------------- |
-| gpt-4o-mini-tts           | -      | \$12.00 | \$0.015 / minute |
-| gpt-4o-transcribe         | \$6.00 | -       | \$0.006 / minute |
-| gpt-4o-transcribe-diarize | \$6.00 | -       | \$0.006 / minute |
-| gpt-4o-mini-transcribe    | \$3.00 | -       | \$0.003 / minute |
-
-#### Other models
-
-| Model   | Use case          | Cost                    |
-| ------- | ----------------- | ----------------------- |
-| Whisper | Transcription     | \$0.006 / minute        |
-| TTS     | Speech generation | \$15.00 / 1M characters |
-| TTS HD  | Speech generation | \$30.00 / 1M characters |
-
-<br />
-
-<div className="-mb-6">
-  
-
-Image generation
-
-
-</div>
-
-<small>Prices per image.</small>
-
-<table style={{ borderCollapse: "collapse", width: "100%" }}>
-  <thead>
-    <tr>
-      <th style={{ textAlign: "left", padding: "8px" }}>Model</th>
-      <th style={{ textAlign: "left", padding: "8px" }}>Quality</th>
-      <th style={{ padding: "8px" }}>1024 x 1024</th>
-      <th style={{ padding: "8px" }}>1024 x 1536</th>
-      <th style={{ padding: "8px" }}>1536 x 1024</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td rowSpan="3" style={{ padding: "8px" }}>GPT Image 1.5</td>
-      <td style={{ padding: "8px" }}>Low</td>
-      <td style={{ padding: "8px" }}>$0.009</td>
-      <td style={{ padding: "8px" }}>$0.013</td>
-      <td style={{ padding: "8px" }}>$0.013</td>
-    </tr>
-    <tr>
-      <td style={{ padding: "8px" }}>Medium</td>
-      <td style={{ padding: "8px" }}>$0.034</td>
-      <td style={{ padding: "8px" }}>$0.05</td>
-      <td style={{ padding: "8px" }}>$0.05</td>
-    </tr>
-    <tr>
-      <td style={{ padding: "8px" }}>High</td>
-      <td style={{ padding: "8px" }}>$0.133</td>
-      <td style={{ padding: "8px" }}>$0.2</td>
-      <td style={{ padding: "8px" }}>$0.2</td>
-    </tr>
-
-    <tr>
-      <td rowSpan="3" style={{ padding: "8px" }}>GPT Image Latest</td>
-      <td style={{ padding: "8px" }}>Low</td>
-      <td style={{ padding: "8px" }}>$0.009</td>
-      <td style={{ padding: "8px" }}>$0.013</td>
-      <td style={{ padding: "8px" }}>$0.013</td>
-    </tr>
-    <tr>
-      <td style={{ padding: "8px" }}>Medium</td>
-      <td style={{ padding: "8px" }}>$0.034</td>
-      <td style={{ padding: "8px" }}>$0.05</td>
-      <td style={{ padding: "8px" }}>$0.05</td>
-    </tr>
-    <tr>
-      <td style={{ padding: "8px" }}>High</td>
-      <td style={{ padding: "8px" }}>$0.133</td>
-      <td style={{ padding: "8px" }}>$0.2</td>
-      <td style={{ padding: "8px" }}>$0.2</td>
-    </tr>
-
-    <tr>
-      <td rowSpan="3" style={{ padding: "8px" }}>GPT Image 1</td>
-      <td style={{ padding: "8px" }}>Low</td>
-      <td style={{ padding: "8px" }}>$0.011</td>
-      <td style={{ padding: "8px" }}>$0.016</td>
-      <td style={{ padding: "8px" }}>$0.016</td>
-    </tr>
-    <tr>
-      <td style={{ padding: "8px" }}>Medium</td>
-      <td style={{ padding: "8px" }}>$0.042</td>
-      <td style={{ padding: "8px" }}>$0.063</td>
-      <td style={{ padding: "8px" }}>$0.063</td>
-    </tr>
-    <tr>
-      <td style={{ padding: "8px" }}>High</td>
-      <td style={{ padding: "8px" }}>$0.167</td>
-      <td style={{ padding: "8px" }}>$0.25</td>
-      <td style={{ padding: "8px" }}>$0.25</td>
-    </tr>
-
-    <tr>
-      <td rowSpan="3" style={{ padding: "8px" }}>GPT Image 1 Mini</td>
-      <td style={{ padding: "8px" }}>Low</td>
-      <td style={{ padding: "8px" }}>$0.005</td>
-      <td style={{ padding: "8px" }}>$0.006</td>
-      <td style={{ padding: "8px" }}>$0.006</td>
-    </tr>
-    <tr>
-      <td style={{ padding: "8px" }}>Medium</td>
-      <td style={{ padding: "8px" }}>$0.011</td>
-      <td style={{ padding: "8px" }}>$0.015</td>
-      <td style={{ padding: "8px" }}>$0.015</td>
-    </tr>
-    <tr>
-      <td style={{ padding: "8px" }}>High</td>
-      <td style={{ padding: "8px" }}>$0.036</td>
-      <td style={{ padding: "8px" }}>$0.052</td>
-      <td style={{ padding: "8px" }}>$0.052</td>
-    </tr>
-
-    <tr><td colSpan="5" style={{ height: "16px" }}></td></tr>
-
-    <tr>
-      <th style={{ textAlign: "left", padding: "8px" }}>Model</th>
-      <th style={{ textAlign: "left", padding: "8px" }}>Quality</th>
-      <th style={{ padding: "8px" }}>1024 x 1024</th>
-      <th style={{ padding: "8px" }}>1024 x 1792</th>
-      <th style={{ padding: "8px" }}>1792 x 1024</th>
-    </tr>
-    <tr>
-      <td rowSpan="2" style={{ padding: "8px" }}>DALL·E 3</td>
-      <td style={{ padding: "8px" }}>Standard</td>
-      <td style={{ padding: "8px" }}>$0.04</td>
-      <td style={{ padding: "8px" }}>$0.08</td>
-      <td style={{ padding: "8px" }}>$0.08</td>
-    </tr>
-    <tr>
-      <td style={{ padding: "8px" }}>HD</td>
-      <td style={{ padding: "8px" }}>$0.08</td>
-      <td style={{ padding: "8px" }}>$0.12</td>
-      <td style={{ padding: "8px" }}>$0.12</td>
-    </tr>
-
-    <tr><td colSpan="5" style={{ height: "16px" }}></td></tr>
-
-    <tr>
-      <th style={{ textAlign: "left", padding: "8px" }}>Model</th>
-      <th style={{ textAlign: "left", padding: "8px" }}>Quality</th>
-      <th style={{ padding: "8px" }}>256 x 256</th>
-      <th style={{ padding: "8px" }}>512 x 512</th>
-      <th style={{ padding: "8px" }}>1024 x 1024</th>
-    </tr>
-    <tr>
-      <td style={{ padding: "8px" }}>DALL·E 2</td>
-      <td style={{ padding: "8px" }}>Standard</td>
-      <td style={{ padding: "8px" }}>$0.016</td>
-      <td style={{ padding: "8px" }}>$0.018</td>
-      <td style={{ padding: "8px" }}>$0.02</td>
-    </tr>
-
-  </tbody>
-</table>
-
-<br />
-
-<div className="-mb-6">
-  
-
-Embeddings
-
-
-</div>
-
-<small>Prices per 1M tokens.</small>
-
-<br />
-
-### Moderation
-
-Our `omni-moderation` models are made available free of charge ✌️
-
-<br />
-
-<div className="-mb-6">
-  
-
-Legacy models
-
-
-</div>
-
-<small className="float-left pt-3">Prices per 1M tokens.</small>
-
-
-
-<div data-content-switcher-pane data-value="batch" hidden>
-        <div class="hidden">Batch</div>
+<p className="pricing-section-meta">Prices per 1M tokens unless noted.</p>
+<div className="pricing-subsection pricing-switcher-layout pricing-multimodal-subsection">
+  <div className="pricing-switcher-header pricing-section-heading">
     
+
+Image generation models
+
+
+    <small className="pricing-switcher-meta">Prices per 1M tokens.</small>
+  </div>
+
+  
+
+<div data-content-switcher-pane data-value="standard">
+      <div class="hidden">Standard</div>
+
+      <div
+        className="pricing-section-meta"
+        style={{ marginBottom: "12px" }}
+        set:html={`Per-image output pricing for GPT Image and DALL·E models is listed in the <a href="/api/docs/guides/image-generation#calculating-costs">Calculating costs</a> section of the image generation guide.`}
+      />
+      </div>
+    <div data-content-switcher-pane data-value="batch" hidden>
+      <div class="hidden">Batch</div>
+
+      <div
+        className="pricing-section-meta"
+        style={{ marginBottom: "12px" }}
+        set:html={`Per-image output pricing for GPT Image and DALL·E models is listed in the <a href="/api/docs/guides/image-generation#calculating-costs">Calculating costs</a> section of the image generation guide.`}
+      />
+      </div>
+
+
 </div>
-  <div data-content-switcher-pane data-value="standard">
-        <div class="hidden">Standard</div>
+
+<div className="pricing-subsection pricing-switcher-layout pricing-multimodal-subsection">
+  <div className="pricing-switcher-header pricing-section-heading">
     
+
+Video generation models
+
+
+    <small className="pricing-switcher-meta">Prices per second.</small>
+  </div>
+
+  
+
+<div data-content-switcher-pane data-value="standard">
+      <div class="hidden">Standard</div>
+
+      </div>
+    <div data-content-switcher-pane data-value="batch" hidden>
+      <div class="hidden">Batch</div>
+
+      </div>
+
+
 </div>
+
+<div className="pricing-subsection pricing-section-heading pricing-multimodal-subsection">
+  
+
+Transcription models
+
+
+</div>
+<p className="pricing-section-meta">Prices per 1M tokens unless noted.</p>
+<div className="pricing-subsection pricing-section-heading">
+  
+
+Tools
+
+
+</div>
+<small>+ Search content tokens billed at model rates.</small>"
+          ),
+        ],
+        [
+          pricingHtml(
+            "Web search preview (reasoning models, including <code>gpt-5</code>, <code>o-series</code>)"
+          ),
+          pricingHtml(
+            "$10.00 / 1k calls<br /><small>+ Search content tokens billed at model rates.</small>"
+          ),
+        ],
+        [
+          "Web search preview (non-reasoning models)",
+          pricingHtml(
+            "$25.00 / 1k calls<br /><small>+ Search content tokens are free.</small>"
+          ),
+        ],
+      ],
+    },
+    {
+      model: "Containers",
+      rows: [
+        [
+          pricingHtml(
+            '<span id="container-usage-pricing"></span>Hosted Shell and Code Interpreter'
+          ),
+          "1 GB $0.03, 4 GB $0.12, 16 GB $0.48, 64 GB $1.92 per 20-minute session per container",
+        ],
+      ],
+    },
+    {
+      model: "File search",
+      rows: [
+        ["Storage", "$0.10 / GB per day (1 GB free)"],
+        ["Tool call", "$2.50 / 1k calls"],
+      ],
+    },
+    {
+      model: "Agent Kit",
+      rows: [
+        [
+          "ChatKit file and image upload storage",
+          "$0.10 / GB-day after 1 GB free per account per month",
+        ],
+      ],
+    },
+  ]}
+/>
+<div
+  className="pricing-section-meta"
+  style={{ marginTop: "16px" }}
+  set:html={`Tokens used for built-in tools are billed at the chosen model's per-token rates. GB refers to binary gigabytes (also known as gibibytes), where 1 GB is 2^30 bytes. Web search content tokens are tokens retrieved from the search index and fed to the model alongside your prompt to generate an answer. For <code>gpt-4o-mini</code> and <code>gpt-4.1-mini</code> with the non-preview web search tool, search content tokens are billed as a fixed block of 8,000 input tokens per call. File search tool call pricing applies to the Responses API only. Container pricing includes <a href="/api/docs/guides/tools-shell#hosted-shell-quickstart">Hosted Shell</a> and <a href="/api/docs/guides/tools-code-interpreter">Code Interpreter</a>. Eligible container sessions are billed at the full 20-minute session rate. Responses API, Chat Completions API, Realtime API, Batch API, and Assistants API are not priced separately. Tokens are billed at the chosen model's input and output rates.`}
+/>
+
+<div className="pricing-subsection pricing-switcher-layout">
+  <div className="pricing-switcher-header pricing-section-heading">
+    
+
+Specialized models
+
+
+    <small className="pricing-switcher-meta">Prices per 1M tokens.</small>
+  </div>
+
+  
+
+<div data-content-switcher-pane data-value="standard">
+      <div class="hidden">Standard</div>
+
+      <small>Web search tool call charges also apply.</small>"
+                ),
+              ],
+            ],
+          },
+          {
+            model: "Deep research",
+            rows: [
+              ["o3-deep-research", 10, 2.5, 40],
+              ["o4-mini-deep-research", 2, 0.5, 8],
+            ],
+          },
+          {
+            model: "Computer use",
+            rows: [["computer-use-preview", 3, "-", 12]],
+          },
+          {
+            model: "Embedding",
+            rows: [
+              ["text-embedding-3-small", 0.02, "-", "-"],
+              ["text-embedding-3-large", 0.13, "-", "-"],
+              ["text-embedding-ada-002", 0.1, "-", "-"],
+            ],
+          },
+          {
+            model: "Moderation",
+            rows: [
+              ["omni-moderation-latest", "Free", "-", "-"],
+              ["text-moderation-latest", "Free", "-", "-"],
+            ],
+          },
+        ]}
+      />
+    </div>
+    <div data-content-switcher-pane data-value="batch" hidden>
+      <div class="hidden">Batch</div>
+
+      </div>
+    <div data-content-switcher-pane data-value="priority" hidden>
+      <div class="hidden">Priority</div>
+
+      </div>
+
+
+</div>
+
+<div className="pricing-subsection pricing-switcher-layout">
+  <div className="pricing-switcher-header pricing-section-heading">
+    
+
+Finetuning
+
+
+    <small className="pricing-switcher-meta">Prices per 1M tokens.</small>
+  </div>
+
+  
+
+<div data-content-switcher-pane data-value="standard">
+      <div class="hidden">Standard</div>
+
+      </div>
+    <div data-content-switcher-pane data-value="batch" hidden>
+      <div class="hidden">Batch</div>
+
+      </div>
+
+
+</div>
+<div
+  className="pricing-section-meta"
+  set:html={`Tokens used for model grading in reinforcement fine-tuning are billed at that model's per-token rate. Inference discounts are available if you enable data sharing when creating the fine-tune job. <a href="https://help.openai.com/en/articles/10306912-sharing-feedback-evaluation-and-fine-tuning-data-and-api-inputs-and-outputs-with-openai#h_c93188c569">Learn more</a>.`}
+/>
