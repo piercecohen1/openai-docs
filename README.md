@@ -1,33 +1,20 @@
-# OpenAI API Docs Mirror
+# OpenAI Developer Docs Mirror
 
-Local mirror of the OpenAI API documentation from [developers.openai.com](https://developers.openai.com), downloaded as raw markdown via `llms.txt` indexes.
+Local mirror of OpenAI developer documentation from [developers.openai.com](https://developers.openai.com), downloaded as raw markdown via `llms.txt` indexes. Sections are auto-discovered from the [root llms.txt](https://developers.openai.com/llms.txt) — new sections added upstream are picked up automatically.
 
 ## Scrape Info
 
 | | |
 |---|---|
 | **Last scraped** | April 3, 2026 |
-| **Total pages** | 422 |
-| **API reference** | 225 pages ([llms.txt](https://developers.openai.com/api/reference/llms.txt)) |
-| **Guides** | 126 pages ([llms.txt](https://developers.openai.com/api/docs/llms.txt)) |
+| **Total pages** | 461 |
+| **OpenAI API docs** | 126 pages ([llms.txt](https://developers.openai.com/api/docs/llms.txt)) |
+| **OpenAI API reference** | 225 pages ([llms.txt](https://developers.openai.com/api/reference/llms.txt)) |
+| **Apps SDK** | 24 pages ([llms.txt](https://developers.openai.com/apps-sdk/llms.txt)) |
 | **Codex** | 71 pages ([llms.txt](https://developers.openai.com/codex/llms.txt)) |
+| **Agentic Commerce** | 15 pages ([llms.txt](https://developers.openai.com/commerce/llms.txt)) |
 
-## API Reference (`reference/`)
-
-Endpoint schemas, request/response formats, and method signatures.
-
-| Directory | Pages |
-|-----------|-------|
-| `(top-level)` | 1 |
-| `resources/` | 220 |
-| `responses/` | 1 |
-| `realtime-beta/` | 1 |
-| `chat-completions/` | 1 |
-| `administration/` | 1 |
-
-## Guides (`guides/`)
-
-Conceptual docs, tutorials, and how-to guides.
+## OpenAI API docs (`guides/`)
 
 | Directory | Pages |
 |-----------|-------|
@@ -38,9 +25,29 @@ Conceptual docs, tutorials, and how-to guides.
 | `tutorials/` | 2 |
 | `gpts/` | 1 |
 
-## Codex (`codex/`)
+## OpenAI API reference (`reference/`)
 
-Codex CLI, IDE extension, cloud, SDK, and product documentation.
+| Directory | Pages |
+|-----------|-------|
+| `(top-level)` | 1 |
+| `resources/` | 220 |
+| `responses/` | 1 |
+| `realtime-beta/` | 1 |
+| `chat-completions/` | 1 |
+| `administration/` | 1 |
+
+## Apps SDK (`apps-sdk/`)
+
+| Directory | Pages |
+|-----------|-------|
+| `(top-level)` | 5 |
+| `build/` | 6 |
+| `deploy/` | 4 |
+| `concepts/` | 4 |
+| `plan/` | 3 |
+| `guides/` | 2 |
+
+## Codex (`codex/`)
 
 | Directory | Pages |
 |-----------|-------|
@@ -58,9 +65,24 @@ Codex CLI, IDE extension, cloud, SDK, and product documentation.
 | `learn/` | 1 |
 | `community/` | 1 |
 
+## Agentic Commerce (`commerce/`)
+
+| Directory | Pages |
+|-----------|-------|
+| `specs/` | 11 |
+| `guides/` | 4 |
+
 ## Directory Structure
 
 ```
+guides
+|-- actions
+|-- assistants
+|   `-- tools
+|-- gpts
+|-- guides
+|   `-- safety-checks
+`-- tutorials
 reference
 |-- administration
 |-- chat-completions
@@ -89,14 +111,12 @@ reference
 |   |-- videos
 |   `-- webhooks
 `-- responses
-guides
-|-- actions
-|-- assistants
-|   `-- tools
-|-- gpts
+apps-sdk
+|-- build
+|-- concepts
+|-- deploy
 |-- guides
-|   `-- safety-checks
-`-- tutorials
+`-- plan
 codex
 |-- app
 |-- cli
@@ -110,6 +130,11 @@ codex
 |-- learn
 |-- plugins
 `-- security
+commerce
+|-- guides
+`-- specs
+    |-- api
+    `-- file-upload
 ```
 
 ## Usage
@@ -117,28 +142,35 @@ codex
 Search with ripgrep:
 
 ```bash
-# Search API reference
-rg "chat completions" reference/
-rg "embeddings" reference/resources/
+# Search everything
+rg "query" .
 
-# Search guides
-rg "function calling" guides/
-rg "structured outputs" guides/guides/
+# Search a specific section
+rg "query" guides/
+rg "query" reference/
+rg "query" apps-sdk/
+rg "query" codex/
+rg "query" commerce/
 ```
 
-Full-text search across all docs:
+Full-text search (single file per section):
 
 ```bash
-rg "tool_choice" reference/llms-full.txt
-rg "streaming" guides/llms-full.txt
+rg "query" guides/llms-full.txt
+rg "query" reference/llms-full.txt
+rg "query" apps-sdk/llms-full.txt
+rg "query" codex/llms-full.txt
+rg "query" commerce/llms-full.txt
 ```
 
 ## Updating
 
 ```bash
-bash download.sh --force   # Re-fetch URL lists from llms.txt
+bash download.sh --force   # Re-discover and re-fetch all sections
 ```
 
 ## How It Works
 
-The OpenAI developer site publishes `llms.txt` indexes with direct `.md` URLs for every page. The download script fetches all three indexes (API reference, guides, and Codex), extracts all URLs, and downloads them with 10 parallel connections. Directory structure is preserved. Each section also gets a `llms-full.txt` (single-file concatenation) for full-text search.
+The OpenAI developer site publishes a root [`llms.txt`](https://developers.openai.com/llms.txt) that links to per-section indexes. This script fetches the root index, discovers all documentation sets, filters out parent indexes (whose content is covered by child indexes), and downloads each leaf section with 10 parallel connections. Directory structure is preserved. Each section also gets a `llms-full.txt` for full-text search.
+
+New sections added to the root `llms.txt` are picked up automatically on the next `--force` run.
