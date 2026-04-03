@@ -19,7 +19,7 @@ Local mirror of OpenAI developer documentation from developers.openai.com, store
 ## Re-scraping
 
 ```bash
-bash download.sh --force   # Re-discover and re-fetch all sections
+bash download.sh
 git add -A && git commit -m "Update docs mirror $(date +%-m-%-d-%y)" && git push
 ```
 

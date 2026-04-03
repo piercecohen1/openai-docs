@@ -22,12 +22,8 @@ dir_for_path() {
   esac
 }
 
-# Handle --force flag
-FORCE=false
-if [[ "${1:-}" == "--force" ]]; then
-  FORCE=true
-  echo "Force mode: clearing cached URL lists..."
-fi
+# --force flag is accepted for backward compat but is now a no-op
+# (URL lists are always re-fetched)
 
 # --- Generic section downloader ---
 # Args: $1=label $2=base_url $3=url_regex $4=strip_prefix $5=out_dir $6=cache_file $7=local_dir
@@ -43,18 +39,12 @@ download_section() {
   echo ""
   echo "=== $label ==="
 
-  if [[ "$FORCE" == true ]]; then
-    rm -f "$cache_file"
-  fi
-
-  # Discover .md files via llms.txt
-  if [[ ! -f "$cache_file" ]]; then
-    echo "Fetching llms.txt index..."
-    curl -sL "$base_url/llms.txt" \
-      | rg -o "$url_regex" \
-      | sort -u > "$cache_file"
-    echo "Found $(wc -l < "$cache_file" | tr -d ' ') markdown files"
-  fi
+  # Always re-fetch to catch new/removed pages
+  echo "Fetching llms.txt index..."
+  curl -sL "$base_url/llms.txt" \
+    | rg -o "$url_regex" \
+    | sort -u > "$cache_file"
+  echo "Found $(wc -l < "$cache_file" | tr -d ' ') markdown files"
 
   local total
   total=$(wc -l < "$cache_file" | tr -d ' ')
@@ -291,3 +281,6 @@ echo ""
 echo "=== Summary ==="
 echo "Total: $GRAND_DOWNLOADED/$GRAND_TOTAL pages across $SECTION_COUNT sections"
 echo "Generated README.md (scraped $(date '+%-m-%-d-%y'))"
+
+# Write machine-readable timestamp for freshness checks
+date +%Y-%m-%d > "$SCRIPT_DIR/.last-updated"
