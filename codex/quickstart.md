@@ -13,10 +13,11 @@ You can also use Codex with API credits by signing in with an OpenAI API key.
 (() => {
   const platform =
     (navigator.userAgentData?.platform || navigator.platform || "").toLowerCase();
-  const isMac =
+  const isDesktopAppPlatform =
     platform.includes("mac") ||
-    /macintosh|mac os x/i.test(navigator.userAgent || "");
-  if (!isMac) return;
+    platform.includes("win") ||
+    /macintosh|mac os x|windows|win64|win32/i.test(navigator.userAgent || "");
+  if (!isDesktopAppPlatform) return;
 
   const shouldPreferApp = () => {
     try {
@@ -54,12 +55,15 @@ You can also use Codex with API credits by signing in with an OpenAI API key.
   ]}
 >
   <div slot="app">
-The Codex app is available on macOS (Apple Silicon).
+The Codex app is available on macOS and Windows.
+
+Most Codex app features are available on both platforms. Platform-specific
+exceptions are noted in the relevant docs.
 
 <WorkflowSteps variant="headings">
 1. Download and install the Codex app
 
-    Download the Codex app for Windows or macOS.
+    Download the Codex app for macOS or Windows. Choose the Intel build if you're using an Intel-based Mac.
 
     <CodexAppDownloadCta client:load className="mb-4" />
 
@@ -143,10 +147,9 @@ The Codex app is available on macOS (Apple Silicon).
      />
    </ExampleGallery>
 
-   If you need more inspiration, check out the [explore section](https://developers.openai.com/codex/explore).
+   If you need more inspiration, explore [Codex use cases](https://developers.openai.com/codex/use-cases).
    If you're new to Codex, read the [best practices guide](https://developers.openai.com/codex/learn/best-practices).
 
-    <CtaPillLink href="/codex/app" label="Learn more about the Codex app" class="mt-8" />
 </WorkflowSteps>
 
 
@@ -250,16 +253,26 @@ The Codex CLI is supported on macOS, Windows, and Linux.
 <WorkflowSteps variant="headings">
 1. Install the Codex CLI
 
-    Install with npm:
+    On macOS or Linux, use the standalone installer:
+
+    ```bash
+    curl -fsSL https://chatgpt.com/codex/install.sh | sh
+    ```
+
+    On Windows, run:
+
+    ```powershell
+    powershell -ExecutionPolicy ByPass -c "irm https://chatgpt.com/codex/install.ps1 | iex"
+    ```
+
+    You can also install Codex CLI with npm or Homebrew:
 
     ```bash
     npm install -g @openai/codex
     ```
 
-    Install with Homebrew:
-
     ```bash
-    brew install codex
+    brew install --cask codex
     ```
 
 2. Run `codex` and sign in
@@ -421,3 +434,22 @@ Use Codex in the cloud at [chatgpt.com/codex](https://chatgpt.com/codex).
 
   </div>
 </Tabs>
+
+<div class="h-6" aria-hidden="true"></div>
+
+## Next steps
+
+[<IconItem title="Learn more about the Codex app" className="mt-2">
+    <span slot="icon">
+      <OpenBook />
+    </span>
+    Use the Codex app to work with your local projects.
+  </IconItem>](https://developers.openai.com/codex/app)
+
+[<IconItem title="Migrate to Codex" className="mt-2">
+    <span slot="icon">
+      <CompareArrows />
+    </span>
+    Move supported instruction files, MCP server configuration, skills, and
+    subagents into Codex.
+  </IconItem>](https://developers.openai.com/codex/migrate)

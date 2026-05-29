@@ -11,7 +11,7 @@ Build faster with the [OpenAI Docs MCP server](https://developers.openai.com/lea
 
 ChatGPT Apps have three components:
 
-- **Your MCP server** defines tools, enforces auth, returns data, and points each tool to a UI bundle.
+- **Your MCP server** defines tools, provides optional server instructions, enforces auth, returns data, and points each tool to a UI bundle.
 - **The widget/UI bundle** renders inside ChatGPT’s iframe and communicates with the host through the MCP Apps UI bridge (JSON-RPC over `postMessage`).
 - **The model** decides when to call tools and narrates the experience using the structured data you return.
 
@@ -71,11 +71,11 @@ walkthrough and a mapping guide, see
 
 `window.openai` is an Apps SDK compatibility layer and a home for optional
 ChatGPT extensions. For new apps, use the MCP Apps bridge by default and treat
-`window.openai` as an API for additional capabilities unqiue for ChatGPT.
+`window.openai` as an API for additional capabilities unique to ChatGPT.
 
 Unique capabilities include:
 
-- **File handling (ChatGPT extension):** `uploadFile` and `getFileDownloadUrl` cover image uploads and previews.
+- **File handling (ChatGPT extension):** `uploadFile`, `selectFiles`, and `getFileDownloadUrl` cover file uploads, selection, and downloads.
 - **Host surfaces (ChatGPT extension):** `requestModal` opens a host-owned modal.
 - **Commerce (ChatGPT extension):** `requestCheckout` opens Instant Checkout (when enabled).
 
@@ -105,6 +105,24 @@ pip install mcp
 ```
 
 ## Build your MCP server
+
+### Add server instructions for cross-tool guidance
+
+MCP servers can return an [`instructions` field](https://modelcontextprotocol.io/specification/2025-06-18/basic/lifecycle#initialization) during initialization. ChatGPT and Codex use these instructions alongside your tool metadata when deciding how to work with your server.
+
+Use server instructions for guidance that applies across tools, such as required tool sequences, shared rate limits, or relationships between tools. Keep the guidance concise and put the most important details first; for ChatGPT and Codex, the first 512 characters should be self-contained. Don't use server instructions to repeat every tool description or change the model's personality.
+
+```ts
+
+
+const server = new McpServer(
+  { name: "kanban-server", version: "1.0.0" },
+  {
+    instructions:
+      "Before updating a task, call list_tasks to validate the task ID. For bulk edits, process at most 10 tasks per request.",
+  }
+);
+```
 
 ### Step 1 – Register a component template
 
@@ -182,7 +200,10 @@ If you ship updates frequently, keep a short, consistent versioning scheme so yo
 Tools are the contract the model reasons about. Define one tool per user intent (e.g., `list_tasks`, `update_task`). Each descriptor should include:
 
 - Machine-readable name and human-readable title.
-- JSON schema for arguments (`zod`, JSON Schema, or dataclasses).
+- Schema for arguments. With the Node helper shown below, use Zod raw shapes or
+  Standard Schema; other SDKs may expose JSON Schema or dataclasses.
+- Schema for returned `structuredContent` (`outputSchema`) so clients and
+  models know the shape of the tool result.
 - `_meta.ui.resourceUri` pointing to the template URI.
 - Optional `_meta.ui.visibility` to control whether the tool is callable by the model, the UI, or both.
 - Optional ChatGPT extensions (like short status text while a tool runs).
@@ -202,6 +223,21 @@ registerAppTool(
   {
     title: "Show Kanban Board",
     inputSchema: { workspace: z.string() },
+    outputSchema: {
+      columns: z.array(
+        z.object({
+          id: z.string(),
+          title: z.string(),
+          tasks: z.array(
+            z.object({
+              id: z.string(),
+              title: z.string(),
+              status: z.string(),
+            })
+          ),
+        })
+      ),
+    },
     _meta: {
       ui: { resourceUri: "ui://widget/kanban-board.html" },
       // ChatGPT extension (optional):
@@ -232,9 +268,9 @@ Memory is user-controlled and model-mediated: the model decides if and how to us
 **Best practices**
 
 - Keep tool inputs explicit and required for correctness; do not rely on memory for critical fields.
-- Treat memory as a hint, not authority; confirm user preferences when it is important to your user flow and may have side effects
+- Treat memory as a hint, not authority; confirm user preferences when it is important to your user flow and may have side effects.
 - Provide safe defaults or ask a follow-up question when context is missing.
-- Make tools resilient to retries or re-evaluation or missing memories
+- Make tools resilient to retries, re-evaluation, or missing memories.
 - For write or destructive actions, re-confirm intent and key parameters in the current turn.
 
 ### Step 3 – Return structured data and metadata
@@ -312,6 +348,7 @@ import {
 } from "@modelcontextprotocol/ext-apps/server";
 
 
+
 const server = new McpServer({ name: "hello-world", version: "1.0.0" });
 
 registerAppResource(
@@ -338,7 +375,8 @@ registerAppTool(
   "hello_widget",
   {
     title: "Show hello widget",
-    inputSchema: { name: { type: "string" } },
+    inputSchema: { name: z.string() },
+    outputSchema: { message: z.string() },
     _meta: { ui: { resourceUri: "ui://widget/hello.html" } },
   },
   async ({ name }) => ({
@@ -446,26 +484,46 @@ Example tool descriptor:
 }
 ```
 
-### File inputs (file params)
+### File handling
 
 **ChatGPT extension (optional):** If your tool accepts user-provided files,
 declare file parameters with `_meta["openai/fileParams"]`. The value is a list
 of top-level input schema fields that should be treated as files. Nested file
 fields are not supported.
 
-Each file param must be an object with this shape:
+File params describe the input side of file handling: they tell ChatGPT which
+tool arguments contain files that the runtime should authorize and pass through
+as file references.
+
+Each declared file param receives an object with this shape:
 
 ```json
 {
   "download_url": "https://...",
-  "file_id": "file_..."
+  "file_id": "file_...",
+  "mime_type": "image/png",
+  "file_name": "input.png"
 }
 ```
+
+`download_url` and `file_id` are required. `mime_type` and `file_name` are
+optional. The `download_url` is temporary and should be used only while handling
+the current tool call. If the file reference came from a widget upload, selected
+file, or another tool result, use `file_id` when you need to request a fresh
+download URL from ChatGPT.
 
 Example:
 
 ```ts
 
+
+
+const imageFileSchema = z.object({
+  download_url: z.string(),
+  file_id: z.string(),
+  mime_type: z.string().optional(),
+  file_name: z.string().optional(),
+});
 
 registerAppTool(
   server,
@@ -474,20 +532,13 @@ registerAppTool(
     title: "process_image",
     description: "Processes an image",
     inputSchema: {
-      type: "object",
-      properties: {
-        imageToProcess: {
-          type: "object",
-          properties: {
-            download_url: { type: "string" },
-            file_id: { type: "string" },
-          },
-          required: ["download_url", "file_id"],
-          additionalProperties: false,
-        },
-      },
-      required: ["imageToProcess"],
-      additionalProperties: false,
+      imageToProcess: imageFileSchema,
+    },
+    outputSchema: {
+      download_url: z.string(),
+      file_id: z.string(),
+      mime_type: z.string().optional(),
+      file_name: z.string().optional(),
     },
     _meta: {
       ui: { resourceUri: "ui://widget/widget.html" },
@@ -500,11 +551,42 @@ registerAppTool(
       structuredContent: {
         download_url: imageToProcess.download_url,
         file_id: imageToProcess.file_id,
+        mime_type: imageToProcess.mime_type,
+        file_name: imageToProcess.file_name,
       },
     };
   }
 );
 ```
+
+To return downloadable files from a tool, include a file reference in
+`structuredContent`, usually under a field such as `file_uri`:
+
+```json
+{
+  "structuredContent": {
+    "file_uri": {
+      "download_url": "https://...",
+      "file_id": "file_...",
+      "mime_type": "application/pdf",
+      "file_name": "report.pdf"
+    }
+  }
+}
+```
+
+This is the output side of file handling. Your tool should return a file
+reference instead of inline binary data or base64 content when the result is a
+downloadable file. ChatGPT can use the returned `file_id` to provide the widget
+with a fresh temporary download URL.
+
+ChatGPT also supports downloadable files returned as MCP
+[`resource_link`](https://modelcontextprotocol.io/specification/2025-06-18/server/tools#resource-links)
+content. Use this for file outputs that should be exposed to the user as
+downloads. For direct web downloads, return an
+[`https://`](https://modelcontextprotocol.io/specification/2025-06-18/server/resources#https)
+resource URI as defined by MCP. ChatGPT elicits user approval before it
+downloads that file for the user.
 
 ### Content security policy (CSP)
 
@@ -527,6 +609,9 @@ broad distribution.
 - `connectDomains` – hosts your widget can fetch from.
 - `resourceDomains` – hosts for static assets like images, fonts, and scripts.
 - `frameDomains` – optional; hosts your widget may embed as iframes. Widgets without `frameDomains` cannot render subframes.
+
+If you want to use `window.openai.openExternal(...)` without seeing a safe-link
+warning, use the field `redirect_domains` under `openai/widgetCSP`.
 
 Caution: Using `frameDomains` is discouraged and should only be done when embedding iframes is core to your experience (for example, a code editor or notebook environment). Apps that declare `frameDomains` are subject to higher scrutiny at review time and are likely to be rejected or held back from broad distribution.
 
@@ -612,12 +697,22 @@ Fields:
 - `results[].title` - human-readable title.
 - `results[].url` - canonical URL for citation.
 
-In MCP, the tool response **wraps** this JSON inside a `content` array. For `search`, return exactly one content item with `type: "text"` and `text` set to the JSON string above:
+In MCP, return this JSON as `structuredContent` and include the same value as a
+JSON string in `content` for compatibility:
 
-**Search tool response wrapper (MCP content array):**
+**Search tool response wrapper:**
 
 ```json
 {
+  "structuredContent": {
+    "results": [
+      {
+        "id": "doc-1",
+        "title": "Human-readable title",
+        "url": "https://example.com"
+      }
+    ]
+  },
   "content": [
     {
       "type": "text",
@@ -647,12 +742,19 @@ Fields:
 - `url` - canonical URL for citation.
 - `metadata` - optional key/value pairs about the result.
 
-For `fetch`, wrap the document JSON the same way:
+For `fetch`, return the document JSON the same way:
 
-**Fetch tool response wrapper (MCP content array):**
+**Fetch tool response wrapper:**
 
 ```json
 {
+  "structuredContent": {
+    "id": "doc-1",
+    "title": "Human-readable title",
+    "text": "Full text of the document",
+    "url": "https://example.com",
+    "metadata": { "source": "optional key/value pairs" }
+  },
   "content": [
     {
       "type": "text",
@@ -670,25 +772,42 @@ Here is a minimal TypeScript example showing the `search` and `fetch` tools:
 
 const server = new McpServer({ name: "acme-knowledge", version: "1.0.0" });
 
+const searchOutputSchema = {
+  results: z.array(
+    z.object({
+      id: z.string(),
+      title: z.string(),
+      url: z.string().url(),
+    })
+  ),
+};
+
+const fetchOutputSchema = {
+  id: z.string(),
+  title: z.string(),
+  text: z.string(),
+  url: z.string().url(),
+  metadata: z.record(z.string(), z.string()).optional(),
+};
+
 server.registerTool(
   "search",
   {
     title: "Search knowledge",
     inputSchema: { query: z.string() },
+    outputSchema: searchOutputSchema,
     annotations: { readOnlyHint: true },
   },
-  async ({ query }) => ({
-    content: [
-      {
-        type: "text",
-        text: JSON.stringify({
-          results: [
-            { id: "doc-1", title: "Overview", url: "https://example.com" },
-          ],
-        }),
-      },
-    ],
-  })
+  async ({ query }) => {
+    const structuredContent = {
+      results: [{ id: "doc-1", title: "Overview", url: "https://example.com" }],
+    };
+
+    return {
+      structuredContent,
+      content: [{ type: "text", text: JSON.stringify(structuredContent) }],
+    };
+  }
 );
 
 server.registerTool(
@@ -696,22 +815,23 @@ server.registerTool(
   {
     title: "Fetch document",
     inputSchema: { id: z.string() },
+    outputSchema: fetchOutputSchema,
     annotations: { readOnlyHint: true },
   },
-  async ({ id }) => ({
-    content: [
-      {
-        type: "text",
-        text: JSON.stringify({
-          id,
-          title: "Overview",
-          text: "Full text...",
-          url: "https://example.com",
-          metadata: { source: "acme" },
-        }),
-      },
-    ],
-  })
+  async ({ id }) => {
+    const structuredContent = {
+      id,
+      title: "Overview",
+      text: "Full text...",
+      url: "https://example.com",
+      metadata: { source: "acme" },
+    };
+
+    return {
+      structuredContent,
+      content: [{ type: "text", text: JSON.stringify(structuredContent) }],
+    };
+  }
 );
 ```
 

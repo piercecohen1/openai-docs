@@ -1,10 +1,12 @@
 # Windows
 
-The [Codex app for Windows](https://apps.microsoft.com/detail/9plm9xgg6vks?hl=en-US&gl=US) gives you one interface for
+The [Codex app for Windows](https://get.microsoft.com/installer/download/9PLM9XGG6VKS?cid=website_cta_psi) gives you one interface for
 working across projects, running parallel agent threads, and reviewing results.
+The Windows app supports core workflows such as worktrees, automations, Git
+functionality, the in-app browser, artifact previews, plugins, and skills.
 It runs natively on Windows using PowerShell and the
 [Windows sandbox](https://developers.openai.com/codex/windows#windows-sandbox), or you can configure it to
-run in [Windows Subsystem for Linux (WSL)](#windows-subsystem-for-linux-wsl).
+run in [Windows Subsystem for Linux 2 (WSL2)](#windows-subsystem-for-linux-wsl).
 
 <CodexScreenshot
   alt="Codex app for Windows showing a project sidebar, active thread, and review pane"
@@ -17,7 +19,7 @@ run in [Windows Subsystem for Linux (WSL)](#windows-subsystem-for-linux-wsl).
 ## Download and update the Codex app
 
 Download the Codex app from the
-[Microsoft Store](https://apps.microsoft.com/detail/9plm9xgg6vks?hl=en-US&gl=US).
+[Microsoft Store](https://get.microsoft.com/installer/download/9PLM9XGG6VKS?cid=website_cta_psi).
 
 Then follow the [quickstart](https://developers.openai.com/codex/quickstart?setup=app) to get started.
 
@@ -36,7 +38,7 @@ winget install Codex -s msstore
 
 ## Native sandbox
 
-The Codex app on Windows supports a native [Windows sandbox](https://developers.openai.com/codex/windows#windows-sandbox) when the agent runs in PowerShell, and uses Linux sandboxing when you run the agent in [Windows Subsystem for Linux (WSL)](#windows-subsystem-for-linux-wsl). To apply sandbox protections in either mode, set sandbox permissions to **Default permissions** in the Composer before sending messages to Codex.
+The Codex app on Windows supports a native [Windows sandbox](https://developers.openai.com/codex/windows#windows-sandbox) when the agent runs in PowerShell, and uses Linux sandboxing when you run the agent in [Windows Subsystem for Linux 2 (WSL2)](#windows-subsystem-for-linux-wsl). To apply sandbox protections in either mode, set sandbox permissions to **Default permissions** in the Composer before sending messages to Codex.
 
 Running Codex in full access mode means Codex is not limited to your project
   directory and might perform unintentional destructive actions that can lead to
@@ -105,7 +107,7 @@ expecting the new default terminal to appear.
 
 By default, the Codex app uses the Windows-native agent. That means the agent
 runs commands in PowerShell. The app can still work with projects that live in
-Windows Subsystem for Linux (WSL) by using the `wsl` CLI when needed.
+Windows Subsystem for Linux 2 (WSL2) by using the `wsl` CLI when needed.
 
 If you want to add a project from the WSL filesystem, click **Add new project**
 or press <kbd>Ctrl</kbd>+<kbd>O</kbd>, then type `\\wsl$\` into the File
@@ -117,10 +119,13 @@ your Windows filesystem and accessing them from WSL through
 `/mnt/<drive>/...`. This setup is more reliable than opening projects
 directly from the WSL filesystem.
 
-If you want the agent itself to run in WSL, open **[Settings](codex://settings)**,
+If you want the agent itself to run in WSL2, open **[Settings](codex://settings)**,
 switch the agent from Windows native to WSL, and **restart the app**. The
 change doesn't take effect until you restart. Your projects should remain in
 place after restart.
+
+WSL1 was supported through Codex `0.114`. Starting in Codex `0.115`, the Linux
+sandbox moved to `bubblewrap`, so WSL1 is no longer supported.
 
 <CodexScreenshot
   alt="Codex app settings showing the agent selector with Windows native and WSL options"
@@ -222,7 +227,7 @@ The Windows app uses the same Codex home directory as native Codex on Windows:
 `%USERPROFILE%\.codex`.
 
 If you also run the Codex CLI inside WSL, the CLI uses the Linux home
-directory by default, so it does not automatically share configuration, cached
+directory by default, so it doesn't automatically share configuration, cached
 auth, or session history with the Windows app.
 
 To share them, use one of these approaches:
@@ -244,12 +249,12 @@ features. Install it with `winget install Git.Git` from PowerShell or `cmd.exe`.
 
 ### Git isn't detected for projects opened from `\\wsl$`
 
-For now, if you want to use the Windows-native agent with a project that is
-also accessible from WSL, the most reliable workaround is to store the project
+For now, if you want to use the Windows-native agent with a project also
+accessible from WSL, the most reliable workaround is to store the project
 on the native Windows drive and access it in WSL through `/mnt/<drive>/...`.
 
-### Cmder is not listed in the open dialog
+### `Cmder` isn't listed in the open dialog
 
-If Cmder is installed but doesn't show in Codex's open dialog, add it to the
-Windows Start Menu: right-click Cmder and choose **Add to Start**, then restart
-Codex or reboot.
+If `Cmder` is installed but doesn't show in Codex's open dialog, add it to the
+Windows Start Menu: right-click `Cmder` and choose **Add to Start**, then
+restart Codex or reboot.

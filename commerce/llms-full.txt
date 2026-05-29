@@ -103,7 +103,7 @@ If your system supports split shipments, consolidate them into a single buyer-vi
 # Best practices
 
 Onboarding product feeds in ChatGPT is currently available to approved
-  partners. To apply for access, fill out this form{" "}
+  partners. To apply for access, fill out this form 
   <a
     href="https://chatgpt.com/merchants"
     target="_blank"
@@ -164,7 +164,7 @@ Onboarding product feeds in ChatGPT is currently available to approved
 # Get Started
 
 Onboarding product feeds in ChatGPT is currently available to approved
-  partners. To apply for access, fill out this form{" "}
+  partners. To apply for access, fill out this form 
   <a
     href="https://chatgpt.com/merchants"
     target="_blank"
@@ -1239,16 +1239,6 @@ Response code: HTTP 4xx/5xx
 
 # Feeds
 
-<a
-    href="https://github.com/agentic-commerce-protocol/agentic-commerce-protocol"
-    target="_blank"
-    rel="noopener noreferrer"
-    class="underline"
-  >
-    This spec is in a draft state for feedback till 04/07/2026. Feedback is
-    welcome in the ACP github repo.
-  </a>
-
 ## Overview
 
 Use these endpoints to create a product feed and retrieve feed metadata.
@@ -1317,8 +1307,8 @@ Returned when the product feed payload is invalid.
 
 The file upload schema reference now lives on the Products page.
 
-- [Upcoming (In review)](https://developers.openai.com/commerce/specs/file-upload/products)
-- [Currently Stable](https://developers.openai.com/commerce/specs/file-upload/products?version=currently-stable)
+- [Stable](https://developers.openai.com/commerce/specs/file-upload/products)
+- [Draft](https://developers.openai.com/commerce/specs/file-upload/products?version=draft)
 
 ---
 
@@ -1453,16 +1443,6 @@ while optional fields enrich relevance and user trust.
 ---
 
 # Products
-
-<a
-    href="https://github.com/agentic-commerce-protocol/agentic-commerce-protocol"
-    target="_blank"
-    rel="noopener noreferrer"
-    class="underline"
-  >
-    This spec is in a draft state for feedback till 04/07/2026. Feedback is
-    welcome in the ACP github repo.
-  </a>
 
 ## Overview
 
@@ -1698,16 +1678,6 @@ At least one of the following fields must be present.
 ---
 
 # Promotions
-
-<a
-    href="https://github.com/agentic-commerce-protocol/agentic-commerce-protocol"
-    target="_blank"
-    rel="noopener noreferrer"
-    class="underline"
-  >
-    This spec is in a draft state for feedback till 04/07/2026. Feedback is
-    welcome in the ACP github repo.
-  </a>
 
 ## Overview
 

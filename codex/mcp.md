@@ -11,6 +11,9 @@ Codex supports MCP servers in both the CLI and the IDE extension.
 - **Streamable HTTP servers**: Servers that you access at an address.
   - Bearer token authentication
   - OAuth authentication (run `codex mcp login <server-name>` for servers that support OAuth)
+- **Server instructions**: Codex reads the MCP `instructions` field returned during initialization and uses it as server-wide guidance alongside the server's tools.
+
+If you build or maintain an MCP server for Codex, use `instructions` for cross-tool workflows, constraints, and rate limits that apply across the server. Keep the first 512 characters self-contained so the most important guidance is available when Codex is deciding how to use the server.
 
 ## Connect Codex to an MCP server
 
@@ -58,6 +61,18 @@ Configure each MCP server with a `[mcp_servers.<server-name>]` table in the conf
 - `env` (optional): Environment variables to set for the server.
 - `env_vars` (optional): Environment variables to allow and forward.
 - `cwd` (optional): Working directory to start the server from.
+- `experimental_environment` (optional): Set to `remote` to start the stdio
+  server through a remote executor environment when one is available.
+
+`env_vars` can contain plain variable names or objects with a source:
+
+```toml
+env_vars = ["LOCAL_TOKEN", { name = "REMOTE_TOKEN", source = "remote" }]
+```
+
+String entries and `source = "local"` read from Codex's local environment.
+`source = "remote"` reads from the remote executor environment and requires
+remote MCP stdio.
 
 #### Streamable HTTP servers
 
@@ -74,10 +89,14 @@ Configure each MCP server with a `[mcp_servers.<server-name>]` table in the conf
 - `required` (optional): Set `true` to make startup fail if this enabled server can't initialize.
 - `enabled_tools` (optional): Tool allow list.
 - `disabled_tools` (optional): Tool deny list (applied after `enabled_tools`).
+- `default_tools_approval_mode` (optional): Default approval behavior for
+  tools from this server. Supported values are `auto`, `prompt`, and
+  `approve`.
+- `tools.<tool>.approval_mode` (optional): Per-tool approval behavior override.
 
 If your OAuth provider requires a fixed callback port, set the top-level `mcp_oauth_callback_port` in `config.toml`. If unset, Codex binds to an ephemeral port.
 
-If your MCP OAuth flow must use a specific callback URL (for example, a remote devbox ingress URL or a custom callback path), set `mcp_oauth_callback_url`. Codex uses this value as the OAuth `redirect_uri` while still using `mcp_oauth_callback_port` for the callback listener port. Local callback URLs (for example `localhost`) bind on loopback; non-local callback URLs bind on `0.0.0.0` so the callback can reach the host.
+If your MCP OAuth flow must use a specific callback URL (for example, a remote Devbox ingress URL or a custom callback path), set `mcp_oauth_callback_url`. Codex uses this value as the OAuth `redirect_uri` while still using `mcp_oauth_callback_port` for the callback listener port. Local callback URLs (for example `localhost`) bind on the local interface; non-local callback URLs bind on `0.0.0.0` so the callback can reach the host.
 
 If the MCP server advertises `scopes_supported`, Codex prefers those
 server-advertised scopes during OAuth login. Otherwise, Codex falls back to the
@@ -89,6 +108,7 @@ scopes configured in `config.toml`.
 [mcp_servers.context7]
 command = "npx"
 args = ["-y", "@upstash/context7-mcp"]
+env_vars = ["LOCAL_TOKEN"]
 
 [mcp_servers.context7.env]
 MY_ENV_VAR = "MY_ENV_VALUE"
@@ -112,9 +132,30 @@ http_headers = { "X-Figma-Region" = "us-east-1" }
 url = "http://localhost:3000/mcp"
 enabled_tools = ["open", "screenshot"]
 disabled_tools = ["screenshot"] # applied after enabled_tools
+default_tools_approval_mode = "prompt"
 startup_timeout_sec = 20
 tool_timeout_sec = 45
 enabled = true
+
+[mcp_servers.chrome_devtools.tools.open]
+approval_mode = "approve"
+```
+
+### Plugin-provided MCP servers
+
+Installed plugins can bundle MCP servers in their plugin manifest. Those
+servers are launched from the plugin, so user config doesn't set their
+transport command. User config can still control on/off state and tool policy
+under `plugins.<plugin>.mcp_servers.<server>`.
+
+```toml
+[plugins."sample@test".mcp_servers.sample]
+enabled = true
+default_tools_approval_mode = "prompt"
+enabled_tools = ["read", "search"]
+
+[plugins."sample@test".mcp_servers.sample.tools.search]
+approval_mode = "approve"
 ```
 
 ## Examples of useful MCP servers

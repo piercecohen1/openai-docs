@@ -18,7 +18,7 @@ It provides styling foundations with Tailwind, CSS variable design tokens, and a
 Using the Apps SDK UI is not a requirement to build your app, but it will make building an app for ChatGPT faster and easier, in a way that is consistent with the ChatGPT design system.
 
 Before diving into code, start designing with our [Figma component
-  library](https://www.figma.com/community/file/1560064615791108827/apps-in-chatgpt-components-templates)
+  library](https://www.figma.com/community/file/1625636989296445101)
 
 ## Display modes
 

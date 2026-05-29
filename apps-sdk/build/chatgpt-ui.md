@@ -68,6 +68,12 @@ window.addEventListener(
 );
 ```
 
+If a tool requires user approval, don't assume tool input is available on the
+first render. ChatGPT may wait to populate `window.openai.toolInput` and send
+`ui/notifications/tool-input` only after the user approves the call, so widgets
+should subscribe to the lifecycle notification and treat missing initial input
+as a normal state.
+
 ### Call tools from the UI
 
 To call a tool directly from the UI, send a JSON-RPC request for `tools/call`.
@@ -243,6 +249,10 @@ server.registerTool(
     title: "Roll dice",
     description: "Roll an N-sided die and return { sides, value }.",
     inputSchema: { sides: z.number().int().min(2) },
+    outputSchema: {
+      sides: z.number().int().min(2),
+      value: z.number().int().min(1),
+    },
     _meta: {
       "openai/toolInvocation/invoking": "Rolling…",
       "openai/toolInvocation/invoked": "Rolled.",
@@ -265,6 +275,10 @@ server.registerTool(
     description:
       "Render the dice widget from roll data. First call roll_dice, then pass its sides and value to this tool.",
     inputSchema: {
+      sides: z.number().int().min(2),
+      value: z.number().int().min(1),
+    },
+    outputSchema: {
       sides: z.number().int().min(2),
       value: z.number().int().min(1),
     },
@@ -387,13 +401,28 @@ access to the library picker.
 ### Download files in the widget (ChatGPT extension)
 
 Use `window.openai.getFileDownloadUrl({ fileId })` to retrieve a temporary URL
-for files the widget uploaded, selected from the file library, or that your
-tool passed via file params.
+for files the widget uploaded, selected from the file library, received through
+a tool input file param, or received from a tool result file reference.
 
 ```tsx
 const { downloadUrl } = await window.openai.getFileDownloadUrl({ fileId });
 imageElement.src = downloadUrl;
 ```
+
+Tool file references use snake case fields:
+
+```json
+{
+  "download_url": "https://...",
+  "file_id": "file_...",
+  "mime_type": "image/png",
+  "file_name": "input.png"
+}
+```
+
+Use `file_id` from that object as `fileId` when calling
+`window.openai.getFileDownloadUrl({ fileId })`. `download_url` is temporary and
+should only be used for the current operation.
 
 ### Close the widget (ChatGPT extension)
 
@@ -405,21 +434,27 @@ You can close the widget two ways: from the UI by calling `window.openai.request
   "tool_call_id": "abc123",
   "content": "...",
   "metadata": {
+    "_meta": {
+      "ui": {
+        "csp": {
+          "connectDomains": ["https://api.myapp.example.com"],
+          "resourceDomains": ["https://persistent.oaistatic.com"],
+          "frameDomains": ["https://widgets.example.com"]
+        }
+      }
+    },
     "openai/closeWidget": true,
-    "openai/widgetDomain": "https://myapp.example.com",
     "openai/widgetCSP": {
-      "connect_domains": ["https://api.myapp.example.com"],
-      "resource_domains": ["https://*.oaistatic.com"],
-      "redirect_domains": ["https://checkout.example.com"], // Optional: allow openExternal redirects + return link
-      "frame_domains": ["https://*.example.com"] // Optional: allow iframes from these domains
-    }
+      "redirect_domains": ["https://checkout.example.com"]
+    },
+    "openai/widgetDomain": "https://myapp.example.com"
   }
 }
 ```
 
-Note: By default, widgets can't render subframes. Setting `frame_domains` relaxes this and allows your widget to embed iframes from those origins. Apps that use `frame_domains` face stricter review and often fail review for broad distribution unless iframe content is core to the use case.
+Note: By default, widgets can't render subframes. Setting `_meta.ui.csp.frameDomains` relaxes this and allows your widget to embed iframes from those origins. Apps that use iframe embeds face stricter review and often fail review for broad distribution unless iframe content is core to the use case.
 
-If you want `window.openai.openExternal` to send users to an external flow (like checkout) and enable a return link to the same conversation, optionally add the destination origin to `redirect_domains`. ChatGPT will skip the safe-link modal and append a `redirectUrl` query parameter to the destination so you can route the user back into ChatGPT.
+If you want `window.openai.openExternal` to send users to an external flow (like checkout) and enable a return link to the same conversation, add the destination origin to `openai/widgetCSP` under `redirect_domains`. ChatGPT will then skip the safe-link modal and append a `redirectUrl` query parameter to the destination so you can route the user back into ChatGPT.
 
 ### Widget session ID
 

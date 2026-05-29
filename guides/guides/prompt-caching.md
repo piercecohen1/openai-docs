@@ -34,7 +34,7 @@ To configure the prompt cache retention policy, set the `prompt_cache_retention`
 
 ### In-memory prompt cache retention
 
-In-memory prompt cache retention is available for all models that support Prompt Caching.
+In-memory prompt cache retention is available for all models that support Prompt Caching, except for `gpt-5.5`, `gpt-5.5-pro`, and all future models.
 
 When using the in-memory policy, cached prefixes generally remain active for 5 to 10 minutes of inactivity, up to a maximum of one hour. In-memory cached prefixes are only held within volatile GPU memory.
 
@@ -42,9 +42,11 @@ When using the in-memory policy, cached prefixes generally remain active for 5 t
 
 Extended prompt cache retention is available for the following models:
 
+- gpt-5.5
+- gpt-5.5-pro
 - gpt-5.4
 - gpt-5.2
-- gp5-5.1-codex-max
+- gpt-5.1-codex-max
 - gpt-5.1
 - gpt-5.1-codex
 - gpt-5.1-codex-mini
@@ -59,11 +61,11 @@ key/value tensors are the intermediate representation from the model's attention
 
 ### Configure per request
 
-If you don’t specify a retention policy, the default is `in_memory`. Allowed values are `in_memory` and `24h`.
+If you don’t specify a retention policy, for most models the default is `in_memory`. For `gpt-5.5`, `gpt-5.5-pro`, and all future models, the default is `24h` and `in_memory` is not supported. Allowed values are `in_memory` and `24h`.
 
 ```json
 {
-  "model": "gpt-5.1",
+  "model": "gpt-5.5",
   "input": "Your prompt goes here...",
   "prompt_cache_retention": "24h"
 }
@@ -109,7 +111,7 @@ All requests, including those with fewer than 1024 tokens, will display a `cache
 
 1. **How is data privacy maintained for caches?**
 
-   Prompt caches are not shared between organizations. Only members of the same organization can access caches of identical prompts.
+   Prompt caches are not shared between organizations. Only members of the same organization can access caches of identical prompts. When using Extended Prompt Caching, key/value tensors have a maximum retention period of 24 hours.
 
 2. **Does Prompt Caching affect output token generation or the final response of the API?**
 
@@ -129,13 +131,13 @@ All requests, including those with fewer than 1024 tokens, will display a `cache
 
 6. **Does Prompt Caching work on Zero Data Retention requests?**
 
-   In-memory cache retention is Zero Data Retention eligible.
-   If you specify extended caching in the request, then that request is not considered Zero Data Retention eligible because the key/value tensors may be held in GPU-local storage, and the key-value tensors are derived from customer content.
-   However, the extended caching request will not be blocked if Zero Data Retention is enabled for your project. The other Zero Data Retention still applies, such as excluding customer content from abuse logs and preventing use of `store=True`.
+   In-memory cache retention does not save any data to disk.
+   Extended prompt caching may store key/value tensors in GPU-local storage, and the key-value tensors are derived from customer content. This data is not retained beyond cache expiration -- the key-value tensors are retained for 1-2 hours (most usage) and at most 24 hours.
+   Extended prompt caching requests are not blocked if Zero Data Retention is enabled for your project. Other Zero Data Retention still applies, such as excluding customer content from abuse logs and preventing use of `store=True`.
    See the [Your data](https://developers.openai.com/api/docs/guides/your-data) guide for more context on Zero Data Retention.
 
 7. **Does Prompt Caching work with Data Residency?**
 
-   In-memory Prompt Caching is compatable with all Data Residency regions.
+   In-memory Prompt Caching does not store data and so does not impact Data Residency.
 
-   Extended caching is only compatible with Data Residency regions that include Regional Inference.
+   Extended caching temporarily stores data on GPU machines and will only be kept in-region when using Regional Inference.

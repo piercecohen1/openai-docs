@@ -4,7 +4,7 @@
 
 When building a ChatGPT app, developers are responsible for choosing how to monetize their experience. Today, the **recommended** and **generally available** approach is to use **external checkout**, where users complete purchases on the developer’s own domain. While current approval is limited to apps for physical goods purchases, we are actively working to support a wider range of commerce use cases.
 
-We’re also enabling **Instant Checkout** in ChatGPT apps for select marketplace partners (beta), with plans to extend access to more marketplaces and physical-goods retailers over time. Until then, we recommend routing purchase flows to your standard external checkout.
+We’re also enabling **in-app checkout with ChatGPT payment sheet** for select marketplace partners (beta), with plans to extend access to more marketplaces and physical-goods retailers over time. Until then, we recommend routing purchase flows to your standard external checkout.
 
 ## Recommended Monetization Approach
 
@@ -22,22 +22,36 @@ This is the recommended approach for most developers building ChatGPT apps.
 4. Payment, billing, taxes, refunds, and compliance are handled entirely on your domain.
 5. After purchase, the user can return to ChatGPT with confirmation or unlocked features.
 
-### Instant Checkout in ChatGPT apps (private beta)
+### In-app Checkout with Saved Payment Methods
+
+App developers can build a checkout flow directly in their ChatGPT app that allows customers to use payment methods already saved with the merchant. This flow can only display saved payment methods and cannot collect new payment method credentials from customers.
+
+In this approach, the customer does not need to be redirected to another surface outside ChatGPT to complete the purchase.
+
+#### How it works
+
+1. A user interacts with your app in ChatGPT.
+2. Your app presents purchasable items, plans, or services with the relevant totals.
+3. Your app displays eligible payment methods that the customer has already saved with you.
+4. The customer selects a saved payment method and confirms the purchase in ChatGPT.
+5. Your backend processes the purchase with the saved payment method and returns confirmation to the app.
+
+### In-app Checkout with ChatGPT Payment Sheet (private beta)
 
 
 
-Instant Checkout is limited to select marketplaces today and is not available
-  to all users.
+In-app checkout with ChatGPT payment sheet is limited to select marketplaces
+  today and is not available to all users.
 
 
 
-The `requestCheckout` function lets your widget hand a checkout session to ChatGPT and let the host display payment options on your behalf. You prepare a checkout session (line items, totals, provider info), render it in your widget, then call `requestCheckout(session_data)` to open the Instant Checkout UI. When the user clicks buy, a token representing the selected payment method is sent to your MCP server via the `complete_checkout` tool call. You can use your PSP integration to collect payment using this token, and send back finalized order details as a response to the `complete_checkout` tool call.
+In order to collect new payment methods within the in-app checkout flow, app developers need to use the ChatGPT payment sheet. Call `requestCheckout` with checkout session data (line items, totals, saved payment methods) to open the ChatGPT payment sheet. When the user clicks buy, a token representing the selected payment method is sent to your MCP server via the `complete_checkout` tool call. You can use your PSP integration to collect payment using this token, and send back finalized order details as a response to the `complete_checkout` tool call.
 
 ### Flow at a glance
 
 1. **Server prepares session**: An MCP tool returns checkout session data (session id, line items, totals, payment provider) in `structuredContent`.
 2. **Widget previews cart**: The widget renders line items and totals so the user can confirm.
-3. **Widget calls `requestCheckout`**: The widget invokes `requestCheckout(session_data)`. ChatGPT opens Instant Checkout, displays the amount to charge, and displays various payment methods.
+3. **Widget calls `requestCheckout`**: The widget invokes `requestCheckout(session_data)`. ChatGPT opens the payment sheet, displays the amount to charge, and displays various payment methods.
 4. **Server finalizes**: Once the user clicks the pay button, the widget calls back to your MCP via the `complete_checkout` tool call. The MCP tool returns the completed order, which will be returned back to widget as a response to `requestCheckout`.
 
 ## Checkout session
@@ -51,7 +65,7 @@ You are responsible for constructing the checkout session payload that the host 
 
 ## Widget: calling `requestCheckout` (ChatGPT Apps SDK capability)
 
-The host provides `window.openai.requestCheckout`. Use it to open the Instant Checkout UI when the user initiates a purchase:
+The host provides `window.openai.requestCheckout`. Use it to open the ChatGPT payment sheet when the user initiates a purchase:
 
 Example:
 
@@ -63,7 +77,7 @@ async function handleCheckout(sessionJson: string) {
     throw new Error("requestCheckout is not available in this host");
   }
 
-  // Host opens the Instant Checkout UI.
+  // Host opens the ChatGPT payment sheet.
   const order = await window.openai.requestCheckout({
     ...session,
     id: checkout_session_id, // Every unique checkout session should have a unique id
@@ -135,14 +149,34 @@ Key points:
 
 You can mirror this pattern and swap in your logic:
 
+For direct `CallToolResult` returns, the Python MCP SDK uses the `Annotated`
+return type below to declare the tool `outputSchema` for `structuredContent`.
+
 ```py
+from typing import Annotated, Any
+
+from pydantic import BaseModel
+
+
+class CompleteCheckoutOutput(BaseModel):
+    id: str
+    status: str
+    currency: str
+    line_items: list[dict[str, Any]]
+    fulfillment_address: dict[str, Any]
+    fulfillment_options: list[dict[str, Any]]
+    fulfillment_option_id: str
+    totals: list[dict[str, Any]]
+    order: dict[str, Any]
+
+
 @tool(description="")
 async def complete_checkout(
     self,
     checkout_session_id: str,
     buyer: Buyer,
     payment_data: PaymentData,
-) -> types.CallToolResult:
+) -> Annotated[types.CallToolResult, CompleteCheckoutOutput]:
     return types.CallToolResult(
         content=[],
         structuredContent={
@@ -228,19 +262,90 @@ Adapt this to:
 - Return authoritative order/receipt data.
 - Include `_meta.ui.resourceUri` if you want to render a confirmation widget (ChatGPT honors `_meta["openai/outputTemplate"]` as an optional compatibility alias).
 
-Refer to the following PSP specific monetization guides for information on how to collect payments:
+The following PSPs support payments processing for the ChatGPT payment sheet:
 
-- [Stripe](https://docs.stripe.com/agentic-commerce/apps)
 - [Adyen](https://docs.adyen.com/online-payments/agentic-commerce)
+- Checkout.com
+- Fiserv
 - [PayPal](https://docs.paypal.ai/growth/agentic-commerce/agent-ready)
+- [Stripe](https://docs.stripe.com/agentic-commerce/apps)
+- Worldpay
+
+## Optional: Receive Raw Payment Methods
+
+If you are a merchant with a PCI DSS Level 1 certificate, you can receive raw payment methods directly by implementing the Agentic Commerce Protocol Delegate Payment endpoint. The delegated payment request will include the full payment method details your payment flow requires, including the raw card number, expiration date, CVC, billing address, allowance constraints, risk signals, and metadata.
+
+For example, a raw card payment method request is as follows:
+
+```json
+{
+  "payment_method": {
+    "type": "card",
+    "card_number_type": "fpan",
+    "number": "4242424242424242",
+    "exp_month": "11",
+    "exp_year": "2026",
+    "name": "Jane Doe",
+    "cvc": "223",
+    "checks_performed": ["avs", "cvv"],
+    "iin": "424242",
+    "display_card_funding_type": "credit",
+    "display_brand": "visa",
+    "display_last4": "4242",
+    "metadata": {}
+  },
+  "allowance": {
+    "reason": "one_time",
+    "max_amount": 5000,
+    "currency": "usd",
+    "checkout_session_id": "cs_01HV3P3ABC123",
+    "merchant_id": "acme_corp",
+    "expires_at": "2026-02-13T12:00:00Z"
+  },
+  "billing_address": {
+    "name": "Jane Doe",
+    "line_one": "185 Berry Street",
+    "line_two": "Suite 550",
+    "city": "San Francisco",
+    "state": "CA",
+    "country": "US",
+    "postal_code": "94107"
+  },
+  "risk_signals": [
+    {
+      "type": "card_testing",
+      "score": 5,
+      "action": "authorized"
+    }
+  ],
+  "metadata": {
+    "session_id": "sess_abc123",
+    "user_agent": "ChatGPT/2.0"
+  }
+}
+```
+
+The corresponding response should return an id representing the payment method. This id will be passed to `complete_checkout` as part of `payment_data`.
+
+```json
+{
+  "id": "vt_01J8Z3WXYZ9ABC123",
+  "created": "2026-02-12T14:30:00Z",
+  "metadata": {
+    "source": "agent_checkout",
+    "merchant_id": "acme_corp",
+    "idempotency_key": "idem_xyz789"
+  }
+}
+```
 
 ## Error Handling
 
-The `complete_checkout` tool call can send back messages of type `error`. Error messages with `code` set to `payment_declined` or `requires_3ds` will be displayed on the Instant Checkout UI. All other error messages will be sent back to the widget as a response to `requestCheckout`. The widget can display the error as desired.
+The `complete_checkout` tool call can send back messages of type `error`. Error messages with `code` set to `payment_declined` or `requires_3ds` will be displayed on the ChatGPT payment sheet. All other error messages will be sent back to the widget as a response to `requestCheckout`. The widget can display the error as desired.
 
 ## Test payment mode
 
-You can set the value of the `payment_mode` field to `test` in the call to `requestCheckout`. This will present an Instant Checkout UI that accepts test cards (such as the 4242 test card). The resulting `token` within `payment_data` that is passed to the `complete_checkout` tool can be processed in the staging environment of your PSP. This allows you to test end-to-end flows without moving real funds.
+You can set the value of the `payment_mode` field to `test` in the call to `requestCheckout`. This will present a ChatGPT payment sheet that accepts test cards (such as the 4242 test card). The resulting `token` within `payment_data` that is passed to the `complete_checkout` tool can be processed in the staging environment of your PSP. This allows you to test end-to-end flows without moving real funds.
 
 Note that in test payment mode, you might have to set a different value for `merchant_id`. Refer to your PSP's monetization guide for more details.
 

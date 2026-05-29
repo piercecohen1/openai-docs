@@ -113,7 +113,7 @@ Please work through this document in its entirety to better understand how
 
 ## How do these rate limits work?
 
-Rate limits are measured in five ways: **RPM** (requests per minute), **RPD** (requests per day), **TPM** (tokens per minute), **TPD** (tokens per day), and **IPM** (images per minute). Rate limits can be hit across any of the options depending on what occurs first. For example, you might send 20 requests with only 100 tokens to the ChatCompletions endpoint and that would fill your limit (if your RPM was 20), even if you did not send 150k tokens (if your TPM limit was 150k) within those 20 requests.
+Rate limits use metrics such as **RPM** (requests per minute), **RPD** (requests per day), **TPM** (tokens per minute), **TPD** (tokens per day), **IPM** (images per minute), and audio minutes per minute for some streaming audio models. Rate limits can be hit across any of the options depending on what occurs first. For example, you might send 20 requests with only 100 tokens to the ChatCompletions endpoint and that would fill your limit (if your RPM was 20), even if you didn't send 150k tokens (if your TPM limit was 150k) within those 20 requests.
 
 [Batch API](https://developers.openai.com/api/docs/api-reference/batch/create) queue limits are calculated based on the total number of input tokens queued for a given model. Tokens from pending batch jobs are counted against your queue limit. Once a batch job is completed, its tokens are no longer counted against that model's limit.
 
@@ -134,10 +134,10 @@ You can view the rate and usage limits for your organization under the [limits](
 | ----------- | --------------------------------------------------------------------- | ---------------- |
 | Free        | User must be in an [allowed geography](https://developers.openai.com/api/docs/supported-countries) | $100 / month     |
 | Tier&nbsp;1 | $5 paid                                                               | $100 / month     |
-| Tier&nbsp;2 | $50 paid and 7+ days since first successful payment                   | $500 / month     |
-| Tier&nbsp;3 | $100 paid and 7+ days since first successful payment                  | $1,000 / month   |
-| Tier&nbsp;4 | $250 paid and 14+ days since first successful payment                 | $5,000 / month   |
-| Tier&nbsp;5 | $1,000 paid and 30+ days since first successful payment               | $200,000 / month |
+| Tier&nbsp;2 | $50 paid                                                              | $500 / month     |
+| Tier&nbsp;3 | $100 paid                                                             | $1,000 / month   |
+| Tier&nbsp;4 | $250 paid                                                             | $5,000 / month   |
+| Tier&nbsp;5 | $1,000 paid                                                           | $200,000 / month |
 
 To view a high-level summary of rate limits per model, visit the [models page](https://developers.openai.com/api/docs/models).
 

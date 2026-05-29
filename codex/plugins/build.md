@@ -4,11 +4,11 @@ This page is for plugin authors. If you want to browse, install, and use
 plugins in Codex, see [Plugins](https://developers.openai.com/codex/plugins). If you are still iterating on
 one repo or one personal workflow, start with a local skill. Build a plugin
 when you want to share that workflow across teams, bundle app integrations or
-MCP config, or publish a stable package.
+MCP config, package lifecycle hooks, or publish a stable package.
 
-## Create a plugin with `$plugin-creator`
+## Create a plugin with `@plugin-creator`
 
-For the fastest setup, use the built-in `$plugin-creator` skill.
+For the fastest setup, use the built-in `@plugin-creator` skill.
 
 <CodexScreenshot
   alt="plugin-creator skill in Codex"
@@ -18,7 +18,7 @@ For the fastest setup, use the built-in `$plugin-creator` skill.
 
 It scaffolds the required `.codex-plugin/plugin.json` manifest and can also
 generate a local marketplace entry for testing. If you already have a plugin
-folder, you can still use `$plugin-creator` to wire it into a local
+folder, you can still use `@plugin-creator` to wire it into a local
 marketplace.
 
 <CodexScreenshot
@@ -29,7 +29,7 @@ marketplace.
 
 ### Build your own curated plugin list
 
-A marketplace is a JSON catalog of plugins. `$plugin-creator` can generate one
+A marketplace is a JSON catalog of plugins. `@plugin-creator` can generate one
 for a single plugin, and you can keep adding entries to that same marketplace
 to build your own curated list for a repo, team, or personal workflow.
 
@@ -51,6 +51,37 @@ you add more plugins.
   lightSrc="/images/codex/plugins/codex-local-plugin-light.png"
   darkSrc="/images/codex/plugins/codex-local-plugin.png"
 />
+
+### Add a marketplace from the CLI
+
+Use `codex plugin marketplace add` when you want Codex to install and track a
+marketplace source for you instead of editing `config.toml` by hand.
+
+```bash
+codex plugin marketplace add owner/repo
+codex plugin marketplace add owner/repo --ref main
+codex plugin marketplace add https://github.com/example/plugins.git --sparse .agents/plugins
+codex plugin marketplace add ./local-marketplace-root
+```
+
+Marketplace sources can be GitHub shorthand (`owner/repo` or
+`owner/repo@ref`), HTTP or HTTPS Git URLs, SSH Git URLs, or local marketplace root
+directories. Use `--ref` to pin a Git ref, and repeat `--sparse PATH` to use a
+sparse checkout for Git-backed marketplace repos. `--sparse` is valid only for
+Git marketplace sources.
+
+To inspect, refresh, or remove configured marketplaces:
+
+```bash
+codex plugin marketplace list
+codex plugin marketplace upgrade
+codex plugin marketplace upgrade marketplace-name
+codex plugin marketplace remove marketplace-name
+```
+
+`codex plugin marketplace list` prints each marketplace Codex is considering
+and the root path it resolves from, including local default marketplaces and
+configured marketplace snapshots.
 
 ### Create a plugin manually
 
@@ -93,7 +124,7 @@ description: Greet the user with a friendly message.
 Greet the user warmly and ask how you can help.
 ```
 
-3. Add the plugin to a marketplace. Use `$plugin-creator` to generate one, or
+3. Add the plugin to a marketplace. Use `@plugin-creator` to generate one, or
    follow [Build your own curated plugin list](#build-your-own-curated-plugin-list)
    to wire the plugin into Codex manually.
 
@@ -190,6 +221,32 @@ to the marketplace root, not relative to the `.agents/plugins/` folder. See
 After you change the plugin, update the plugin directory that your marketplace
 entry points to and restart Codex so the local install picks up the new files.
 
+### Share a local plugin with your workspace
+
+After you create a plugin and add it to Codex, you can share it with other
+members of your ChatGPT workspace from the Codex app.
+
+1. Open **Plugins** in the Codex app.
+2. Go to **Created by you** and open the plugin details page.
+3. Select **Share**.
+4. Add workspace members or copy a share link.
+5. Choose who has access, then send the invitation or link.
+
+People you share with can find the plugin under **Shared with you** in the
+plugin directory. Sharing a local plugin with your workspace doesn't publish
+it to the public Plugin Directory. Shared plugins stay within your workspace
+and organization boundary; accounts that aren't signed in to that workspace
+can't access them. Use a marketplace when you want repo or CLI distribution,
+and use workspace sharing when you want selected teammates to install a plugin
+from the Codex app.
+
+Workspace admins can disable plugin sharing from cloud-managed requirements by
+adding `plugin_sharing = false` to `requirements.toml`:
+
+```toml
+plugin_sharing = false
+```
+
 ### Marketplace metadata
 
 If you maintain a repo marketplace, define it in
@@ -245,6 +302,8 @@ copy are ready for other developers to see.
   personal installs, a common pattern is `./.codex/plugins/<plugin-name>`.
 - Keep `source.path` relative to the marketplace root, start it with `./`, and
   keep it inside that root.
+- For local entries, `source` can also be a plain string path such as
+  `"./plugins/my-plugin"`.
 - Always include `policy.installation`, `policy.authentication`, and
   `category` on each plugin entry.
 - Use `policy.installation` values such as `AVAILABLE`,
@@ -252,11 +311,36 @@ copy are ready for other developers to see.
 - Use `policy.authentication` to decide whether auth happens on install or
   first use.
 
-The marketplace controls where Codex loads the plugin from. `source.path` can
-point somewhere else if your plugin lives outside those example directories. A
-marketplace file can live in the repo where you are developing the plugin or in
-a separate marketplace repo, and one marketplace file can point to one plugin
-or many.
+The marketplace controls where Codex loads the plugin from. A local
+`source.path` can point somewhere else if your plugin lives outside those
+example directories. A marketplace file can live in the repo where you are
+developing the plugin or in a separate marketplace repo, and one marketplace
+file can point to one plugin or many.
+
+Marketplace entries can also point at Git-backed plugin sources. Use
+`"source": "url"` when the plugin lives at the repository root, or
+`"source": "git-subdir"` when the plugin lives in a subdirectory:
+
+```json
+{
+  "name": "remote-helper",
+  "source": {
+    "source": "git-subdir",
+    "url": "https://github.com/example/codex-plugins.git",
+    "path": "./plugins/remote-helper",
+    "ref": "main"
+  },
+  "policy": {
+    "installation": "AVAILABLE",
+    "authentication": "ON_INSTALL"
+  },
+  "category": "Productivity"
+}
+```
+
+Git-backed entries may use `ref` or `sha` selectors. If Codex can't resolve a
+marketplace entry's source, it skips that plugin entry instead of failing the
+whole marketplace.
 
 ### How Codex uses marketplaces
 
@@ -267,6 +351,7 @@ Codex can read marketplace files from:
 
 - the curated marketplace that powers the official Plugin Directory
 - a repo marketplace at `$REPO_ROOT/.agents/plugins/marketplace.json`
+- a legacy-compatible marketplace at `$REPO_ROOT/.claude-plugin/marketplace.json`
 - a personal marketplace at `~/.agents/plugins/marketplace.json`
 
 You can install any plugin exposed through a marketplace. Codex installs
@@ -283,8 +368,10 @@ on or off state in `~/.codex/config.toml`.
 ### Plugin structure
 
 Every plugin has a manifest at `.codex-plugin/plugin.json`. It can also include
-a `skills/` directory, an `.app.json` file that points at one or more apps or
-connectors, and assets used to present the plugin across supported surfaces.
+a `skills/` directory, a `hooks/` directory for lifecycle hooks, an `.app.json`
+file that points at one or more apps or connectors, an `.mcp.json` file that
+configures MCP servers, and assets used to present the plugin across supported
+surfaces.
 
 <FileTree
   class="mt-4"
@@ -320,6 +407,16 @@ connectors, and assets used to present the plugin across supported surfaces.
           ],
         },
         {
+          name: "hooks/",
+          open: true,
+          children: [
+            {
+              name: "hooks.json",
+              comment: "Optional: lifecycle hooks",
+            },
+          ],
+        },
+        {
           name: ".app.json",
           comment: "Optional: app or connector mappings",
         },
@@ -336,14 +433,14 @@ connectors, and assets used to present the plugin across supported surfaces.
   ]}
 />
 
-Only `plugin.json` belongs in `.codex-plugin/`. Keep `skills/`, `assets/`,
-`.mcp.json`, and `.app.json` at the plugin root.
+Only `plugin.json` belongs in `.codex-plugin/`. Keep `skills/`, `hooks/`,
+`assets/`, `.mcp.json`, and `.app.json` at the plugin root.
 
 Published plugins typically use a richer manifest than the minimal example that
 appears in quick-start scaffolds. The manifest has three jobs:
 
 - Identify the plugin.
-- Point to bundled components such as skills, apps, or MCP servers.
+- Point to bundled components such as skills, apps, MCP servers, or hooks.
 - Provide install-surface metadata such as descriptions, icons, and legal
   links.
 
@@ -366,6 +463,7 @@ Here's a complete manifest example:
   "skills": "./skills/",
   "mcpServers": "./.mcp.json",
   "apps": "./.app.json",
+  "hooks": "./hooks/hooks.json",
   "interface": {
     "displayName": "My Plugin",
     "shortDescription": "Reusable skills and apps",
@@ -399,8 +497,8 @@ components:
 - `name`, `version`, and `description` identify the plugin.
 - `author`, `homepage`, `repository`, `license`, and `keywords` provide
   publisher and discovery metadata.
-- `skills`, `mcpServers`, and `apps` point to bundled components relative to
-  the plugin root.
+- `skills`, `mcpServers`, `apps`, and `hooks` point to bundled components
+  relative to the plugin root.
 - `interface` controls how install surfaces present the plugin.
 
 Use the `interface` object for install-surface metadata:
@@ -419,8 +517,109 @@ Use the `interface` object for install-surface metadata:
 - Keep manifest paths relative to the plugin root and start them with `./`.
 - Store visual assets such as `composerIcon`, `logo`, and `screenshots` under
   `./assets/` when possible.
-- Use `skills` for bundled skill folders, `apps` for `.app.json`, and
-  `mcpServers` for `.mcp.json`.
+- Use `skills` for bundled skill folders, `apps` for `.app.json`,
+  `mcpServers` for `.mcp.json`, and `hooks` for lifecycle hooks.
+- Enabled plugins can include lifecycle hooks alongside skills, MCP servers, and
+  apps.
+- If your plugin stores hooks at `./hooks/hooks.json`, you do not need a
+  `hooks` entry in `.codex-plugin/plugin.json`; Codex checks that default file
+  automatically.
+
+### Bundled MCP servers and lifecycle hooks
+
+`mcpServers` can point to an `.mcp.json` file that contains either a direct
+server map or a wrapped `mcp_servers` object.
+
+Direct server map:
+
+```json
+{
+  "docs": {
+    "command": "docs-mcp",
+    "args": ["--stdio"]
+  }
+}
+```
+
+Wrapped server map:
+
+```json
+{
+  "mcp_servers": {
+    "docs": {
+      "command": "docs-mcp",
+      "args": ["--stdio"]
+    }
+  }
+}
+```
+
+After installation, users can enable or disable a bundled MCP server and tune
+tool approval policy from their Codex config without editing the plugin. Use
+`plugins.<plugin>.mcp_servers.<server>` for plugin-scoped MCP server policy:
+
+```toml
+[plugins."my-plugin".mcp_servers.docs]
+enabled = true
+default_tools_approval_mode = "prompt"
+enabled_tools = ["search"]
+
+[plugins."my-plugin".mcp_servers.docs.tools.search]
+approval_mode = "approve"
+```
+
+When your plugin is enabled, Codex can load lifecycle hooks from your plugin
+alongside user, project, and managed hooks.
+
+Installing or enabling a plugin doesn't automatically trust its hooks.
+Plugin-bundled hooks are non-managed hooks, so Codex skips them until the user
+reviews and trusts the current hook definition.
+
+The default plugin hook file is `hooks/hooks.json`:
+
+```json
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 ${PLUGIN_ROOT}/hooks/session_start.py",
+            "statusMessage": "Loading plugin context"
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+If you define `hooks` in `.codex-plugin/plugin.json`, Codex uses that manifest
+entry instead of the default `hooks/hooks.json`. The manifest field can be a
+single path, an array of paths, an inline hooks object, or an array of inline
+hooks objects.
+
+```json
+{
+  "name": "repo-policy",
+  "hooks": ["./hooks/session.json", "./hooks/tools.json"]
+}
+```
+
+Hook paths follow the same manifest path rules as `skills`, `apps`, and
+`mcpServers`: start with `./`, resolve relative to the plugin root, and stay
+inside the plugin root.
+
+Plugin hook commands receive the Codex-specific environment variables
+`PLUGIN_ROOT` and `PLUGIN_DATA`. `PLUGIN_ROOT` points to the installed plugin
+root, and `PLUGIN_DATA` points to the plugin's writable data directory. Codex
+also sets `CLAUDE_PLUGIN_ROOT` and `CLAUDE_PLUGIN_DATA` for compatibility with
+existing plugin hooks.
+
+Plugin hooks use the same event schema as regular hooks. See
+[Hooks](https://developers.openai.com/codex/hooks) for supported events, inputs, outputs, trust review, and
+current limitations.
 
 ### Publish official public plugins
 

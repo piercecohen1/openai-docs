@@ -67,7 +67,7 @@ curl -X POST "https://api.openai.com/v1/realtime/calls/$CALL_ID/accept" \
   -H "Content-Type: application/json" \
   -d '{
         "type": "realtime",
-        "model": "gpt-realtime",
+        "model": "gpt-realtime-2",
         "instructions": "You are Alex, a friendly concierge for Example Corp."
       }'
 ```
@@ -217,7 +217,7 @@ AUTH_HEADER = {
 call_accept = {
     "type": "realtime",
     "instructions": "You are a support agent.",
-    "model": "gpt-realtime",
+    "model": "gpt-realtime-2",
 }
 
 response_create = {
@@ -282,7 +282,7 @@ if __name__ == "__main__":
 
 Now that you've connected over SIP, use the left navigation or click into these pages to start building your realtime application.
 
-- [Using realtime models](https://developers.openai.com/api/docs/guides/realtime-models-prompting)
+- [Realtime prompting guide](https://developers.openai.com/api/docs/guides/realtime-models-prompting)
 - [Managing conversations](https://developers.openai.com/api/docs/guides/realtime-conversations)
 - [Webhooks and server-side controls](https://developers.openai.com/api/docs/guides/realtime-server-controls)
 - [Managing costs](https://developers.openai.com/api/docs/guides/realtime-costs)

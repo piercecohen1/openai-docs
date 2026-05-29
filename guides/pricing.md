@@ -139,9 +139,11 @@ Flagship models
         tier="standard"
         latestSectionLabel={null}
         allModelsFootnote={pricingHtml(
-          'Regional processing (data residency) endpoints are charged a 10% uplift for <code>gpt-5.4</code>, <code>gpt-5.4-mini</code>, <code>gpt-5.4-nano</code>, and <code>gpt-5.4-pro</code>. See our <a href="/api/docs/guides/your-data">Your data</a> guide for supported regions and processing details.'
+          'Regional processing (data residency) endpoints are charged a 10% uplift for models released on or after March 5, 2026, that are eligible for data residency. See our <a href="/api/docs/guides/your-data">Your data</a> guide for supported regions and processing details.'
         )}
         rows={[
+          ["gpt-5.5 (<272K context length)", 5, 0.5, 30],
+          ["gpt-5.5-pro (<272K context length)", 30, "", 180],
           ["gpt-5.4 (<272K context length)", 2.5, 0.25, 15],
           ["gpt-5.4-mini", 0.75, 0.075, 4.5],
           ["gpt-5.4-nano", 0.2, 0.02, 1.25],
@@ -193,9 +195,11 @@ Flagship models
         tier="batch"
         latestSectionLabel={null}
         allModelsFootnote={pricingHtml(
-          'Regional processing (data residency) endpoints are charged a 10% uplift for <code>gpt-5.4</code>, <code>gpt-5.4-mini</code>, <code>gpt-5.4-nano</code>, and <code>gpt-5.4-pro</code>. See our <a href="/api/docs/guides/your-data">Your data</a> guide for supported regions and processing details.'
+          'Regional processing (data residency) endpoints are charged a 10% uplift for models released on or after March 5, 2026, that are eligible for data residency. See our <a href="/api/docs/guides/your-data">Your data</a> guide for supported regions and processing details.'
         )}
         rows={[
+          ["gpt-5.5 (<272K context length)", 2.5, 0.25, 15],
+          ["gpt-5.5-pro (<272K context length)", 15, "", 90],
           ["gpt-5.4 (<272K context length)", 1.25, 0.13, 7.5],
           ["gpt-5.4-mini", 0.375, 0.0375, 2.25],
           ["gpt-5.4-nano", 0.1, 0.01, 0.625],
@@ -245,9 +249,11 @@ Flagship models
         tier="flex"
         latestSectionLabel={null}
         allModelsFootnote={pricingHtml(
-          'Regional processing (data residency) endpoints are charged a 10% uplift for <code>gpt-5.4</code>, <code>gpt-5.4-mini</code>, <code>gpt-5.4-nano</code>, and <code>gpt-5.4-pro</code>. See our <a href="/api/docs/guides/your-data">Your data</a> guide for supported regions and processing details.'
+          'Regional processing (data residency) endpoints are charged a 10% uplift for models released on or after March 5, 2026, that are eligible for data residency. See our <a href="/api/docs/guides/your-data">Your data</a> guide for supported regions and processing details.'
         )}
         rows={[
+          ["gpt-5.5 (<272K context length)", 2.5, 0.25, 15],
+          ["gpt-5.5-pro (<272K context length)", 15, "", 90],
           ["gpt-5.4 (<272K context length)", 1.25, 0.13, 7.5],
           ["gpt-5.4-mini", 0.375, 0.0375, 2.25],
           ["gpt-5.4-nano", 0.1, 0.01, 0.625],
@@ -270,9 +276,10 @@ Flagship models
         tier="priority"
         latestSectionLabel={null}
         allModelsFootnote={pricingHtml(
-          'Regional processing (data residency) endpoints are charged a 10% uplift for <code>gpt-5.4</code>, <code>gpt-5.4-mini</code>, <code>gpt-5.4-nano</code>, and <code>gpt-5.4-pro</code>. See our <a href="/api/docs/guides/your-data">Your data</a> guide for supported regions and processing details.'
+          'Regional processing (data residency) endpoints are charged a 10% uplift for models released on or after March 5, 2026, that are eligible for data residency. See our <a href="/api/docs/guides/your-data">Your data</a> guide for supported regions and processing details.'
         )}
         rows={[
+          ["gpt-5.5 (<272K context length)", 12.5, 1.25, 75],
           ["gpt-5.4 (<272K context length)", 5, 0.5, 30],
           ["gpt-5.4-mini", 1.5, 0.15, 9],
           ["gpt-5.2", 3.5, 0.35, 28],
@@ -330,7 +337,7 @@ Image generation models
       <div
         className="pricing-section-meta"
         style={{ marginBottom: "12px" }}
-        set:html={`Per-image output pricing for GPT Image and DALL·E models is listed in the <a href="/api/docs/guides/image-generation#calculating-costs">Calculating costs</a> section of the image generation guide.`}
+        set:html={`For image generation cost estimates, use the <a href="/api/docs/guides/image-generation#calculating-costs">calculator</a> in the image generation guide.`}
       />
       </div>
     <div data-content-switcher-pane data-value="batch" hidden>
@@ -339,7 +346,7 @@ Image generation models
       <div
         className="pricing-section-meta"
         style={{ marginBottom: "12px" }}
-        set:html={`Per-image output pricing for GPT Image and DALL·E models is listed in the <a href="/api/docs/guides/image-generation#calculating-costs">Calculating costs</a> section of the image generation guide.`}
+        set:html={`For image generation cost estimates, use the <a href="/api/docs/guides/image-generation#calculating-costs">calculator</a> in the image generation guide.`}
       />
       </div>
 
@@ -508,6 +515,13 @@ Finetuning
 
 
     <small className="pricing-switcher-meta">Prices per 1M tokens.</small>
+    OpenAI is winding down the fine-tuning platform. The platform is no longer
+      accessible to new users, but existing users of the fine-tuning platform
+      will be able to create training jobs for the coming months.
+      <br />
+      All fine-tuned models will remain available for inference until their base
+      models are deprecated. The full timeline is
+      [here](https://developers.openai.com/api/docs/deprecations#update-to-openais-self-serve-fine-tuning).
   </div>
 
   

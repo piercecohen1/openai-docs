@@ -12,9 +12,22 @@ Start from the user journey defined in your [use case research](https://develope
 
 - **One job per tool** – keep each tool focused on a single read or write action ("fetch_board", "create_ticket"), rather than a kitchen-sink endpoint. This helps the model decide between alternatives.
 - **Explicit inputs** – define the shape of `inputSchema` now, including parameter names, data types, and enums. Document defaults and nullable fields so the model knows what is optional.
-- **Predictable outputs** – enumerate the structured fields you will return, including machine-readable identifiers that the model can reuse in follow-up calls.
+- **Predictable outputs** – enumerate the structured fields you will return,
+  declare them in `outputSchema`, and include machine-readable identifiers that
+  the model can reuse in follow-up calls.
 
 If you need both read and write behavior, create separate tools so ChatGPT can respect confirmation flows for write actions.
+
+## Separate data processing from UI rendering
+
+If one workflow needs both reusable data and a widget, plan that as two tools instead of one overloaded tool:
+
+- **Data tools** return complete `structuredContent` for model reasoning and follow-up calls, without a UI template.
+- **Render tools** accept the prepared data, attach the component template, and stay focused on presentation.
+
+The model should call the data tool first, use the returned `structuredContent`, then call the render tool with the prepared data so the widget renders once with final, model-checked context. State that dependency in the render tool description.
+
+For local UI interactions that need fresh data, let the widget call the data tool directly rather than remounting itself. See [Build your ChatGPT UI](https://developers.openai.com/apps-sdk/build/chatgpt-ui#separate-data-processing-from-ui-rendering) for the fuller implementation pattern.
 
 ## Capture metadata for discovery
 
@@ -52,7 +65,7 @@ Capture any gaps or ambiguities now and adjust the plan—changing metadata befo
 
 When you are ready to implement, compile the following into a handoff document:
 
-- Tool name, description, input schema, and expected output schema.
+- Tool name, description, `inputSchema`, and `outputSchema`.
 - Whether the tool should return a component, and if so which UI component should render it.
 - Auth requirements, rate limits, and error handling expectations.
 - Test prompts that should succeed (and ones that should fail).

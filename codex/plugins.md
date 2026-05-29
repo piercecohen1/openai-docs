@@ -7,6 +7,8 @@ workflows for Codex.
 
 Extend what Codex can do, for example:
 
+- Install the Codex Security plugin to scan authorized code and confirm
+  plausible vulnerability findings.
 - Install the Gmail plugin to let Codex read and manage Gmail.
 - Install the Google Drive plugin to work across Drive, Docs, Sheets, and
   Slides.
@@ -19,10 +21,12 @@ A plugin can contain:
   or helper scripts for a task.
 - **Apps:** connections to tools like GitHub, Slack, or Google Drive, so
   Codex can read information from those tools and take actions in them.
-- **MCP servers:** services that give Codex access to additional tools or
-  shared information, often from systems outside your local project.
+- **MCP servers:** services that give Codex access to more tools or shared
+  information, often from systems outside your local project.
 
-More plugin capabilities are coming soon.
+You can share plugins by publishing them through a marketplace source, such as a
+repo marketplace for a project or team. See [Build plugins](https://developers.openai.com/codex/plugins/build)
+for marketplace setup, packaging, and distribution guidance.
 
 ## Use and install plugins
 
@@ -32,9 +36,16 @@ Open **Plugins** in the Codex app to browse and install curated plugins.
 
 <CodexScreenshot
   alt="Codex Plugins page"
-  lightSrc="/images/codex/plugins/directory.png"
-  darkSrc="/images/codex/plugins/directory_dark.png"
+  lightSrc="/images/codex/plugins/directory.webp"
+  darkSrc="/images/codex/plugins/directory-dark.webp"
 />
+
+The plugin directory groups plugins into categories:
+
+- **Curated by OpenAI:** highlighted plugins available to all Codex users.
+- **Shared with you:** plugins shared by other members of your ChatGPT
+  workspace.
+- **Created by you:** plugins you created or added to your own workspace.
 
 ### Plugin directory in the CLI
 
@@ -50,6 +61,11 @@ codex
   lightSrc="/images/codex/plugins/cli_light.png"
   darkSrc="/images/codex/plugins/codex-plugin-cli.png"
 />
+
+The CLI plugin browser groups plugins by marketplace. Use the marketplace tabs
+to switch sources, open a plugin to inspect details, install or uninstall
+marketplace entries, and press <kbd>Space</kbd> on an installed plugin to toggle
+its enabled state.
 
 ### Install and use a plugin
 
@@ -96,7 +112,7 @@ After you install a plugin, you can use it directly in the prompt window:
     </p>
     <p class="mt-3 text-sm text-secondary">
       Use this when you want to be specific about which plugin or skill Codex
-      should use. See <a href="/codex/app/commands">Codex app commands</a> and{" "}
+      should use. See <a href="/codex/app/commands">Codex app commands</a> and 
       <a href="/codex/skills">Skills</a>.
     </p>
   </div>
@@ -112,7 +128,7 @@ privacy, and data-sharing policies.
 - Bundled skills are available as soon as you install the plugin.
 - If a plugin includes apps, Codex may prompt you to install or sign in to
   those apps in ChatGPT during setup or the first time you use them.
-- If a plugin includes MCP servers, they may require additional setup or
+- If a plugin includes MCP servers, they may require extra setup or
   authentication before you can use them.
 - When Codex sends data through a bundled app, that app's terms and privacy
   policy apply.
@@ -137,4 +153,10 @@ enabled = false
 
 If you want to create, test, or distribute your own plugin, see
 [Build plugins](https://developers.openai.com/codex/plugins/build). That page covers local scaffolding,
-manual marketplace setup, plugin manifests, and packaging guidance.
+manual marketplace setup, workspace sharing, plugin manifests, and packaging
+guidance.
+
+## Plugin guides
+
+- [Codex Security plugin](https://developers.openai.com/codex/security/plugin): Scan authorized code,
+  confirm findings, and prepare reviewed fixes.

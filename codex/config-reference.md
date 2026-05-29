@@ -6,14 +6,25 @@ Use this page as a searchable reference for Codex configuration files. For conce
 
 User-level configuration lives in `~/.codex/config.toml`. You can also add project-scoped overrides in `.codex/config.toml` files. Codex loads project-scoped config files only when you trust the project.
 
-For sandbox and approval keys (`approval_policy`, `sandbox_mode`, and `sandbox_workspace_write.*`), pair this reference with [Sandbox and approvals](https://developers.openai.com/codex/agent-approvals-security#sandbox-and-approvals), [Protected paths in writable roots](https://developers.openai.com/codex/agent-approvals-security#protected-paths-in-writable-roots), and [Network access](https://developers.openai.com/codex/agent-approvals-security#network-access).
+Project-scoped config can't override machine-local provider, auth,
+host-owned app request metadata, notification, configuration profile selection,
+or telemetry routing keys. Codex ignores `openai_base_url`,
+`chatgpt_base_url`, `apps_mcp_product_sku`, `model_provider`,
+`model_providers`, `notify`, `profile`, `profiles`,
+`experimental_realtime_ws_base_url`, and `otel` when they appear in a
+project-local `.codex/config.toml`; put provider, notification, and telemetry
+keys in user-level config instead. Config [profile files](https://developers.openai.com/codex/config-advanced#profiles) live next to
+`config.toml` as `$CODEX_HOME/profile-name.config.toml`; select one with
+`--profile profile-name`.
+
+For sandbox and approval keys (`approval_policy`, `sandbox_mode`, and `sandbox_workspace_write.*`), pair this reference with [Sandbox and approvals](https://developers.openai.com/codex/agent-approvals-security#sandbox-and-approvals), [Protected paths in writable roots](https://developers.openai.com/codex/agent-approvals-security#protected-paths-in-writable-roots), and [Network access](https://developers.openai.com/codex/agent-approvals-security#network-access). For beta permission profiles, see [Permissions](https://developers.openai.com/codex/permissions).
 
 <ConfigTable
   options={[
     {
       key: "model",
       type: "string",
-      description: "Model to use (e.g., `gpt-5-codex`).",
+      description: "Model to use (e.g., `gpt-5.5`).",
     },
     {
       key: "review_model",
@@ -47,7 +58,7 @@ For sandbox and approval keys (`approval_policy`, `sandbox_mode`, and `sandbox_w
       key: "model_catalog_json",
       type: "string (path)",
       description:
-        "Optional path to a JSON model catalog loaded on startup. Profile-level `profiles.<name>.model_catalog_json` can override this per profile.",
+        "Optional path to a JSON model catalog loaded on startup. A selected `$CODEX_HOME/profile-name.config.toml` profile file can override this per profile.",
     },
     {
       key: "oss_provider",
@@ -90,6 +101,18 @@ For sandbox and approval keys (`approval_policy`, `sandbox_mode`, and `sandbox_w
       type: "boolean",
       description:
         "When `true`, skill-script approval prompts are allowed to surface.",
+    },
+    {
+      key: "approvals_reviewer",
+      type: "user | auto_review",
+      description:
+        "Who reviews eligible approval prompts under `on-request` or granular approval policies. Defaults to `user`; `auto_review` uses the reviewer subagent. This setting doesn't change sandboxing or review actions already allowed inside the sandbox.",
+    },
+    {
+      key: "auto_review.policy",
+      type: "string",
+      description:
+        "Local Markdown policy instructions for automatic review. Managed `guardian_policy_config` takes precedence. Blank values are ignored.",
     },
     {
       key: "allow_login_shell",
@@ -196,7 +219,7 @@ For sandbox and approval keys (`approval_policy`, `sandbox_mode`, and `sandbox_w
       key: "commit_attribution",
       type: "string",
       description:
-        "Override the commit co-author trailer text. Set an empty string to disable automatic attribution.",
+        'Commit co-author trailer used when `[features].codex_git_commit` is enabled. Defaults to `Codex <noreply@openai.com>`; set `""` to disable.',
     },
     {
       key: "model_instructions_file",
@@ -212,8 +235,9 @@ For sandbox and approval keys (`approval_policy`, `sandbox_mode`, and `sandbox_w
     },
     {
       key: "service_tier",
-      type: "flex | fast",
-      description: "Preferred service tier for new turns.",
+      type: "string",
+      description:
+        "Preferred service tier for new turns. Built-in values include `flex` and `fast`; legacy `fast` config maps to the request value `priority`, and catalog-provided tier IDs can also be stored.",
     },
     {
       key: "experimental_compact_prompt_file",
@@ -296,15 +320,62 @@ For sandbox and approval keys (`approval_policy`, `sandbox_mode`, and `sandbox_w
       description: "Per-tool approval behavior override for a single app tool.",
     },
     {
+      key: "tool_suggest.discoverables",
+      type: "array<table>",
+      description:
+        'Allow tool suggestions for additional discoverable connectors or plugins. Each entry uses `type = "connector"` or `"plugin"` and an `id`.',
+    },
+    {
+      key: "tool_suggest.disabled_tools",
+      type: "array<table>",
+      description:
+        'Disable suggestions for specific discoverable connectors or plugins. Each entry uses `type = "connector"` or `"plugin"` and an `id`.',
+    },
+    {
       key: "features.apps",
       type: "boolean",
       description: "Enable ChatGPT Apps/connectors support (experimental).",
     },
     {
-      key: "features.codex_hooks",
+      key: "features.hooks",
       type: "boolean",
       description:
-        "Enable lifecycle hooks loaded from `hooks.json` (under development; off by default).",
+        "Enable lifecycle hooks loaded from `hooks.json` or inline `[hooks]` config. `features.codex_hooks` is a deprecated alias.",
+    },
+    {
+      key: "features.codex_git_commit",
+      type: "boolean",
+      description:
+        "Enable Codex-generated git commits. When enabled, Codex uses `commit_attribution` to append a `Co-authored-by:` trailer to generated commit messages.",
+    },
+    {
+      key: "hooks",
+      type: "table",
+      description:
+        "Lifecycle hooks configured inline in `config.toml`. Uses the same event schema as `hooks.json`; see the Hooks guide for examples and supported events.",
+    },
+    {
+      key: "hooks.<Event>",
+      type: "array<table>",
+      description:
+        "Matcher groups for hook events such as `PreToolUse`, `PermissionRequest`, `PostToolUse`, `PreCompact`, `PostCompact`, `SessionStart`, `SubagentStart`, `SubagentStop`, `UserPromptSubmit`, or `Stop`.",
+    },
+    {
+      key: "hooks.<Event>[].hooks",
+      type: "array<table>",
+      description:
+        "Hook handlers for a matcher group. Command hooks are currently supported; prompt and agent hook handlers are parsed but skipped.",
+    },
+    {
+      key: "hooks.<Event>[].hooks[].commandWindows",
+      type: "string",
+      description:
+        "Windows-only command override for command hooks. The TOML alias `command_windows` is also accepted.",
+    },
+    {
+      key: "features.memories",
+      type: "boolean",
+      description: "Enable [Memories](https://developers.openai.com/codex/memories) (off by default).",
     },
     {
       key: "mcp_servers.<id>.command",
@@ -323,9 +394,9 @@ For sandbox and approval keys (`approval_policy`, `sandbox_mode`, and `sandbox_w
     },
     {
       key: "mcp_servers.<id>.env_vars",
-      type: "array<string>",
+      type: 'array<string | { name = string, source = "local" | "remote" }>',
       description:
-        "Additional environment variables to whitelist for an MCP stdio server.",
+        'Additional environment variables to whitelist for an MCP stdio server. String entries default to `source = "local"`; use `source = "remote"` only with executor-backed remote stdio.',
     },
     {
       key: "mcp_servers.<id>.cwd",
@@ -394,6 +465,18 @@ For sandbox and approval keys (`approval_policy`, `sandbox_mode`, and `sandbox_w
         "Deny list applied after `enabled_tools` for the MCP server.",
     },
     {
+      key: "mcp_servers.<id>.default_tools_approval_mode",
+      type: "auto | prompt | approve",
+      description:
+        "Default approval behavior for MCP tools on this server unless a per-tool override exists.",
+    },
+    {
+      key: "mcp_servers.<id>.tools.<tool>.approval_mode",
+      type: "auto | prompt | approve",
+      description:
+        "Per-tool approval behavior override for one MCP tool on this server.",
+    },
+    {
       key: "mcp_servers.<id>.scopes",
       type: "array<string>",
       description:
@@ -404,6 +487,12 @@ For sandbox and approval keys (`approval_policy`, `sandbox_mode`, and `sandbox_w
       type: "string",
       description:
         "Optional RFC 8707 OAuth resource parameter to include during MCP login.",
+    },
+    {
+      key: "mcp_servers.<id>.experimental_environment",
+      type: "local | remote",
+      description:
+        "Experimental placement for an MCP server. `remote` starts stdio servers through a remote executor environment; streamable HTTP remote placement is not implemented.",
     },
     {
       key: "agents.max_threads",
@@ -442,6 +531,70 @@ For sandbox and approval keys (`approval_policy`, `sandbox_mode`, and `sandbox_w
         "Optional pool of display nicknames for spawned agents in that role.",
     },
     {
+      key: "memories.generate_memories",
+      type: "boolean",
+      description:
+        "When `false`, newly created threads are not stored as memory-generation inputs. Defaults to `true`.",
+    },
+    {
+      key: "memories.use_memories",
+      type: "boolean",
+      description:
+        "When `false`, Codex skips injecting existing memories into future sessions. Defaults to `true`.",
+    },
+    {
+      key: "memories.disable_on_external_context",
+      type: "boolean",
+      description:
+        "When `true`, threads that use external context such as MCP tool calls, web search, or tool search are kept out of memory generation. Defaults to `false`. Legacy alias: `memories.no_memories_if_mcp_or_web_search`.",
+    },
+    {
+      key: "memories.max_raw_memories_for_consolidation",
+      type: "number",
+      description:
+        "Maximum recent raw memories retained for global consolidation. Defaults to `256` and is capped at `4096`.",
+    },
+    {
+      key: "memories.max_unused_days",
+      type: "number",
+      description:
+        "Maximum days since a memory was last used before it becomes ineligible for consolidation. Defaults to `30` and is clamped to `0`-`365`.",
+    },
+    {
+      key: "memories.max_rollout_age_days",
+      type: "number",
+      description:
+        "Maximum age of threads considered for memory generation. Defaults to `30` and is clamped to `0`-`90`.",
+    },
+    {
+      key: "memories.max_rollouts_per_startup",
+      type: "number",
+      description:
+        "Maximum rollout candidates processed per startup pass. Defaults to `16` and is capped at `128`.",
+    },
+    {
+      key: "memories.min_rollout_idle_hours",
+      type: "number",
+      description:
+        "Minimum idle time before a thread is considered for memory generation. Defaults to `6` and is clamped to `1`-`48`.",
+    },
+    {
+      key: "memories.min_rate_limit_remaining_percent",
+      type: "number",
+      description:
+        "Minimum remaining percentage required in Codex rate-limit windows before memory generation starts. Defaults to `25` and is clamped to `0`-`100`.",
+    },
+    {
+      key: "memories.extract_model",
+      type: "string",
+      description: "Optional model override for per-thread memory extraction.",
+    },
+    {
+      key: "memories.consolidation_model",
+      type: "string",
+      description: "Optional model override for global memory consolidation.",
+    },
+    {
       key: "features.unified_exec",
       type: "boolean",
       description:
@@ -469,6 +622,75 @@ For sandbox and approval keys (`approval_policy`, `sandbox_mode`, and `sandbox_w
       type: "boolean",
       description:
         "Enable personality selection controls (stable; on by default).",
+    },
+    {
+      key: "features.network_proxy",
+      type: "boolean | table",
+      description:
+        "Enable sandboxed networking. Use a table form when setting network policy options such as `domains` (experimental; off by default).",
+    },
+    {
+      key: "features.network_proxy.enabled",
+      type: "boolean",
+      description: "Enable sandboxed networking. Defaults to `false`.",
+    },
+    {
+      key: "features.network_proxy.domains",
+      type: "map<string, allow | deny>",
+      description:
+        "Domain policy for sandboxed networking. Unset by default, which means no external destinations are allowed until you add `allow` rules. Supports exact hosts, `*.example.com` for subdomains only, `**.example.com` for apex plus subdomains, and global `*` allow rules; prefer scoped rules because `*` broadly opens public outbound access. Add `deny` rules for blocked destinations; `deny` wins on conflicts.",
+    },
+    {
+      key: "features.network_proxy.unix_sockets",
+      type: "map<string, allow | deny>",
+      description:
+        "Unix socket policy for sandboxed networking. Unset by default; add `allow` entries for permitted sockets.",
+    },
+    {
+      key: "features.network_proxy.allow_local_binding",
+      type: "boolean",
+      description:
+        "Allow broader local/private-network access. Defaults to `false`; exact local IP literal or `localhost` allow rules can still permit specific local targets.",
+    },
+    {
+      key: "features.network_proxy.enable_socks5",
+      type: "boolean",
+      description: "Expose SOCKS5 support. Defaults to `true`.",
+    },
+    {
+      key: "features.network_proxy.enable_socks5_udp",
+      type: "boolean",
+      description: "Allow UDP over SOCKS5. Defaults to `true`.",
+    },
+    {
+      key: "features.network_proxy.allow_upstream_proxy",
+      type: "boolean",
+      description:
+        "Allow chaining through an upstream proxy from the environment. Defaults to `true`.",
+    },
+    {
+      key: "features.network_proxy.dangerously_allow_non_loopback_proxy",
+      type: "boolean",
+      description:
+        "Permit non-loopback listener addresses. Defaults to `false`; enabling it can expose proxy listeners beyond localhost.",
+    },
+    {
+      key: "features.network_proxy.dangerously_allow_all_unix_sockets",
+      type: "boolean",
+      description:
+        "Permit arbitrary Unix socket destinations instead of allowlist-only access. Defaults to `false`; use only in tightly controlled environments.",
+    },
+    {
+      key: "features.network_proxy.proxy_url",
+      type: "string",
+      description:
+        'HTTP listener URL for sandboxed networking. Defaults to `"http://127.0.0.1:3128"`.',
+    },
+    {
+      key: "features.network_proxy.socks_url",
+      type: "string",
+      description:
+        'SOCKS5 listener URL. Defaults to `"http://127.0.0.1:8081"`.',
     },
     {
       key: "features.web_search",
@@ -501,12 +723,6 @@ For sandbox and approval keys (`approval_policy`, `sandbox_mode`, and `sandbox_w
         "Compress streaming request bodies with zstd when supported (stable; on by default).",
     },
     {
-      key: "features.smart_approvals",
-      type: "boolean",
-      description:
-        "Route eligible approval requests through the guardian reviewer subagent (experimental; off by default).",
-    },
-    {
       key: "features.skill_mcp_dependency_install",
       type: "boolean",
       description:
@@ -516,7 +732,7 @@ For sandbox and approval keys (`approval_policy`, `sandbox_mode`, and `sandbox_w
       key: "features.fast_mode",
       type: "boolean",
       description:
-        'Enable Fast mode selection and the `service_tier = "fast"` path (stable; on by default).',
+        "Enable model-catalog service tier selection in the TUI, including Fast-tier commands when the active model advertises them (stable; on by default).",
     },
     {
       key: "features.prevent_idle_sleep",
@@ -529,6 +745,12 @@ For sandbox and approval keys (`approval_policy`, `sandbox_mode`, and `sandbox_w
       type: "boolean",
       description:
         "Suppress the warning that appears when under-development feature flags are enabled.",
+    },
+    {
+      key: "model_providers.<id>",
+      type: "table",
+      description:
+        "Custom provider definition. Built-in provider IDs (`openai`, `ollama`, and `lmstudio`) are reserved and cannot be overridden.",
     },
     {
       key: "model_providers.<id>.name",
@@ -606,6 +828,51 @@ For sandbox and approval keys (`approval_policy`, `sandbox_mode`, and `sandbox_w
       type: "boolean",
       description:
         "Whether that provider supports the Responses API WebSocket transport.",
+    },
+    {
+      key: "model_providers.<id>.auth",
+      type: "table",
+      description:
+        "Command-backed bearer token configuration for a custom provider. Do not combine with `env_key`, `experimental_bearer_token`, or `requires_openai_auth`.",
+    },
+    {
+      key: "model_providers.<id>.auth.command",
+      type: "string",
+      description:
+        "Command to run when Codex needs a bearer token. The command must print the token to stdout.",
+    },
+    {
+      key: "model_providers.<id>.auth.args",
+      type: "array<string>",
+      description: "Arguments passed to the token command.",
+    },
+    {
+      key: "model_providers.<id>.auth.timeout_ms",
+      type: "number",
+      description:
+        "Maximum token command runtime in milliseconds (default: 5000).",
+    },
+    {
+      key: "model_providers.<id>.auth.refresh_interval_ms",
+      type: "number",
+      description:
+        "How often Codex proactively refreshes the token in milliseconds (default: 300000). Set to `0` to refresh only after an authentication retry.",
+    },
+    {
+      key: "model_providers.<id>.auth.cwd",
+      type: "string (path)",
+      description: "Working directory for the token command.",
+    },
+    {
+      key: "model_providers.amazon-bedrock.aws.profile",
+      type: "string",
+      description:
+        "AWS profile name used by the built-in `amazon-bedrock` provider.",
+    },
+    {
+      key: "model_providers.amazon-bedrock.aws.region",
+      type: "string",
+      description: "AWS region used by the built-in `amazon-bedrock` provider.",
     },
     {
       key: "model_reasoning_effort",
@@ -687,78 +954,6 @@ For sandbox and approval keys (`approval_policy`, `sandbox_mode`, and `sandbox_w
       key: "project_doc_fallback_filenames",
       type: "array<string>",
       description: "Additional filenames to try when `AGENTS.md` is missing.",
-    },
-    {
-      key: "profile",
-      type: "string",
-      description:
-        "Default profile applied at startup (equivalent to `--profile`).",
-    },
-    {
-      key: "profiles.<name>.*",
-      type: "various",
-      description:
-        "Profile-scoped overrides for any of the supported configuration keys.",
-    },
-    {
-      key: "profiles.<name>.service_tier",
-      type: "flex | fast",
-      description: "Profile-scoped service tier preference for new turns.",
-    },
-    {
-      key: "profiles.<name>.plan_mode_reasoning_effort",
-      type: "none | minimal | low | medium | high | xhigh",
-      description: "Profile-scoped Plan-mode reasoning override.",
-    },
-    {
-      key: "profiles.<name>.web_search",
-      type: "disabled | cached | live",
-      description:
-        'Profile-scoped web search mode override (default: `"cached"`).',
-    },
-    {
-      key: "profiles.<name>.personality",
-      type: "none | friendly | pragmatic",
-      description:
-        "Profile-scoped communication style override for supported models.",
-    },
-    {
-      key: "profiles.<name>.model_catalog_json",
-      type: "string (path)",
-      description:
-        "Profile-scoped model catalog JSON path override (applied on startup only; overrides the top-level `model_catalog_json` for that profile).",
-    },
-    {
-      key: "profiles.<name>.model_instructions_file",
-      type: "string (path)",
-      description:
-        "Profile-scoped replacement for the built-in instruction file.",
-    },
-    {
-      key: "profiles.<name>.experimental_use_unified_exec_tool",
-      type: "boolean",
-      description:
-        "Legacy name for enabling unified exec; prefer `[features].unified_exec`.",
-    },
-    {
-      key: "profiles.<name>.oss_provider",
-      type: "lmstudio | ollama",
-      description: "Profile-scoped OSS provider for `--oss` sessions.",
-    },
-    {
-      key: "profiles.<name>.tools_view_image",
-      type: "boolean",
-      description: "Enable or disable the `view_image` tool in that profile.",
-    },
-    {
-      key: "profiles.<name>.analytics.enabled",
-      type: "boolean",
-      description: "Profile-scoped analytics enablement override.",
-    },
-    {
-      key: "profiles.<name>.windows.sandbox",
-      type: "unelevated | elevated",
-      description: "Profile-scoped Windows sandbox mode override.",
     },
     {
       key: "history.persistence",
@@ -896,7 +1091,13 @@ For sandbox and approval keys (`approval_policy`, `sandbox_mode`, and `sandbox_w
       key: "tui.notification_method",
       type: "auto | osc9 | bel",
       description:
-        "Notification method for unfocused terminal notifications (default: auto).",
+        "Notification method for terminal notifications (default: auto).",
+    },
+    {
+      key: "tui.notification_condition",
+      type: "unfocused | always",
+      description:
+        "Control whether TUI notifications fire only when the terminal is unfocused or regardless of focus. Defaults to `unfocused`.",
     },
     {
       key: "tui.animations",
@@ -911,6 +1112,18 @@ For sandbox and approval keys (`approval_policy`, `sandbox_mode`, and `sandbox_w
         "Control alternate screen usage for the TUI (default: auto; auto skips it in Zellij to preserve scrollback).",
     },
     {
+      key: "tui.vim_mode_default",
+      type: "boolean",
+      description:
+        "Start the composer in Vim normal mode instead of insert mode (default: false). You can still toggle it per session with `/vim`.",
+    },
+    {
+      key: "tui.raw_output_mode",
+      type: "boolean",
+      description:
+        "Start the TUI in raw scrollback mode for copy-friendly terminal selection (default: false). You can toggle it with `/raw` or the default `alt-r` key binding.",
+    },
+    {
       key: "tui.show_tooltips",
       type: "boolean",
       description:
@@ -923,10 +1136,58 @@ For sandbox and approval keys (`approval_policy`, `sandbox_mode`, and `sandbox_w
         "Ordered list of TUI footer status-line item identifiers. `null` disables the status line.",
     },
     {
+      key: "tui.terminal_title",
+      type: "array<string> | null",
+      description:
+        'Ordered list of terminal window/tab title item identifiers. Defaults to `["spinner", "project"]`; `null` disables title updates.',
+    },
+    {
       key: "tui.theme",
       type: "string",
       description:
         "Syntax-highlighting theme override (kebab-case theme name).",
+    },
+    {
+      key: "tui.keymap.<context>.<action>",
+      type: "string | array<string>",
+      description:
+        "Keyboard shortcut binding for a TUI action. Supported contexts include `global`, `chat`, `composer`, `editor`, `pager`, `list`, and `approval`; context-specific bindings override `tui.keymap.global`.",
+    },
+    {
+      key: "tui.keymap.<context>.<action> = []",
+      type: "empty array",
+      description:
+        "Unbind the action in that keymap context. Key names use normalized strings such as `ctrl-a`, `shift-enter`, `page-down`, or `minus`.",
+    },
+    {
+      key: "plugins.<plugin>.mcp_servers.<server>.enabled",
+      type: "boolean",
+      description:
+        "Enable or disable an MCP server bundled by an installed plugin without changing the plugin manifest.",
+    },
+    {
+      key: "plugins.<plugin>.mcp_servers.<server>.default_tools_approval_mode",
+      type: "auto | prompt | approve",
+      description:
+        "Default approval behavior for tools on a plugin-provided MCP server.",
+    },
+    {
+      key: "plugins.<plugin>.mcp_servers.<server>.enabled_tools",
+      type: "array<string>",
+      description:
+        "Allow list of tools exposed from a plugin-provided MCP server.",
+    },
+    {
+      key: "plugins.<plugin>.mcp_servers.<server>.disabled_tools",
+      type: "array<string>",
+      description:
+        "Deny list applied after `enabled_tools` for a plugin-provided MCP server.",
+    },
+    {
+      key: "plugins.<plugin>.mcp_servers.<server>.tools.<tool>.approval_mode",
+      type: "auto | prompt | approve",
+      description:
+        "Per-tool approval behavior override for a plugin-provided MCP tool.",
     },
     {
       key: "tui.model_availability_nux.<model>",
@@ -1010,42 +1271,73 @@ For sandbox and approval keys (`approval_policy`, `sandbox_mode`, and `sandbox_w
       key: "default_permissions",
       type: "string",
       description:
-        "Name of the default permissions profile to apply to sandboxed tool calls.",
+        "Name of the default permissions profile to apply to sandboxed tool calls. Built-ins are `:read-only`, `:workspace`, and `:danger-full-access`; custom profile names require matching `[permissions.<name>]` tables. Don't combine with `sandbox_mode` or `[sandbox_workspace_write]`.",
+    },
+    {
+      key: "permissions.<name>.description",
+      type: "string",
+      description:
+        "Human-readable description for this named profile. A profile does not inherit its parent's description through `extends`.",
+    },
+    {
+      key: "permissions.<name>.extends",
+      type: "string",
+      description:
+        "Optional parent profile applied before this named profile. Set it to another named profile, `:read-only`, or `:workspace`; `:danger-full-access`, undefined parents, and cycles are rejected.",
+    },
+    {
+      key: "permissions.<name>.workspace_roots",
+      type: "table",
+      description:
+        "Profile-defined workspace roots that receive `:workspace_roots` filesystem rules alongside the session's runtime workspace roots.",
+    },
+    {
+      key: "permissions.<name>.workspace_roots.<path>",
+      type: "boolean",
+      description:
+        "Opt a path into the profile's workspace root set when `true`. Disabled entries remain inactive.",
     },
     {
       key: "permissions.<name>.filesystem",
       type: "table",
       description:
-        "Named filesystem permission profile. Each key is an absolute path or special token such as `:minimal` or `:project_roots`.",
+        "Named filesystem permission profile. Each key is an absolute path or special token such as `:minimal` or `:workspace_roots`.",
     },
     {
-      key: "permissions.<name>.filesystem.<path>",
-      type: '"read" | "write" | "none" | table',
+      key: "permissions.<name>.filesystem.glob_scan_max_depth",
+      type: "number",
       description:
-        "Grant direct access for a path or special token, or scope nested entries under that root.",
+        "Maximum depth for expanding deny-read glob patterns on platforms that snapshot matches before sandbox startup. Must be at least `1` when set.",
     },
     {
-      key: 'permissions.<name>.filesystem.":project_roots".<subpath>',
-      type: '"read" | "write" | "none"',
+      key: "permissions.<name>.filesystem.<path-or-glob>",
+      type: '"read" | "write" | "deny" | table',
       description:
-        'Scoped filesystem access relative to the detected project roots. Use `"."` for the root itself.',
+        'Grant direct access for a path, glob pattern, or special token, or scope nested entries under that root. Use `"deny"` to deny reads for matching paths.',
+    },
+    {
+      key: 'permissions.<name>.filesystem.":workspace_roots".<subpath-or-glob>',
+      type: '"read" | "write" | "deny"',
+      description:
+        'Scoped filesystem access relative to each effective workspace root. Use `"."` for the root itself; glob subpaths such as `"**/*.env"` can deny reads with `"deny"`.',
     },
     {
       key: "permissions.<name>.network.enabled",
       type: "boolean",
-      description: "Enable network access for this named permissions profile.",
+      description:
+        "Enable network access for this named permissions profile. This changes the sandbox network policy; it does not start the network proxy by itself.",
     },
     {
       key: "permissions.<name>.network.proxy_url",
       type: "string",
       description:
-        "HTTP proxy endpoint used when this permissions profile enables the managed network proxy.",
+        "HTTP listener URL used when this permissions profile enables sandboxed networking.",
     },
     {
       key: "permissions.<name>.network.enable_socks5",
       type: "boolean",
       description:
-        "Expose a SOCKS5 listener when this permissions profile enables the managed network proxy.",
+        "Expose SOCKS5 support when this permissions profile enables sandboxed networking.",
     },
     {
       key: "permissions.<name>.network.socks_url",
@@ -1061,19 +1353,19 @@ For sandbox and approval keys (`approval_policy`, `sandbox_mode`, and `sandbox_w
       key: "permissions.<name>.network.allow_upstream_proxy",
       type: "boolean",
       description:
-        "Allow the managed proxy to chain to another upstream proxy.",
+        "Allow sandboxed networking to chain through another upstream proxy.",
     },
     {
       key: "permissions.<name>.network.dangerously_allow_non_loopback_proxy",
       type: "boolean",
       description:
-        "Permit non-loopback bind addresses for the managed proxy listener.",
+        "Permit non-loopback bind addresses for sandboxed networking listeners. Enabling it can expose listeners beyond localhost.",
     },
     {
       key: "permissions.<name>.network.dangerously_allow_all_unix_sockets",
       type: "boolean",
       description:
-        "Allow the proxy to use arbitrary Unix sockets instead of the default restricted set.",
+        "Allow arbitrary Unix socket destinations instead of the default restricted set. Use only in tightly controlled environments.",
     },
     {
       key: "permissions.<name>.network.mode",
@@ -1081,32 +1373,40 @@ For sandbox and approval keys (`approval_policy`, `sandbox_mode`, and `sandbox_w
       description: "Network proxy mode used for subprocess traffic.",
     },
     {
-      key: "permissions.<name>.network.allowed_domains",
-      type: "array<string>",
-      description: "Allowlist of domains permitted through the managed proxy.",
-    },
-    {
-      key: "permissions.<name>.network.denied_domains",
-      type: "array<string>",
-      description: "Denylist of domains blocked by the managed proxy.",
-    },
-    {
-      key: "permissions.<name>.network.allow_unix_sockets",
-      type: "array<string>",
+      key: "permissions.<name>.network.domains",
+      type: "table",
       description:
-        "Allowlist of Unix socket paths permitted through the managed proxy.",
+        "Domain rules for sandboxed networking. Supports exact hosts, `*.example.com` for subdomains only, `**.example.com` for apex plus subdomains, and global `*` allow rules. `deny` wins on conflicts.",
+    },
+    {
+      key: "permissions.<name>.network.domains.<pattern>",
+      type: "allow | deny",
+      description:
+        "Allow or deny an exact host or scoped wildcard pattern such as `*.example.com` or `**.example.com`.",
+    },
+    {
+      key: "permissions.<name>.network.unix_sockets",
+      type: "table",
+      description:
+        "Unix socket allowlist overrides for sandboxed networking. Use socket paths as keys; `allow` adds a path, and `deny` rejects it.",
+    },
+    {
+      key: "permissions.<name>.network.unix_sockets.<path>",
+      type: "allow | deny",
+      description:
+        "Add an absolute Unix socket path to the effective allowlist with `allow`, or reject it with `deny`. Denied entries are omitted from the effective allowlist.",
     },
     {
       key: "permissions.<name>.network.allow_local_binding",
       type: "boolean",
       description:
-        "Permit local bind/listen operations through the managed proxy.",
+        "Permit broader local/private-network access through sandboxed networking. Exact local IP literal or `localhost` allow rules can still permit specific local targets when this stays `false`.",
     },
     {
       key: "projects.<path>.trust_level",
       type: "string",
       description:
-        'Mark a project or worktree as trusted or untrusted (`"trusted"` | `"untrusted"`). Untrusted projects skip project-scoped `.codex/` layers.',
+        'Mark a project or worktree as trusted or untrusted (`"trusted"` | `"untrusted"`). Untrusted projects skip project-scoped `.codex/` layers, including project-local config, hooks, and rules.',
     },
     {
       key: "notice.hide_full_access_warning",
@@ -1183,15 +1483,57 @@ canonical keys that `config.toml` uses. Omitted keys remain unconstrained.
         "Allowed values for `approval_policy` (for example `untrusted`, `on-request`, `never`, and `granular`).",
     },
     {
+      key: "allowed_approvals_reviewers",
+      type: "array<string>",
+      description:
+        "Allowed values for `approvals_reviewer`, such as `user` and `auto_review`.",
+    },
+    {
+      key: "guardian_policy_config",
+      type: "string",
+      description:
+        "Managed Markdown policy instructions for automatic review. This takes precedence over local `[auto_review].policy`. Blank values are ignored.",
+    },
+    {
       key: "allowed_sandbox_modes",
       type: "array<string>",
       description: "Allowed values for `sandbox_mode`.",
+    },
+    {
+      key: "remote_sandbox_config",
+      type: "array<table>",
+      description:
+        "Host-specific sandbox requirements. The first entry whose `hostname_patterns` match the resolved host name overrides top-level `allowed_sandbox_modes` for that requirements source. Host-specific entries currently override sandbox modes only.",
+    },
+    {
+      key: "remote_sandbox_config[].hostname_patterns",
+      type: "array<string>",
+      description:
+        "Case-insensitive host name patterns. Supports `*` for any sequence of characters and `?` for one character.",
+    },
+    {
+      key: "remote_sandbox_config[].allowed_sandbox_modes",
+      type: "array<string>",
+      description:
+        "Allowed sandbox modes to apply when this host-specific entry matches.",
     },
     {
       key: "allowed_web_search_modes",
       type: "array<string>",
       description:
         "Allowed values for `web_search` (`disabled`, `cached`, `live`). `disabled` is always allowed; an empty list effectively allows only `disabled`.",
+    },
+    {
+      key: "allow_managed_hooks_only",
+      type: "boolean",
+      description:
+        "When `true`, Codex skips user, project, session, and plugin hooks while still allowing managed hooks from `requirements.toml` and other managed config layers.",
+    },
+    {
+      key: "plugin_sharing",
+      type: "boolean",
+      description:
+        "Set to `false` in cloud-managed `requirements.toml` to disable workspace sharing for locally built plugins.",
     },
     {
       key: "features",
@@ -1204,6 +1546,144 @@ canonical keys that `config.toml` uses. Omitted keys remain unconstrained.
       type: "boolean",
       description:
         "Require a specific canonical feature key to stay enabled or disabled.",
+    },
+    {
+      key: "features.in_app_browser",
+      type: "boolean",
+      description:
+        "Set to `false` in `requirements.toml` to disable the in-app browser pane.",
+    },
+    {
+      key: "features.browser_use",
+      type: "boolean",
+      description:
+        "Set to `false` in `requirements.toml` to disable Browser Use and Browser Agent availability.",
+    },
+    {
+      key: "features.computer_use",
+      type: "boolean",
+      description:
+        "Set to `false` in `requirements.toml` to disable Computer Use availability and related install or enablement flows.",
+    },
+    {
+      key: "experimental_network",
+      type: "table",
+      description:
+        "Network access requirements enforced from `requirements.toml`. These constraints are separate from `features.network_proxy` and can configure sandboxed networking without the user feature flag.",
+    },
+    {
+      key: "experimental_network.enabled",
+      type: "boolean",
+      description:
+        "Enable sandboxed networking requirements. This does not grant network access when the active sandbox keeps command networking off.",
+    },
+    {
+      key: "experimental_network.http_port",
+      type: "integer",
+      description:
+        "Loopback HTTP listener port to use for `[experimental_network]` requirements.",
+    },
+    {
+      key: "experimental_network.socks_port",
+      type: "integer",
+      description:
+        "Loopback SOCKS5 listener port to use for `[experimental_network]` requirements.",
+    },
+    {
+      key: "experimental_network.allow_upstream_proxy",
+      type: "boolean",
+      description:
+        "Allow sandboxed networking to chain through an upstream proxy from the environment.",
+    },
+    {
+      key: "experimental_network.dangerously_allow_non_loopback_proxy",
+      type: "boolean",
+      description:
+        "Permit non-loopback listener addresses for `[experimental_network]` requirements. Enabling it can expose listeners beyond localhost.",
+    },
+    {
+      key: "experimental_network.dangerously_allow_all_unix_sockets",
+      type: "boolean",
+      description:
+        "Permit arbitrary Unix socket destinations instead of allowlist-only access. Use only in tightly controlled environments.",
+    },
+    {
+      key: "experimental_network.domains",
+      type: "map<string, allow | deny>",
+      description:
+        "Map-shaped administrator domain policy for sandboxed networking. Supports exact hosts, `*.example.com` for subdomains only, `**.example.com` for apex plus subdomains, and global `*` allow rules; prefer scoped rules because `*` broadly opens public outbound access. `deny` wins on conflicts. Do not combine this with `experimental_network.allowed_domains` or `experimental_network.denied_domains`.",
+    },
+    {
+      key: "experimental_network.allowed_domains",
+      type: "array<string>",
+      description:
+        "List-shaped administrator allow rules for sandboxed networking. Do not combine this with `experimental_network.domains`.",
+    },
+    {
+      key: "experimental_network.denied_domains",
+      type: "array<string>",
+      description:
+        "List-shaped administrator deny rules for sandboxed networking. Do not combine this with `experimental_network.domains`.",
+    },
+    {
+      key: "experimental_network.managed_allowed_domains_only",
+      type: "boolean",
+      description:
+        "When `true`, only administrator-managed allow rules remain effective while sandboxed networking requirements are active; user allowlist additions are ignored. Without managed allow rules, user-added domain allow rules do not remain effective.",
+    },
+    {
+      key: "experimental_network.unix_sockets",
+      type: "map<string, allow | deny>",
+      description:
+        "Administrator-managed Unix socket policy for sandboxed networking.",
+    },
+    {
+      key: "experimental_network.allow_local_binding",
+      type: "boolean",
+      description:
+        "Permit broader local/private-network access for sandboxed networking. Exact local IP literal or `localhost` allow rules can still permit specific local targets when this stays `false`.",
+    },
+    {
+      key: "hooks",
+      type: "table",
+      description:
+        "Admin-enforced managed lifecycle hooks. Requires a managed hook directory and uses the same event schema as inline `[hooks]` in `config.toml`.",
+    },
+    {
+      key: "hooks.managed_dir",
+      type: "string (absolute path)",
+      description:
+        "Directory containing managed hook scripts on macOS and Linux. Codex validates that it is absolute and exists before loading managed hooks.",
+    },
+    {
+      key: "hooks.windows_managed_dir",
+      type: "string (absolute path)",
+      description:
+        "Directory containing managed hook scripts on Windows. Codex validates that it is absolute and exists before loading managed hooks.",
+    },
+    {
+      key: "hooks.<Event>",
+      type: "array<table>",
+      description:
+        "Matcher groups for a hook event such as `PreToolUse`, `PermissionRequest`, `PostToolUse`, `PreCompact`, `PostCompact`, `SessionStart`, `SubagentStart`, `SubagentStop`, `UserPromptSubmit`, or `Stop`.",
+    },
+    {
+      key: "hooks.<Event>[].hooks",
+      type: "array<table>",
+      description:
+        "Hook handlers for a matcher group. Command hooks are currently supported; prompt and agent hook handlers are parsed but skipped.",
+    },
+    {
+      key: "hooks.<Event>[].hooks[].commandWindows",
+      type: "string",
+      description:
+        "Windows-only command override for command hooks. The TOML alias `command_windows` is also accepted.",
+    },
+    {
+      key: "permissions.filesystem.deny_read",
+      type: "array<string>",
+      description:
+        "Admin-enforced filesystem read denials. Entries can be paths or glob patterns, and users cannot weaken them with local config.",
     },
     {
       key: "mcp_servers",

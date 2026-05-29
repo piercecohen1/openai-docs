@@ -22,8 +22,10 @@ Once the session is open, you can:
 - Watch Codex explain its plan before making a change, and approve or reject steps inline.
 - Read syntax-highlighted markdown code blocks and diffs in the TUI, then use `/theme` to preview and save a preferred theme.
 - Use `/clear` to wipe the terminal and start a fresh chat, or press <kbd>Ctrl</kbd>+<kbd>L</kbd> to clear the screen without starting a new conversation.
-- Use `/copy` to copy the latest completed Codex output. If a turn is still running, Codex copies the most recent finished output instead of in-progress text.
+- Use `/copy` or press <kbd>Ctrl</kbd>+<kbd>O</kbd> to copy the latest completed Codex output. If a turn is still running, Codex copies the most recent finished output instead of in-progress text.
+- Press <kbd>Tab</kbd> while Codex is running to queue follow-up text, slash commands, or `!` shell commands for the next turn.
 - Navigate draft history in the composer with <kbd>Up</kbd>/<kbd>Down</kbd>; Codex restores prior draft text and image placeholders.
+- Press <kbd>Ctrl</kbd>+<kbd>R</kbd> to search prompt history from the composer, then press <kbd>Enter</kbd> to accept a match or <kbd>Esc</kbd> to cancel.
 - Press <kbd>Ctrl</kbd>+<kbd>C</kbd> or use `/exit` to close the interactive session when you're done.
 
 ## Resuming conversations
@@ -44,20 +46,72 @@ codex exec resume 7f9f9a2e-1b3c-4c7a-9b0e-.... "Implement the plan"
 
 Each resumed run keeps the original transcript, plan history, and approvals, so Codex can use prior context while you supply new instructions. Override the working directory with `--cd` or add extra roots with `--add-dir` if you need to steer the environment before resuming.
 
+## Connect the TUI to a remote app server
+
+Remote TUI mode lets you run the Codex app server on one machine and use the
+Codex terminal UI from another machine. Start the app server with a WebSocket
+listener:
+
+```bash
+codex app-server --listen ws://127.0.0.1:4500
+```
+
+Then connect the TUI to that endpoint:
+
+```bash
+codex --remote ws://127.0.0.1:4500
+```
+
+For access from another machine, bind the app server to a reachable interface
+and configure WebSocket auth before remote use:
+
+```bash
+TOKEN_FILE="$HOME/.codex/app-server-token"
+openssl rand -base64 32 > "$TOKEN_FILE"
+chmod 600 "$TOKEN_FILE"
+codex app-server --listen ws://0.0.0.0:4500 --ws-auth capability-token --ws-token-file "$TOKEN_FILE"
+```
+
+`--remote` accepts explicit `ws://host:port` and `wss://host:port` addresses.
+Plain WebSocket connections are appropriate for localhost and SSH
+port-forwarding workflows. For non-local clients, use WebSocket auth and put the
+connection behind TLS.
+
+Codex supports these WebSocket authentication modes:
+
+- Capability token: start the server with `--ws-auth capability-token` and
+  either `--ws-token-file /absolute/path` or `--ws-token-sha256 HEX`.
+- Signed bearer token: start the server with
+  `--ws-auth signed-bearer-token --ws-shared-secret-file /absolute/path`, plus
+  optional `--ws-issuer`, `--ws-audience`, and `--ws-max-clock-skew-seconds`.
+
+The TUI sends the remote auth token as an `Authorization: Bearer <token>` header
+during the WebSocket handshake. Codex only accepts remote auth tokens over
+`wss://` URLs or loopback `ws://` URLs.
+
+```bash
+export CODEX_REMOTE_TOKEN="$(cat "$TOKEN_FILE")"
+codex --remote wss://remote-host:4500 --remote-auth-token-env CODEX_REMOTE_TOKEN
+```
+
+For SSH remote projects in the Codex app, use
+[Remote connections](https://developers.openai.com/codex/remote-connections). For managed remote-control
+clients, `codex remote-control` starts an app-server process with
+remote-control support enabled.
+
 ## Models and reasoning
 
-For most tasks in Codex, `gpt-5.4` is the recommended model. It brings the
-industry-leading coding capabilities of `gpt-5.3-codex` to OpenAI's flagship
-frontier model, combining frontier coding performance with stronger reasoning,
-native computer use, and broader professional workflows. For extra fast tasks,
-ChatGPT Pro subscribers have access to the GPT-5.3-Codex-Spark model in
-research preview.
+For most tasks in Codex, `gpt-5.5` is the recommended model. It is OpenAI's newest frontier model for complex coding, computer
+use, knowledge work, and research workflows, with stronger planning, tool use,
+and follow-through on multi-step tasks. For extra fast tasks, ChatGPT Pro subscribers have
+access to the GPT-5.3-Codex-Spark model in research preview.
 
 Switch models mid-session with the `/model` command, or specify one when launching the CLI.
 
 ```bash
-codex --model gpt-5.4
+codex --model gpt-5.5
 ```
+
 
 [Learn more about the models available in Codex](https://developers.openai.com/codex/models).
 
@@ -71,7 +125,7 @@ codex features enable unified_exec
 codex features disable shell_snapshot
 ```
 
-`codex features enable <feature>` and `codex features disable <feature>` write to `~/.codex/config.toml`. If you launch Codex with `--profile`, Codex stores the change in that profile rather than the root configuration.
+`codex features enable <feature>` and `codex features disable <feature>` write to `~/.codex/config.toml`. If you launch Codex with `--profile profile-name`, Codex writes to `$CODEX_HOME/profile-name.config.toml` instead.
 
 ## Subagents
 
@@ -94,6 +148,16 @@ codex --image img1.png,img2.jpg "Summarize these diagrams"
 ```
 
 Codex accepts common formats such as PNG and JPEG. Use comma-separated filenames for two or more images, and combine them with text instructions to add context.
+
+## Image generation
+
+Ask Codex to generate or edit images directly in the CLI. This works well for assets such as icons, banners, illustrations, sprite sheets, and placeholder art. If you want Codex to transform or extend an existing asset, attach a reference image with your prompt.
+
+You can ask in natural language or explicitly invoke the image generation skill by including `$imagegen` in your prompt.
+
+Built-in image generation uses `gpt-image-2`, counts toward your general Codex usage limits, and uses included limits 3-5x faster on average than similar turns without image generation, depending on image quality and size. For details, see [Pricing](https://developers.openai.com/codex/pricing#image-generation-usage-limits). For prompting tips and model details, see the [image generation guide](https://developers.openai.com/api/docs/guides/image-generation).
+
+For larger batches of image generation, set `OPENAI_API_KEY` in your environment variables and ask Codex to generate images through the API so API pricing applies instead.
 
 ## Syntax highlighting and themes
 
@@ -183,7 +247,7 @@ Environment IDs come from your Codex cloud configuration—use `codex cloud` and
 
 ## Slash commands
 
-Slash commands give you quick access to specialized workflows like `/review`, `/fork`, or your own reusable prompts. Codex ships with a curated set of built-ins, and you can create custom ones for team-specific tasks or personal shortcuts.
+Slash commands give you quick access to specialized workflows like `/review`, `/fork`, `/side`, or your own reusable prompts. Codex ships with a curated set of built-ins, and you can create custom ones for team-specific tasks or personal shortcuts.
 
 See the [slash commands guide](https://developers.openai.com/codex/guides/slash-commands) to browse the catalog of built-ins, learn how to author custom commands, and understand where they live on disk.
 
@@ -202,7 +266,7 @@ See [Model Context Protocol](https://developers.openai.com/codex/mcp) for exampl
 ## Tips and shortcuts
 
 - Type `@` in the composer to open a fuzzy file search over the workspace root; press <kbd>Tab</kbd> or <kbd>Enter</kbd> to drop the highlighted path into your message.
-- Press <kbd>Enter</kbd> while Codex is running to inject new instructions into the current turn, or press <kbd>Tab</kbd> to queue a follow-up prompt for the next turn.
+- Press <kbd>Enter</kbd> while Codex is running to inject new instructions into the current turn, or press <kbd>Tab</kbd> to queue follow-up input for the next turn. Queued input can be a normal prompt, a slash command such as `/review`, or a `!` shell command. Codex parses queued slash commands when they run.
 - Prefix a line with `!` to run a local shell command (for example, `!ls`). Codex treats the output like a user-provided command result and still applies your approval and sandbox settings.
 - Tap <kbd>Esc</kbd> twice while the composer is empty to edit your previous user message. Continue pressing <kbd>Esc</kbd> to walk further back in the transcript, then hit <kbd>Enter</kbd> to fork from that point.
 - Launch Codex from any directory using `codex --cd <path>` to set the working root without running `cd` first. The active path appears in the TUI header.

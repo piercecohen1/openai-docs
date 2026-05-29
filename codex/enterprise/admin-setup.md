@@ -11,7 +11,7 @@
 
 This guide is for ChatGPT Enterprise admins who want to set up Codex for their workspace.
 
-Use this page as the step-by-step rollout guide. For detailed policy, configuration, and monitoring details, use the linked pages: [Authentication](https://developers.openai.com/codex/auth), [Agent approvals & security](https://developers.openai.com/codex/agent-approvals-security), [Managed configuration](https://developers.openai.com/codex/enterprise/managed-configuration), and [Governance](https://developers.openai.com/codex/enterprise/governance).
+Use this page as the step-by-step rollout guide. For detailed policy, configuration, automation, and monitoring details, use the linked pages: [Authentication](https://developers.openai.com/codex/auth), [Agent approvals & security](https://developers.openai.com/codex/agent-approvals-security), [Access tokens](https://developers.openai.com/codex/enterprise/access-tokens), [Managed configuration](https://developers.openai.com/codex/enterprise/managed-configuration), and [Governance](https://developers.openai.com/codex/enterprise/governance).
 
 ## Enterprise-grade security and privacy
 
@@ -59,7 +59,9 @@ Turn on **Allow members to use Codex Local**.
 
 This enables use of the Codex app, CLI, and IDE extension for allowed users.
 
-If this toggle is off, users who attempt to use the Codex app, CLI, or IDE will see the following error: “403 - Unauthorized. Contact your ChatGPT administrator for access.”
+If members need programmatic Codex local workflows, also turn on **Allow members to use Codex access tokens** or grant the access token permission through a custom role. For setup and permission details, see [Access tokens](https://developers.openai.com/codex/enterprise/access-tokens).
+
+If the Codex Local toggle is off, users who attempt to use the Codex app, CLI, or IDE will see the following error: “403 - Unauthorized. Contact your ChatGPT administrator for access.”
 
 #### Enable device code authentication for Codex CLI
 
@@ -161,7 +163,7 @@ This separation makes it easier to roll out Codex while keeping analytics, envir
 
 Codex Admins can deploy admin-enforced `requirements.toml` policies from the Codex [Policies page](https://chatgpt.com/codex/settings/policies).
 
-Use this page when you want to apply different local Codex constraints to different groups without distributing device-level files first. The managed policy uses the same `requirements.toml` format described in [Managed configuration](https://developers.openai.com/codex/enterprise/managed-configuration), so you can define allowed approval policies, sandbox modes, web search behavior, MCP server allowlists, feature pins, and restrictive command rules.
+Use this page when you want to apply different local Codex constraints to different groups without distributing device-level files first. The managed policy uses the same `requirements.toml` format described in [Managed configuration](https://developers.openai.com/codex/enterprise/managed-configuration), so you can define allowed approval policies, sandbox modes, web search behavior, network access requirements, MCP server allowlists, feature pins, and restrictive command rules. To disable Browser Use, the in-app browser, or Computer Use, see [Pin feature flags](https://developers.openai.com/codex/enterprise/managed-configuration#pin-feature-flags).
 
 <div class="max-w-1xl mx-auto py-1">
   <img src="https://developers.openai.com/images/codex/enterprise/policies_and_configurations_page.png"
@@ -198,6 +200,31 @@ allowed_sandbox_modes = ["workspace-write"]
 allowed_approval_policies = ["on-request"]
 ```
 
+Example: disable Browser Use, the in-app browser, and Computer Use:
+
+```toml
+[features]
+browser_use = false
+in_app_browser = false
+computer_use = false
+```
+
+Example: define administrator-owned network requirements:
+
+```toml
+experimental_network.enabled = true
+experimental_network.dangerously_allow_all_unix_sockets = true
+experimental_network.allow_local_binding = true
+experimental_network.allowed_domains = [
+  "api.openai.com",
+  "*.example.com",
+]
+experimental_network.denied_domains = [
+  "blocked.example.com",
+  "*.exfil.example.com",
+]
+```
+
 Example: add a restrictive command rule when you want admins to block or gate specific commands:
 
 ```toml
@@ -207,7 +234,7 @@ prefix_rules = [
 ]
 ```
 
-You can use either example on its own or combine them in a single managed policy for a group. For exact keys, precedence, and more examples, see [Managed configuration](https://developers.openai.com/codex/enterprise/managed-configuration) and [Agent approvals & security](https://developers.openai.com/codex/agent-approvals-security).
+You can use any example on its own or combine them in a single managed policy for a group. For exact keys, precedence, and more examples, see [Managed configuration](https://developers.openai.com/codex/enterprise/managed-configuration) and [Agent approvals & security](https://developers.openai.com/codex/agent-approvals-security).
 
 ### Checking user policies
 

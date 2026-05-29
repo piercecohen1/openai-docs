@@ -78,11 +78,34 @@ This prevents divergence between UI and server.
 const tasks = new Map(); // replace with your DB or external service
 let nextId = 1;
 
+const taskListOutputSchema = {
+  type: "object",
+  properties: {
+    type: { type: "string", const: "taskList" },
+    tasks: {
+      type: "array",
+      items: {
+        type: "object",
+        properties: {
+          id: { type: "string" },
+          title: { type: "string" },
+          done: { type: "boolean" },
+        },
+        required: ["id", "title", "done"],
+        additionalProperties: false,
+      },
+    },
+  },
+  required: ["type", "tasks"],
+  additionalProperties: false,
+};
+
 const server = new Server({
   tools: {
     get_tasks: {
       description: "Return all tasks",
       inputSchema: jsonSchema.object({}),
+      outputSchema: taskListOutputSchema,
       async run() {
         return {
           structuredContent: {
@@ -95,6 +118,7 @@ const server = new Server({
     add_task: {
       description: "Add a new task",
       inputSchema: jsonSchema.object({ title: jsonSchema.string() }),
+      outputSchema: taskListOutputSchema,
       async run({ title }) {
         const id = `task-${nextId++}`; // simple example id
         tasks.set(id, { id, title, done: false });
@@ -229,7 +253,7 @@ The recommended shape is:
 
 - `modelContent`: text or JSON the model should see.
 - `privateContent`: UI-only state the model should not see.
-- `imageIds`: list of file IDs uploaded by the widget, selected via `window.openai.selectFiles()` when the file library is available, or provided to your tool via file params.
+- `imageIds`: list of file IDs uploaded by the widget, selected via `window.openai.selectFiles()` when the file library is available, received through tool input file params, or returned by tool file references.
 
 ```tsx
 type StructuredWidgetState = {
@@ -251,8 +275,8 @@ setState({
 ```
 
 Only file IDs you uploaded with `window.openai.uploadFile`, selected with
-`window.openai.selectFiles()` when available, or received via file params can
-be included in `imageIds`.
+`window.openai.selectFiles()` when available, received through file params, or
+received from tool result file references can be included in `imageIds`.
 
 ---
 
@@ -358,10 +382,21 @@ async function writePreferences(userId, preferences) {
   return await response.body.json();
 }
 
+const preferencesOutputSchema = {
+  type: "object",
+  properties: {
+    type: { type: "string", const: "preferences" },
+    preferences: { type: "object" },
+  },
+  required: ["type", "preferences"],
+  additionalProperties: false,
+};
+
 const server = new Server({
   tools: {
     get_preferences: {
       inputSchema: jsonSchema.object({ userId: jsonSchema.string() }),
+      outputSchema: preferencesOutputSchema,
       async run({ userId }) {
         const preferences = await readPreferences(userId);
         return { structuredContent: { type: "preferences", preferences } };
@@ -372,6 +407,7 @@ const server = new Server({
         userId: jsonSchema.string(),
         preferences: jsonSchema.object({}),
       }),
+      outputSchema: preferencesOutputSchema,
       async run({ userId, preferences }) {
         const updated = await writePreferences(userId, preferences);
         return {

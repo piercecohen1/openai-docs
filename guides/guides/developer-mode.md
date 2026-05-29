@@ -17,21 +17,21 @@
 
 ## What is ChatGPT developer mode
 
-ChatGPT developer mode is a beta feature that provides full Model Context Protocol (MCP) client support for all tools, both read and write. It's powerful but dangerous, and is intended for developers who understand how to safely configure and test apps. When using developer mode, watch for [prompt injections and other risks](https://developers.openai.com/api/docs/mcp), model mistakes on write actions that could destroy data, and malicious MCPs that attempt to steal information.
+ChatGPT developer mode provides full Model Context Protocol (MCP) client support for all tools, both read and write. It's powerful but dangerous, and is intended for developers who understand how to safely configure and test apps. When using developer mode, watch for [prompt injections and other risks](https://developers.openai.com/api/docs/mcp), model mistakes on write actions that could destroy data, and malicious MCPs that attempt to steal information.
 
 ## How to use
 
-- **Eligibility:** Available in beta to Pro, Plus, Business, Enterprise and Education accounts on the web.
+- **Eligibility:** Available to Pro, Plus, Business, Enterprise, and Education accounts on the web.
 - **Enable developer mode:** Go to [**Settings → Apps**](https://chatgpt.com/#settings/Connectors) → [**Advanced settings → Developer mode**](https://chatgpt.com/#settings/Connectors/Advanced).
 - **Create Apps from MCPs:**
   - Open [ChatGPT Apps settings](https://chatgpt.com/#settings/Connectors).
   - Click on "Create app" next to **Advanced settings** and create an app for your remote MCP server. It will appear in the composer's "Developer Mode" tool later during conversations. The "Create app" button will only show if you are in Developer mode.
     - Supported MCP protocols: SSE and streaming HTTP.
     - Authentication supported: OAuth, No Authentication, and Mixed Authentication
-      - For OAuth, if static credentials are provided, then they will be used. Otherwise, dynamic client registration will be used to create the credentials.
-      - Mixed authentication is supporting Oauth and No Authentication. This means the initialize and list tools APIs are no auth, and tools will be Oauth or Noauth based on the security schemes set on their tool metadata.
+      - For OAuth, if static credentials are provided, then they will be used. Otherwise, ChatGPT can use Client ID Metadata Documents when the authorization server advertises support and the connector creator chooses CIMD. CIMD supports public-client token exchange (`none`) and signed client assertion token exchange (`private_key_jwt`). ChatGPT can also use DCR when configured.
+      - Mixed authentication supports OAuth and No Authentication. This means the initialize and list tools APIs use no auth, and tools use OAuth or no auth based on the security schemes set on their tool metadata.
   - Created apps will show under "Drafts" in the app settings.
-- **Manage tools:** In app settings there is a details page per app. Use that to toggle tools on or off and refresh apps to pull new tools and descriptions from the MCP server.
+- **Manage tools:** In app settings there is a details page per app. Use that to toggle tools on or off and refresh apps to pull new tools, descriptions, and server instructions from the MCP server.
 - **Use apps in conversations:** Choose **Developer mode** from the Plus menu and select the apps for the conversation. You may need to explore different prompting techniques to call the correct tools. For example:
   - Be explicit: "Use the \"Acme CRM\" app's \"update_record\" tool to …". When needed, include the server label and tool name.
   - Disallow alternatives to avoid ambiguity: "Do not use built-in browsing or other tools; only use the Acme CRM connector."
@@ -41,6 +41,7 @@ ChatGPT developer mode is a beta feature that provides full Model Context Protoc
   - Developer mode does not require `search`/`fetch` tools. Any tools your connector exposes (including write actions) are available, subject to confirmation settings.
   - See more guidance in [Using tools](https://developers.openai.com/api/docs/guides/tools) and [Prompting](https://developers.openai.com/api/docs/guides/prompting).
   - Improve tool selection with better tool descriptions: In your MCP server, write action-oriented tool names and descriptions that include "Use this when…" guidance, note disallowed/edge cases, and add parameter descriptions (and enums) to help the model choose the right tool among similar ones and avoid built-in tools when inappropriate.
+  - Add server instructions for cross-tool guidance: Use the MCP [`instructions` field](https://modelcontextprotocol.io/specification/2025-06-18/basic/lifecycle#initialization) for server-wide guidance such as required tool sequences, shared rate limits, or relationships between tools. Keep the first 512 characters self-contained.
 
   Examples:
 

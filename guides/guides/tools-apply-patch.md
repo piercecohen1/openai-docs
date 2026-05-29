@@ -88,7 +88,7 @@ When using the `apply_patch` tool, you don’t provide an input schema; the mode
 
 ## Use the apply patch tool with the Agents SDK
 
-Alternatively, you can use the [Agents SDK](https://developers.openai.com/api/docs/guides/agents-sdk) to use the apply patch tool. You'll still have to implement the harness that handles the actual file operations but you can use the `applyDiff` function to hande the diff processing.
+Alternatively, you can use the [Agents SDK](https://developers.openai.com/api/docs/guides/tools#usage-in-the-agents-sdk) to use the apply patch tool. You'll still have to implement the harness that handles the actual file operations but you can use the `applyDiff` function to handle the diff processing.
 
 You can find full working examples on GitHub.
 
@@ -171,6 +171,8 @@ The model can then adjust future diffs (for example, by re-reading a file in you
     </div>
   </td>
   <td style={{ maxWidth: "150px" }}>
+    [GPT-5.5](https://developers.openai.com/api/docs/models/gpt-5.5)
+    <br />
     [GPT-5.4](https://developers.openai.com/api/docs/models/gpt-5.4)
     <br />
     [GPT-5.2](https://developers.openai.com/api/docs/models/gpt-5.2)

@@ -193,7 +193,7 @@ without this pattern. If you choose to use `frameDomains`, be aware that:
 
 ### Privacy policy
 
-Submissions must include a clear, published privacy policy explaining - at minimum - the categories of personal data collected, the purposes of use, the categories of recipients, and any controls offered to your users. Follow this policy at all times. Users can review your privacy policy before installing your app.
+Submissions must include a clear, published privacy policy explaining - at minimum - the categories of personal data collected, the purposes of use, the categories of recipients, data retention timelines, and any controls offered to your users. Follow this policy at all times. Users can review your privacy policy before installing your app.
 
 ### Data collection
 
@@ -227,7 +227,7 @@ You must provide customer support contact details where end users can reach you 
 
 ## Submitting your app
 
-Users with the Owner role may submit an app for review from the [OpenAI Platform Dashboard](http://platform.openai.com/apps-manage).
+Users with the Owner role or the `api.apps.write` permission can create app drafts and submit them from the [OpenAI Platform Dashboard](http://platform.openai.com/apps-manage). Users with `api.apps.read` can view app drafts and review status in the Dashboard.
 
 While you can publish multiple, unique apps within a single Platform organization, each may only have one version in review at a time. You can review the status of the review within the Dashboard and will receive an email notification informing you of any status changes.
 

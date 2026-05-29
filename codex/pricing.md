@@ -1,11 +1,5 @@
 # Codex Pricing
 
-Teams can now get started with Codex with no fixed monthly costs. For a
-  limited time, eligible ChatGPT Business workspaces can earn up to $500 in
-  credits when their team members start using Codex. [View
-  terms](https://help.openai.com/en/articles/20001150-codex-for-business-promotion-earn-up-to-500-in-credits)
-  or [get started](https://chatgpt.com/codex/team/start).
-
 <h2 class="sr-only">Pricing options</h2>
 
 <ContentSwitcher
@@ -51,34 +45,33 @@ Teams can now get started with Codex with no fixed monthly costs. For a
         - Codex on the web, in the CLI, in the IDE extension, and on iOS
         - Cloud-based integrations like automatic code review and Slack
           integration
-        - The latest models, including GPT-5.4 and GPT-5.3-Codex
-        - GPT-5.4-mini for up to 3.3x higher usage limits for local messages
+        - The latest models, including GPT-5.5, GPT-5.4, and GPT-5.3-Codex
+        - GPT-5.4-mini for higher usage limits on routine local messages
         - Flexibly extend usage with [ChatGPT credits](#credits-overview)
         - Other [ChatGPT features](https://chatgpt.com/pricing) as part of the
           Plus plan
       </PricingCard>
       <PricingCard
         name="Pro"
-        subtitle="Rely on Codex for daily full-time development."
-        price="$200"
+        subtitle="Choose 5x or 20x higher rate limits than Plus."
+        priceEyebrow="From"
+        price="$100"
         interval="/month"
         ctaLabel="Get Pro"
         ctaHref="https://chatgpt.com/explore/pro?utm_internal_source=openai_developers_codex"
         highlight="Everything in Plus and:"
+        footnoteLabel="*Learn more about limits and promos on both tiers."
+        footnoteHref="https://help.openai.com/en/articles/9793128-about-chatgpt-pro-plans"
       >
-        - Priority request processing
+        **Double your normal Codex usage on the $100/month tier until May 31, 2026.**
+
         - Access to GPT-5.3-Codex-Spark (research preview), a fast Codex model
           for day-to-day coding tasks
-        - 6x higher usage limits for local and cloud tasks
-        - 10x more cloud-based code reviews
+        - ~~5x~~ 10x or 20x more Codex usage than Plus*
         - Other [ChatGPT features](https://chatgpt.com/pricing) as part of the
           Pro plan
       </PricingCard>
-    </div>
-
-    <div class="mt-8 mb-10 codex-pricing-grid">
       <PricingCard
-        class="codex-pricing-card--span-two"
         name="API Key"
         subtitle="Great for automation in shared environments like CI."
         price=""
@@ -174,6 +167,11 @@ cloud. Small scripts or routine functions may consume only a fraction of your
 allowance, while larger codebases, long-running tasks, or extended sessions that
 require Codex to hold more context will use significantly more per message.
 
+GPT-5.5 uses significantly fewer tokens to achieve results comparable to
+GPT-5.4. Its Codex setup runs faster and delivers higher-quality results for
+most users. These efficiency gains support generous usage limits despite
+GPT-5.5 being a significantly more capable model.
+
 <div id="usage-limits">
   <ContentSwitcher
     id="codex-usage-limits"
@@ -185,8 +183,12 @@ require Codex to hold more context will use significantly more per message.
         value: "plus",
       },
       {
-        label: "Pro",
+        label: "Pro 5x",
         value: "pro",
+      },
+      {
+        label: "Pro 20x",
+        value: "pro-20x",
       },
       {
         label: "Business",
@@ -212,28 +214,34 @@ require Codex to hold more context will use significantly more per message.
               Cloud Tasks[\*](#shared-limits-plus) / 5h
             </th>
             <th scope="col" style="text-align:center">
-              Code Reviews / week
+              Code Reviews / 5h
             </th>
           </tr>
         </thead>
         <tbody>
           <tr>
+            <td>GPT-5.5</td>
+            <td style="text-align:center">15-80</td>
+            <td style="text-align:center">Not available</td>
+            <td style="text-align:center">Not available</td>
+          </tr>
+          <tr>
             <td>GPT-5.4</td>
-            <td style="text-align:center">33-168</td>
+            <td style="text-align:center">20-100</td>
             <td style="text-align:center">Not available</td>
             <td style="text-align:center">Not available</td>
           </tr>
           <tr>
             <td>GPT-5.4-mini</td>
-            <td style="text-align:center">110-560</td>
+            <td style="text-align:center">60-350</td>
             <td style="text-align:center">Not available</td>
             <td style="text-align:center">Not available</td>
           </tr>
           <tr>
             <td>GPT-5.3-Codex</td>
-            <td style="text-align:center">45-225</td>
+            <td style="text-align:center">30-150</td>
             <td style="text-align:center">10-60</td>
-            <td style="text-align:center">10-25</td>
+            <td style="text-align:center">20-50</td>
           </tr>
         </tbody>
         <tfoot>
@@ -261,7 +269,7 @@ require Codex to hold more context will use significantly more per message.
       </table>
     </div>
     <div data-content-switcher-pane data-value="pro" hidden>
-      <div class="hidden">Pro</div>
+      <div class="hidden">Pro 5x</div>
 
       <table>
         <thead>
@@ -274,27 +282,33 @@ require Codex to hold more context will use significantly more per message.
               Cloud Tasks[\*](#shared-limits-pro) / 5h
             </th>
             <th scope="col" style="text-align:center">
-              Code Reviews / week
+              Code Reviews / 5h
             </th>
           </tr>
         </thead>
         <tbody>
           <tr>
+            <td>GPT-5.5</td>
+            <td style="text-align:center">80-400</td>
+            <td style="text-align:center">Not available</td>
+            <td style="text-align:center">Not available</td>
+          </tr>
+          <tr>
             <td>GPT-5.4</td>
-            <td style="text-align:center">223-1120</td>
+            <td style="text-align:center">100-500</td>
             <td style="text-align:center">Not available</td>
             <td style="text-align:center">Not available</td>
           </tr>
           <tr>
             <td>GPT-5.4-mini</td>
-            <td style="text-align:center">743-3733</td>
+            <td style="text-align:center">300-1750</td>
             <td style="text-align:center">Not available</td>
             <td style="text-align:center">Not available</td>
           </tr>
           <tr>
             <td>GPT-5.3-Codex</td>
-            <td style="text-align:center">300-1500</td>
-            <td style="text-align:center">50-400</td>
+            <td style="text-align:center">150-750</td>
+            <td style="text-align:center">50-300</td>
             <td style="text-align:center">100-250</td>
           </tr>
         </tbody>
@@ -305,6 +319,86 @@ require Codex to hold more context will use significantly more per message.
                 *The usage limits for local messages and cloud tasks share a
                 **five-hour window**. Additional weekly limits may apply.
               </a>
+            </td>
+          </tr>
+          <tr>
+            <td colspan="4" style="text-align:center">
+              Pro $100 gets 2x the usage shown above until May 31, 2026.
+            </td>
+          </tr>
+          <tr>
+            <td colspan="4" style="text-align:center">
+              For Enterprise/Edu users, there are no fixed rate limits - usage
+              scales with [credits](#credits-overview)
+            </td>
+          </tr>
+          <tr>
+            <td colspan="4" style="text-align:center">
+              Enterprise and Edu plans without flexible pricing have the same
+              per-seat usage limits as Plus for most features
+            </td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+    <div data-content-switcher-pane data-value="pro-20x" hidden>
+      <div class="hidden">Pro 20x</div>
+
+      <table>
+        <thead>
+          <tr>
+            <th scope="col"></th>
+            <th scope="col" style="text-align:center">
+              Local Messages[\*](#shared-limits-pro-20x) / 5h
+            </th>
+            <th scope="col" style="text-align:center">
+              Cloud Tasks[\*](#shared-limits-pro-20x) / 5h
+            </th>
+            <th scope="col" style="text-align:center">
+              Code Reviews / 5h
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>GPT-5.5</td>
+            <td style="text-align:center">300-1600</td>
+            <td style="text-align:center">Not available</td>
+            <td style="text-align:center">Not available</td>
+          </tr>
+          <tr>
+            <td>GPT-5.4</td>
+            <td style="text-align:center">400-2000</td>
+            <td style="text-align:center">Not available</td>
+            <td style="text-align:center">Not available</td>
+          </tr>
+          <tr>
+            <td>GPT-5.4-mini</td>
+            <td style="text-align:center">1200-7000</td>
+            <td style="text-align:center">Not available</td>
+            <td style="text-align:center">Not available</td>
+          </tr>
+          <tr>
+            <td>GPT-5.3-Codex</td>
+            <td style="text-align:center">600-3000</td>
+            <td style="text-align:center">200-1200</td>
+            <td style="text-align:center">400-1000</td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr>
+            <td colspan="4" style="text-align:center">
+              <a id="shared-limits-pro-20x" class="footnote">
+                *The usage limits for local messages and cloud tasks share a
+                **five-hour window**. Additional weekly limits may apply.
+              </a>
+            </td>
+          </tr>
+          <tr>
+            <td colspan="4" style="text-align:center">
+              Pro $200 gets a boost on the usage shown above until May 31,
+              2026. [Learn
+              more](https://help.openai.com/en/articles/9793128-about-chatgpt-pro-plans).
             </td>
           </tr>
           <tr>
@@ -336,28 +430,34 @@ require Codex to hold more context will use significantly more per message.
               Cloud Tasks[\*](#shared-limits-business) / 5h
             </th>
             <th scope="col" style="text-align:center">
-              Code Reviews / week
+              Code Reviews / 5h
             </th>
           </tr>
         </thead>
         <tbody>
           <tr>
+            <td>GPT-5.5</td>
+            <td style="text-align:center">15-80</td>
+            <td style="text-align:center">Not available</td>
+            <td style="text-align:center">Not available</td>
+          </tr>
+          <tr>
             <td>GPT-5.4</td>
-            <td style="text-align:center">15-60</td>
+            <td style="text-align:center">20-100</td>
             <td style="text-align:center">Not available</td>
             <td style="text-align:center">Not available</td>
           </tr>
           <tr>
             <td>GPT-5.4-mini</td>
-            <td style="text-align:center">40-200</td>
+            <td style="text-align:center">60-350</td>
             <td style="text-align:center">Not available</td>
             <td style="text-align:center">Not available</td>
           </tr>
           <tr>
             <td>GPT-5.3-Codex</td>
-            <td style="text-align:center">20-90</td>
-            <td style="text-align:center">5-40</td>
-            <td style="text-align:center">15-30</td>
+            <td style="text-align:center">30-150</td>
+            <td style="text-align:center">10-60</td>
+            <td style="text-align:center">20-50</td>
           </tr>
         </tbody>
         <tfoot>
@@ -398,11 +498,17 @@ require Codex to hold more context will use significantly more per message.
               Cloud Tasks[\*](#shared-limits-api-key) / 5h
             </th>
             <th scope="col" style="text-align:center">
-              Code Reviews / week
+              Code Reviews / 5h
             </th>
           </tr>
         </thead>
         <tbody>
+          <tr>
+            <td>GPT-5.5</td>
+            <td style="text-align:center">Not available</td>
+            <td style="text-align:center">Not available</td>
+            <td style="text-align:center">Not available</td>
+          </tr>
           <tr>
             <td>GPT-5.4</td>
             <td style="text-align:center">
@@ -456,12 +562,18 @@ require Codex to hold more context will use significantly more per message.
   </ContentSwitcher>
 </div>
 
+Codex usage limits are shared with other agentic features once pricing for
+those features is effective. This currently includes [ChatGPT for
+Excel](https://help.openai.com/articles/20001063) on Plus and Pro.
+
 Speed configurations increase credit consumption for all applicable models, so
-they also use included limits faster. Details can be found [here](https://developers.openai.com/codex/speed).
-GPT-5.3-Codex-Spark is in research preview for ChatGPT Pro users only, and isn't
-available in the API at launch. Because it runs on specialized low-latency
-hardware, usage is governed by a separate usage limit that may adjust based on
-demand.
+they also use included limits faster. Fast mode consumes credits at a higher
+rate for supported models. See [Speed](https://developers.openai.com/codex/speed) for supported models and
+rates. Image generations also use included limits ~3-5x faster on average,
+depending on image quality and size. GPT-5.3-Codex-Spark is in research preview
+for ChatGPT Pro users only, and isn't available in the API at launch. Because it
+runs on specialized low-latency hardware, usage is governed by a separate usage
+limit that may adjust based on demand.
 
 ### What happens when you hit usage limits?
 
@@ -472,11 +584,33 @@ Business, Edu, and Enterprise plans with [flexible
 pricing](https://help.openai.com/en/articles/11487671-flexible-pricing-for-the-enterprise-edu-and-business-plans)
 can purchase additional workspace credits to continue using Codex.
 
-If you are approaching usage limits, you can also switch to the GPT-5.4-mini
-model to make your usage limits last longer.
+If you are approaching usage limits, you can also switch to a smaller model to
+make your usage limits last longer.
 
 All users may also run extra local tasks using an API key, with usage charged at
 [standard API rates](https://platform.openai.com/docs/pricing).
+
+<a id="image-generation-usage-limits"></a>
+
+### How does image generation count toward usage limits?
+
+Image generation counts toward the same general Codex usage limits as local
+messages and cloud tasks. Image generations use included limits 3-5x faster on
+average than similar turns without image generation, depending on
+image quality and size. After you reach your included limits, image generation
+also draws from [credits](#credits-overview).
+
+Image generation isn't available on the Free plan. When you use Codex with an
+API key, API pricing applies to image generation instead of included ChatGPT
+usage limits.
+
+### What's the current Codex usage promo on Pro?
+
+We’re currently offering extra Codex usage on both Pro tiers.
+
+For **Pro $100**, to celebrate the launch, you’ll get **2x Codex usage through May 31, 2026**. That means 10x usage instead of the standard 5x.
+
+**For Pro $200**, as a thank you to our most loyal customers, we’re carrying forward the benefits of our earlier 2x promo, which means Pro $200 now includes 20x Plus on an ongoing basis. In addition, we’re continuing to honor the higher 5-hour Codex limits for a limited time, so those remain at 25x Plus through May 31, 2026 instead of the standard 20x Plus.
 
 ### Where can I see my current usage limits?
 
@@ -497,7 +631,7 @@ input tokens and output tokens your workspace consumes. Read about tokens
 [here](https://help.openai.com/en/articles/4936856-what-are-tokens-and-how-to-count-them).
 
 This format replaces average per-message estimates for your plan with a direct
-mapping between token usage and credits. It is most useful when you want a
+mapping between token usage and credits. It's most useful when you want a
 clearer view of how input, cached input, and output affect credit consumption.
 
 Under this model, actual credit usage depends on the mix of input, cached input,
@@ -546,31 +680,25 @@ Select your appropriate plan type in the table below to see rates.
         </thead>
         <tbody>
           <tr>
+            <td>GPT-5.5</td>
+            <td style="text-align:center">125 credits</td>
+            <td style="text-align:center">12.50 credits</td>
+            <td style="text-align:center">750 credits</td>
+          </tr>
+          <tr>
             <td>GPT-5.4</td>
             <td style="text-align:center">62.50 credits</td>
             <td style="text-align:center">6.250 credits</td>
             <td style="text-align:center">375 credits</td>
           </tr>
           <tr>
-            <td>GPT-5.3-Codex</td>
-            <td style="text-align:center">43.75 credits</td>
-            <td style="text-align:center">4.375 credits</td>
-            <td style="text-align:center">350 credits</td>
-          </tr>
-          <tr>
-            <td>GPT-5.1-Codex-mini</td>
-            <td style="text-align:center">6.25 credits</td>
-            <td style="text-align:center">0.625 credits</td>
-            <td style="text-align:center">50 credits</td>
-          </tr>
-          <tr>
-            <td>GPT-5.4-Mini</td>
+            <td>GPT-5.4-mini</td>
             <td style="text-align:center">18.75 credits</td>
             <td style="text-align:center">1.875 credits</td>
             <td style="text-align:center">113 credits</td>
           </tr>
           <tr>
-            <td>GPT-5.2-Codex</td>
+            <td>GPT-5.3-Codex</td>
             <td style="text-align:center">43.75 credits</td>
             <td style="text-align:center">4.375 credits</td>
             <td style="text-align:center">350 credits</td>
@@ -582,27 +710,34 @@ Select your appropriate plan type in the table below to see rates.
             <td style="text-align:center">350 credits</td>
           </tr>
           <tr>
-            <td>GPT-5.1-Codex-Max</td>
-            <td style="text-align:center">31.25 credits</td>
-            <td style="text-align:center">3.125 credits</td>
-            <td style="text-align:center">250 credits</td>
-          </tr>
-          <tr>
             <td>GPT-5.3-Codex-Spark</td>
             <td colspan="3" style="text-align:center">
               research preview
             </td>
           </tr>
+          <tr>
+            <td>GPT-Image-2 (image)</td>
+            <td style="text-align:center">200 credits</td>
+            <td style="text-align:center">50 credits</td>
+            <td style="text-align:center">750 credits</td>
+          </tr>
+          <tr>
+            <td>GPT-Image-2 (text)</td>
+            <td style="text-align:center">125 credits</td>
+            <td style="text-align:center">31.25 credits</td>
+            <td style="text-align:center">250 credits</td>
+          </tr>
         </tbody>
         <tfoot>
           <tr>
             <td colspan="4" style="text-align:center">
-              Fast mode consumes 2x as many credits.
+              Fast mode consumes credits at a higher rate for supported models.
+              See <a href="/codex/speed">Speed</a> for rates.
             </td>
           </tr>
           <tr>
             <td colspan="4" style="text-align:center">
-              Code review runs on 5.3-Codex.
+              Cloud tasks and code review run on GPT-5.3-Codex.
             </td>
           </tr>
         </tfoot>
@@ -622,13 +757,16 @@ Select your appropriate plan type in the table below to see rates.
               Unit
             </th>
             <th scope="col" style="text-align:center">
+              GPT-5.5
+            </th>
+            <th scope="col" style="text-align:center">
               GPT-5.4
             </th>
             <th scope="col" style="text-align:center">
               GPT-5.3-Codex
             </th>
             <th scope="col" style="text-align:center">
-              GPT-5.1-Codex-mini
+              GPT-5.4-mini
             </th>
           </tr>
         </thead>
@@ -636,36 +774,52 @@ Select your appropriate plan type in the table below to see rates.
           <tr>
             <td>Local Tasks</td>
             <td style="text-align:center">1 message</td>
+            <td style="text-align:center">\~14 credits</td>
             <td style="text-align:center">\~7 credits</td>
             <td style="text-align:center">\~5 credits</td>
-            <td style="text-align:center">\~1 credit</td>
+            <td style="text-align:center">\~2 credits</td>
           </tr>
           <tr>
             <td>Cloud Tasks</td>
             <td style="text-align:center">1 message</td>
-            <td style="text-align:center">\~34 credits</td>
+            <td style="text-align:center">Not available</td>
+            <td style="text-align:center">Not available</td>
             <td style="text-align:center">\~25 credits</td>
             <td style="text-align:center">Not available</td>
           </tr>
           <tr>
             <td>Code Review</td>
             <td style="text-align:center">1 pull request</td>
-            <td style="text-align:center">\~34 credits</td>
+            <td style="text-align:center">Not available</td>
+            <td style="text-align:center">Not available</td>
             <td style="text-align:center">\~25 credits</td>
             <td style="text-align:center">Not available</td>
+          </tr>
+          <tr>
+            <td>Image generation</td>
+            <td style="text-align:center">1 image (1024px &times; 1024px)</td>
+            <td colspan="4" style="text-align:center">
+              \~5-6 credits
+            </td>
+          </tr>
+          <tr>
+            <td>Image generation</td>
+            <td style="text-align:center">1 image (1024px &times; 1536px)</td>
+            <td colspan="4" style="text-align:center">
+              \~7-8 credits
+            </td>
           </tr>
         </tbody>
         <tfoot>
           <tr>
-            <td colspan="5" style="text-align:center">
-              Fast mode consumes 2x as many credits.
+            <td colspan="6" style="text-align:center">
+              Fast mode consumes credits at a higher rate for supported models.
+              See <a href="/codex/speed">Speed</a> for rates.
             </td>
           </tr>
           <tr>
-            <td colspan="5" style="text-align:center">
-              These averages also apply to legacy GPT-5.2, GPT-5.2-Codex,
-              GPT-5.1, GPT-5.1-Codex-Max, GPT-5, GPT-5-Codex, and
-              GPT-5-Codex-Mini.
+            <td colspan="6" style="text-align:center">
+              These averages also apply to GPT-5.2.
             </td>
           </tr>
         </tfoot>
@@ -675,10 +829,11 @@ Select your appropriate plan type in the table below to see rates.
 </div>
 
 Speed configurations will increase credit consumption for all models that apply.
-Details can be found [here](https://developers.openai.com/codex/speed).
+Fast mode consumes credits at a higher rate for supported models. See
+[Speed](https://developers.openai.com/codex/speed) for supported models and rates.
 
 [Learn more about credits in ChatGPT Plus and
-Pro.](https://help.openai.com/en/articles/12642688-using-credits-for-flexible-usage-in-chatgpt-freegopluspro-sora)
+Pro.](https://help.openai.com/en/articles/12642688)
 
 [Learn more about credits in ChatGPT Business, Enterprise, and
 Edu.](https://help.openai.com/en/articles/11487671-flexible-pricing-for-the-enterprise-edu-and-business-plans)
@@ -703,6 +858,6 @@ tips to maximize your limits:
 - **Limit the number of MCP servers you use.** Every [MCP](https://developers.openai.com/codex/mcp) you add
   to Codex adds more context to your messages and uses more of your limit.
   Disable MCP servers when you don’t need them.
-- **Switch to GPT-5.4-mini for routine tasks.** Using the mini model should
-  extend your local-message usage limits by roughly 2.5x to 3.3x, depending on
-  the model you switch from.
+- **Switch to a smaller model for routine tasks.** Using GPT-5.4 or
+  GPT-5.4-mini can extend your local-message usage limits, depending on the
+  model you switch from.

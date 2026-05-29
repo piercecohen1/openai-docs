@@ -1,15 +1,5 @@
 # Products
 
-<a
-    href="https://github.com/agentic-commerce-protocol/agentic-commerce-protocol"
-    target="_blank"
-    rel="noopener noreferrer"
-    class="underline"
-  >
-    This spec is in a draft state for feedback till 04/07/2026. Feedback is
-    welcome in the ACP github repo.
-  </a>
-
 ## Overview
 
 Use these endpoints to retrieve the current products for a feed or upsert

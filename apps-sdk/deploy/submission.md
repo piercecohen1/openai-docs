@@ -32,17 +32,37 @@ Before submitting an app, complete identity verification in the [OpenAI Platform
 
 This is enforced during app review. Publishing under an unverified individual or business name will result in rejection.
 
-### Owner role
+### App management permissions
 
-You must have the Owner role in an organization to complete verification and create and submit apps for review.
-
-If you aren't currently an Owner, your organization's current owners will need to grant you this role to proceed.
+To create app drafts and submit them for review, you need the `api.apps.write` permission. To view app drafts and review status in the Dashboard, you need the `api.apps.read` permission. Organization owners automatically have both permissions, and can grant them to non-owners through roles in the [OpenAI Platform Dashboard](https://platform.openai.com/settings/organization/roles).
 
 ### MCP server requirements
 
 - Your MCP server is hosted on a publicly accessible domain
 - You are not using a local or testing endpoint
 - You defined a [content security policy (CSP)](https://developers.openai.com/apps-sdk/build/mcp-server#content-security-policy-csp) to allow the exact domains you fetch from (this is required to submit your app for security reasons)
+
+### Template MCP server URLs
+
+Most apps should submit a universal MCP server URL: a single hosted MCP endpoint that works for all users and organizations.
+
+Choose **Template** only if your app uses workspace-specific MCP server URLs, such as when each customer has a separate tenant, workspace, or managed MCP endpoint. Template submissions require two URL values:
+
+- **MCP Server URL:** A concrete, working MCP endpoint for review and automated checks.
+- **Template MCP Server URL:** The URL pattern that describes which part of the MCP endpoint changes across customer workspaces.
+
+The review MCP server URL must be a real endpoint that OpenAI can connect to during submission review. Don't enter a placeholder URL in the **MCP Server URL** field.
+
+Use placeholders in the **Template MCP Server URL** for the parts that a workspace admin will configure later. Placeholders must use `{name}` syntax, start with a letter, and contain only letters, numbers, or underscores. Each placeholder name must be unique.
+
+Make sure the concrete **MCP Server URL** matches the template pattern after replacing each placeholder with a real value.
+
+For example:
+
+```text
+https://{workspace}.example.com/mcp
+https://mcp.example.com/{tenant}/mcp
+```
 
 ## Submitting for review
 
@@ -82,7 +102,7 @@ If you have questions before, during, or after submission, and if your question 
 
 **How long does app review take?**
 
-The app directory and Apps SDK are currently in beta, and review timelines may vary as we continue to build and scale our processes. Please do not contact support to request expedited review, as these requests cannot be accommodated.
+Review timelines may vary as we continue to build and scale our processes. Please do not contact support to request expedited review, as these requests cannot be accommodated.
 
 **What are common rejection reasons and how can I resolve them?**
 

@@ -6,30 +6,39 @@ Local mirror of OpenAI developer documentation from [developers.openai.com](http
 
 | | |
 |---|---|
-| **Last scraped** | April 3, 2026 |
-| **Total pages** | 461 |
-| **OpenAI API docs** | 126 pages ([llms.txt](https://developers.openai.com/api/docs/llms.txt)) |
-| **OpenAI API reference** | 225 pages ([llms.txt](https://developers.openai.com/api/reference/llms.txt)) |
-| **Apps SDK** | 24 pages ([llms.txt](https://developers.openai.com/apps-sdk/llms.txt)) |
-| **Codex** | 71 pages ([llms.txt](https://developers.openai.com/codex/llms.txt)) |
+| **Last scraped** | May 29, 2026 |
+| **Total pages** | 512 |
+| **Ads** | 12 pages ([llms.txt](https://developers.openai.com/ads/llms.txt)) |
+| **OpenAI API docs** | 150 pages ([llms.txt](https://developers.openai.com/api/docs/llms.txt)) |
+| **OpenAI API reference** | 226 pages ([llms.txt](https://developers.openai.com/api/reference/llms.txt)) |
+| **Apps SDK** | 26 pages ([llms.txt](https://developers.openai.com/apps-sdk/llms.txt)) |
+| **Codex** | 83 pages ([llms.txt](https://developers.openai.com/codex/llms.txt)) |
 | **Agentic Commerce** | 15 pages ([llms.txt](https://developers.openai.com/commerce/llms.txt)) |
+
+## Ads (`ads/`)
+
+| Directory | Pages |
+|-----------|-------|
+| `(top-level)` | 5 |
+| `api-reference/` | 7 |
 
 ## OpenAI API docs (`guides/`)
 
 | Directory | Pages |
 |-----------|-------|
 | `(top-level)` | 9 |
-| `guides/` | 101 |
+| `guides/` | 125 |
 | `actions/` | 7 |
 | `assistants/` | 6 |
 | `tutorials/` | 2 |
+| `libraries/` | 1 |
 | `gpts/` | 1 |
 
 ## OpenAI API reference (`reference/`)
 
 | Directory | Pages |
 |-----------|-------|
-| `(top-level)` | 1 |
+| `(top-level)` | 2 |
 | `resources/` | 220 |
 | `responses/` | 1 |
 | `realtime-beta/` | 1 |
@@ -42,26 +51,27 @@ Local mirror of OpenAI developer documentation from [developers.openai.com](http
 |-----------|-------|
 | `(top-level)` | 5 |
 | `build/` | 6 |
+| `guides/` | 4 |
 | `deploy/` | 4 |
 | `concepts/` | 4 |
 | `plan/` | 3 |
-| `guides/` | 2 |
 
 ## Codex (`codex/`)
 
 | Directory | Pages |
 |-----------|-------|
-| `(top-level)` | 34 |
-| `app/` | 9 |
+| `(top-level)` | 40 |
+| `app/` | 12 |
+| `concepts/` | 5 |
+| `security/` | 4 |
 | `ide/` | 4 |
-| `concepts/` | 4 |
-| `security/` | 3 |
+| `enterprise/` | 4 |
 | `integrations/` | 3 |
 | `guides/` | 3 |
-| `enterprise/` | 3 |
 | `cli/` | 3 |
 | `cloud/` | 2 |
 | `plugins/` | 1 |
+| `memories/` | 1 |
 | `learn/` | 1 |
 | `community/` | 1 |
 
@@ -75,66 +85,74 @@ Local mirror of OpenAI developer documentation from [developers.openai.com](http
 ## Directory Structure
 
 ```
+ads
+└── api-reference
 guides
-|-- actions
-|-- assistants
-|   `-- tools
-|-- gpts
-|-- guides
-|   `-- safety-checks
-`-- tutorials
+├── actions
+├── assistants
+│   └── tools
+├── gpts
+├── guides
+│   ├── agents
+│   ├── prompting
+│   ├── safety-checks
+│   └── workload-identity-federation
+├── libraries
+└── tutorials
 reference
-|-- administration
-|-- chat-completions
-|-- realtime-beta
-|-- resources
-|   |-- audio
-|   |-- batches
-|   |-- beta
-|   |-- chat
-|   |-- completions
-|   |-- containers
-|   |-- conversations
-|   |-- embeddings
-|   |-- evals
-|   |-- files
-|   |-- fine_tuning
-|   |-- images
-|   |-- models
-|   |-- moderations
-|   |-- organization
-|   |-- projects
-|   |-- realtime
-|   |-- responses
-|   |-- uploads
-|   |-- vector_stores
-|   |-- videos
-|   `-- webhooks
-`-- responses
+├── administration
+├── chat-completions
+├── realtime-beta
+├── resources
+│   ├── audio
+│   ├── batches
+│   ├── beta
+│   ├── chat
+│   ├── completions
+│   ├── containers
+│   ├── conversations
+│   ├── embeddings
+│   ├── evals
+│   ├── files
+│   ├── fine_tuning
+│   ├── images
+│   ├── models
+│   ├── moderations
+│   ├── organization
+│   ├── projects
+│   ├── realtime
+│   ├── responses
+│   ├── uploads
+│   ├── vector_stores
+│   ├── videos
+│   └── webhooks
+└── responses
 apps-sdk
-|-- build
-|-- concepts
-|-- deploy
-|-- guides
-`-- plan
+├── build
+├── concepts
+├── deploy
+├── guides
+└── plan
 codex
-|-- app
-|-- cli
-|-- cloud
-|-- community
-|-- concepts
-|-- enterprise
-|-- guides
-|-- ide
-|-- integrations
-|-- learn
-|-- plugins
-`-- security
+├── app
+├── cli
+├── cloud
+├── community
+├── concepts
+│   └── sandboxing
+├── enterprise
+├── guides
+├── ide
+├── integrations
+├── learn
+├── memories
+├── plugins
+└── security
 commerce
-|-- guides
-`-- specs
-    |-- api
-    `-- file-upload
+├── guides
+└── specs
+    ├── api
+    └── file-upload
 ```
 
 ## Usage
@@ -146,6 +164,7 @@ Search with ripgrep:
 rg "query" .
 
 # Search a specific section
+rg "query" ads/
 rg "query" guides/
 rg "query" reference/
 rg "query" apps-sdk/
@@ -156,6 +175,7 @@ rg "query" commerce/
 Full-text search (single file per section):
 
 ```bash
+rg "query" ads/llms-full.txt
 rg "query" guides/llms-full.txt
 rg "query" reference/llms-full.txt
 rg "query" apps-sdk/llms-full.txt

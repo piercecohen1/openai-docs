@@ -72,6 +72,15 @@ curl https://api.openai.com/v1/audio/speech \\
   --output speech.mp3
 ```
 
+```cli
+openai audio:speech create \\
+  --model gpt-4o-mini-tts \\
+  --voice coral \\
+  --instructions "Speak in a cheerful and positive tone." \\
+  --input "Today is a wonderful day to build something people love!" \\
+  --output speech.mp3
+```
+
 
 By default, the endpoint outputs an MP3 of the spoken audio, but you can configure it to output any [supported format](#supported-output-formats).
 
@@ -199,9 +208,9 @@ Custom voices enable you to create a unique voice for your agent or application.
 
 To create a custom voice, you’ll provide a short sample audio reference that the model will seek to replicate.
 
-Custom voices are limited to eligible customers. Contact sales at
-  [sales@openai.com](mailto:sales@openai.com) to learn more. Once enabled for
-  your organization, you’ll have access to the
+Custom voices are limited to eligible customers. Contact our [sales
+  team](https://openai.com/contact-sales/) to learn more. Once enabled for your
+  organization, you’ll have access to the
   [Voices](https://platform.openai.com/audio/voices) tab under Audio.
 
 #### Creating a voice
@@ -309,7 +318,7 @@ curl https://api.openai.com/v1/audio/speech \
 const sessionConfig = JSON.stringify({
   session: {
     type: "realtime",
-    model: "gpt-realtime",
+    model: "gpt-realtime-2",
     audio: {
       output: {
         voice: { id: "voice_123abc" },
@@ -318,3 +327,26 @@ const sessionConfig = JSON.stringify({
   },
 });
 ```
+
+## Related guides
+
+<a href="/api/docs/guides/realtime">
+  
+
+<span slot="icon">
+      </span>
+    Choose the right path for voice agents, translation, transcription, and
+    speech generation.
+
+
+</a>
+
+<a href="/api/docs/guides/audio">
+  
+
+<span slot="icon">
+      </span>
+    Review audio modalities, speech tasks, streaming, and request-based APIs.
+
+
+</a>

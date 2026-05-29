@@ -25,7 +25,7 @@ You can switch models with the switcher under the chat input.
 
 ## Adjust reasoning effort
 
-You can adjust reasoning effort to control how long Codex thinks before responding. Higher effort can help on complex tasks, but responses take longer. Higher effort also uses more tokens and can consume your rate limits faster (especially with GPT-5-Codex).
+You can adjust reasoning effort to control how long Codex thinks before responding. Higher effort can help on complex tasks, but responses take longer. Higher effort also uses more tokens and can consume your rate limits faster, especially with higher-capability models.
 
 Use the same model switcher shown above, and choose `low`, `medium`, or `high` for each model. Start with `medium`, and only switch to `high` when you need more depth.
 
@@ -87,6 +87,16 @@ You'll see `web_search` items in the transcript or `codex exec --json` output wh
 You can drag and drop images into the prompt composer to include them as context.
 
 Hold down `Shift` while dropping an image. VS Code otherwise prevents extensions from accepting a drop.
+
+## Image generation
+
+Ask Codex to generate or edit images without leaving your editor. This is useful for UI assets, layouts, illustrations, sprite sheets, and quick placeholders while you work. Add a reference image to the prompt when you want Codex to transform or extend an existing asset.
+
+You can ask in natural language or explicitly invoke the image generation skill by including `$imagegen` in your prompt.
+
+Built-in image generation uses `gpt-image-2`, counts toward your general Codex usage limits, and uses included limits 3-5x faster on average than similar turns without image generation, depending on image quality and size. For details, see [Pricing](https://developers.openai.com/codex/pricing#image-generation-usage-limits). For prompting tips and model details, see the [image generation guide](https://developers.openai.com/api/docs/guides/image-generation).
+
+For larger batches of image generation, set `OPENAI_API_KEY` in your environment variables and ask Codex to generate images through the API so API pricing applies instead.
 
 ## See also
 

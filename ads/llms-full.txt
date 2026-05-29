@@ -1,0 +1,1484 @@
+# Ads — full documentation
+
+> Single-file Markdown export of the Ads docs for creating ads in ChatGPT and measuring website conversions.
+
+Curated index: https://developers.openai.com/ads/llms.txt
+
+# Overview
+
+The Advertiser API lets you manage ad campaigns, ad groups, ads, files, and
+reporting from one API. It supports CRUD-like functions with standard JSON content types.
+
+## Authentication
+
+Issue an API key in the Settings tab of [Ads Manager](https://ads.openai.com).
+Each key is scoped to one ad account.
+
+Pass the key as a bearer token on every request:
+
+```bash
+Authorization: Bearer $OPENAI_ADS_API_KEY
+```
+
+By default, the Advertiser API works in the context of a single Ad Account. If
+  you need to manage multiple Ad Accounts with the API, please [contact
+  us](https://openai.com/advertisers/).
+
+## Endpoints
+
+| Resource  | Use for                                                                         |
+| --------- | ------------------------------------------------------------------------------- |
+| Campaigns | Create, list, retrieve, update, and change campaign state.                      |
+| Ad Groups | Create, list, retrieve, update, and change ad group state.                      |
+| Ads       | Create, list, retrieve, update, and change ad state.                            |
+| Files     | Upload creative assets for use in ads.                                          |
+| Insights  | Retrieve performance data across ad account, campaign, ad group, and ad scopes. |
+
+All resources live inside a single Ad Account.
+
+Use the [Quickstart](https://developers.openai.com/ads/api-quickstart) for a minimal end-to-end workflow, or go
+directly to the [API reference](https://developers.openai.com/ads/api-reference/authentication).
+
+## Object Statuses
+
+For an ad to show to users, the ad, and its parent ad group and campaign all have to be enabled. Further, the Ad has to be reviewed. Reviews typically only take a few minutes, you can monitor with the review_status field.
+
+## Rate limits
+
+The Advertiser API enforces limits by both ad account and IP address:
+
+| Scope        | Limit                     |
+| ------------ | ------------------------- |
+| Per endpoint | 600 requests per minute   |
+| Overall      | 1,200 requests per minute |
+
+Requests must stay within both the ad-account and IP-address limits.
+
+## OpenAPI spec
+
+<a href="/ads/openapi.json" download>
+  {"Download the OpenAPI spec"}
+</a>
+
+## Changelog
+
+| Release | Change                            |
+| ------- | --------------------------------- |
+| v1      | Published the initial API version |
+
+---
+
+# Quickstart
+
+The Ads API can programmatically create ad campaigns and monitor your results. This guide covers the minimal implementation to get an ad live, and check your results.
+
+## Ad Structure
+
+Ads live inside an Ad Group, and Ad Groups live inside a Campaign. Campaigns and Ad Groups define your budget and targeting, while Ads host your Ad's title, description and images.
+
+## 1. Confirm access to your ad account
+
+Issue an API key in the Settings tab of your [Ads Manager](https://ads.openai.com) account. See the [authentication reference](https://developers.openai.com/ads/api-reference/authentication) for more info.
+
+Call `GET /ad_account` to confirm that your bearer token works and that
+you are using the right account:
+
+```bash
+curl -X GET "https://api.ads.openai.com/v1/ad_account" \
+  -H "Authorization: Bearer $OPENAI_ADS_API_KEY" \
+  -H "Accept: application/json"
+```
+
+Response:
+
+```json
+{
+  "id": "act_123",
+  "name": "Acme Ads",
+  "url": "https://www.acme.example",
+  "preview_url": "https://preview.acme.example",
+  "timezone": "UTC",
+  "currency_code": "USD"
+}
+```
+
+## 2. Upload a creative asset
+
+Upload a remote image and store the returned `file_id`. You'll use it when
+you create the ad.
+
+```bash
+curl -X POST "https://api.ads.openai.com/v1/upload" \
+  -H "Authorization: Bearer $OPENAI_ADS_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "image_url": "https://example.com/assets/workspace-planner-card.png"
+  }'
+```
+
+Response:
+
+```json
+{
+  "file_id": "file_901"
+}
+```
+
+If you already have a local file, the same endpoint also accepts
+`multipart/form-data`.
+
+## 3. Create a campaign
+
+Create the top-level campaign first. Save the returned campaign ID for the next
+step.
+
+```bash
+curl -X POST "https://api.ads.openai.com/v1/campaigns" \
+  -H "Authorization: Bearer $OPENAI_ADS_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Spring launch",
+    "status": "active",
+    "budget": {
+      "lifetime_spend_limit_micros": 25000000
+    }
+  }'
+```
+
+Response:
+
+```json
+{
+  "id": "cmpn_101",
+  "created_at": 1735689600,
+  "updated_at": 1735689600,
+  "name": "Spring launch",
+  "description": null,
+  "status": "active",
+  "start_time": null,
+  "end_time": null,
+  "budget": {
+    "lifetime_spend_limit_micros": 25000000
+  },
+  "targeting": {}
+}
+```
+
+## 4. Create an ad group
+
+Create an ad group inside the campaign. Save the returned ad group ID for the
+ad creation step.
+
+```bash
+curl -X POST "https://api.ads.openai.com/v1/ad_groups" \
+  -H "Authorization: Bearer $OPENAI_ADS_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "campaign_id": "cmpn_101",
+    "name": "US English",
+    "status": "active",
+    "context_hints": ["productivity", "team collaboration"],
+    "bidding_config": {
+      "billing_event_type": "impression",
+      "max_bid_micros": 60000
+    }
+  }'
+```
+
+Response:
+
+```json
+{
+  "id": "adgrp_301",
+  "created_at": 1735689700,
+  "updated_at": 1735689700,
+  "name": "US English",
+  "description": null,
+  "context_hints": ["productivity", "team collaboration"],
+  "status": "active",
+  "bidding_config": {
+    "billing_event_type": "impression",
+    "max_bid_micros": 60000
+  }
+}
+```
+
+## 5. Create an ad
+
+Create the ad with a `chat_card` creative and attach the uploaded asset by
+`file_id`.
+
+```bash
+curl -X POST "https://api.ads.openai.com/v1/ads" \
+  -H "Authorization: Bearer $OPENAI_ADS_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "ad_group_id": "adgrp_301",
+    "name": "Planner launch card",
+    "status": "active",
+    "creative": {
+      "type": "chat_card",
+      "title": "Try the new workspace planner",
+      "body": "Coordinate tasks, docs, and meetings in one place.",
+      "target_url": "https://example.com/workspace-planner",
+      "file_id": "file_901"
+    }
+  }'
+```
+
+Response:
+
+```json
+{
+  "id": "ad_501",
+  "name": "Planner launch card",
+  "created_at": 1735689800,
+  "updated_at": 1735689800,
+  "creative": {
+    "type": "chat_card",
+    "title": "Try the new workspace planner",
+    "body": "Coordinate tasks, docs, and meetings in one place.",
+    "file_id": "file_901",
+    "image_url": "https://cdn.openai.com/ads/file_901.png",
+    "target_url": "https://example.com/workspace-planner"
+  },
+  "status": "active",
+  "review_status": "in_review"
+}
+```
+
+## 6. Retrieve insights
+
+Once the ad is serving, retrieve performance data from the ad-level insights
+endpoint.
+
+```bash
+curl -sS -G "https://api.ads.openai.com/v1/ads/ad_501/insights" \
+  -H "Authorization: Bearer $OPENAI_ADS_API_KEY" \
+  --data-urlencode "time_granularity=daily" \
+  --data-urlencode "limit=7"
+```
+
+```json
+{
+  "object": "list",
+  "count": 1,
+  "data": [
+    {
+      "id": "start=1775088000:end=1775174400:entity_id=ad_501",
+      "readable_time": "2026-04-02",
+      "timezone": "UTC",
+      "impressions": 15548,
+      "clicks": 312,
+      "spend": 42.75,
+      "start_time": 1775088000,
+      "end_time": 1775174400
+    }
+  ],
+  "first_id": "start=1775088000:end=1775174400:entity_id=ad_501",
+  "last_id": "start=1775088000:end=1775174400:entity_id=ad_501",
+  "has_more": false
+}
+```
+
+## Next steps
+
+Once the basic flow works, use the full reference for each part of the
+integration:
+
+- [Authentication](https://developers.openai.com/ads/api-reference/authentication)
+- [Campaigns](https://developers.openai.com/ads/api-reference/campaigns)
+- [Ad Groups](https://developers.openai.com/ads/api-reference/ad-groups)
+- [Ads](https://developers.openai.com/ads/api-reference/ads)
+- [Files](https://developers.openai.com/ads/api-reference/files)
+- [Insights](https://developers.openai.com/ads/api-reference/insights)
+
+---
+
+# Ad Account
+
+## Get ad account metadata
+
+Fetch metadata for the current ad account.
+
+`GET /ad_account`
+
+This endpoint takes no request body or query parameters.
+
+```bash
+curl -X GET "https://api.ads.openai.com/v1/ad_account" \
+  -H "Authorization: Bearer $OPENAI_ADS_API_KEY"
+```
+
+```json
+{
+  "id": "act_123",
+  "name": "Acme Ads",
+  "url": "https://www.acme.example",
+  "preview_url": "https://preview.acme.example",
+  "timezone": "UTC",
+  "currency_code": "USD"
+}
+```
+
+The response includes:
+
+- `id` for the ad account
+- `name` for the display name
+- `url` for the primary destination
+- `preview_url` when a preview destination is available
+- `timezone` for the ad account timezone
+- `currency_code` for the account currency
+
+---
+
+# Ad Groups
+
+## List ad groups
+
+List ad groups for a campaign.
+
+`GET /ad_groups`
+
+| Parameter     | Type    | Required | Notes                              |
+| ------------- | ------- | -------- | ---------------------------------- |
+| `campaign_id` | string  | Yes      | Parent campaign ID.                |
+| `limit`       | integer | No       | Between `1` and `500`. Default 20. |
+| `after`       | string  | No       | Cursor for the next page.          |
+| `before`      | string  | No       | Cursor for the previous page.      |
+| `order`       | string  | No       | `asc` or `desc`.                   |
+
+```bash
+curl -X GET "https://api.ads.openai.com/v1/ad_groups?campaign_id=cmpn_101&limit=10" \
+  -H "Authorization: Bearer $OPENAI_ADS_API_KEY"
+```
+
+```json
+{
+  "object": "list",
+  "data": [
+    {
+      "id": "adgrp_301",
+      "created_at": 1735689700,
+      "updated_at": 1735776100,
+      "name": "US English",
+      "description": "Primary English-speaking audience.",
+      "context_hints": ["productivity", "team collaboration"],
+      "status": "active",
+      "bidding_config": {
+        "billing_event_type": "impression",
+        "max_bid_micros": 60000
+      }
+    }
+  ],
+  "first_id": "adgrp_301",
+  "last_id": "adgrp_301",
+  "has_more": false
+}
+```
+
+## Create an ad group
+
+Create an ad group for a campaign.
+
+`POST /ad_groups`
+
+| Field                               | Type     | Required | Notes                                                       |
+| ----------------------------------- | -------- | -------- | ----------------------------------------------------------- |
+| `campaign_id`                       | string   | Yes      | Parent campaign ID.                                         |
+| `name`                              | string   | Yes      | `3` to `1000` chars and must include a non-space character. |
+| `description`                       | string   | No       | Ad group description.                                       |
+| `context_hints`                     | string[] | No       | Free-form audience or placement hints.                      |
+| `status`                            | string   | Yes      | `active` or `paused`.                                       |
+| `bidding_config.billing_event_type` | string   | Yes      | Currently `impression`.                                     |
+| `bidding_config.max_bid_micros`     | integer  | Yes      | Between `1` and `100000000`.                                |
+
+### Field notes
+
+Context hints provide extra information on when you think your ads might be useful, and help guide when they appear. Provide a list of descriptions or keywords for when the product or service might be useful to show.
+
+Micros are millionths of the main currency unit (e.g., Dollars). The max_bid field is per event, so a $60CPM ($0.06 per impression) is passed as 60,000 to the API. Note that currency fields respect your ad account's default currency.
+
+```bash
+curl -X POST "https://api.ads.openai.com/v1/ad_groups" \
+  -H "Authorization: Bearer $OPENAI_ADS_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "campaign_id": "cmpn_101",
+    "name": "US English",
+    "description": "Primary English-speaking audience.",
+    "context_hints": ["productivity", "team collaboration"],
+    "status": "active",
+    "bidding_config": {
+      "billing_event_type": "impression",
+      "max_bid_micros": 60000
+    }
+  }'
+```
+
+## Retrieve an ad group
+
+Fetch one ad group by ID.
+
+`GET /ad_groups/{ad_group_id}`
+
+```bash
+curl -X GET "https://api.ads.openai.com/v1/ad_groups/adgrp_301" \
+  -H "Authorization: Bearer $OPENAI_ADS_API_KEY"
+```
+
+## Update an ad group
+
+Update an ad group with `POST`.
+
+`POST /ad_groups/{ad_group_id}`
+
+All fields are optional on update. `description` can be set to `null` to clear
+it. If you include `bidding_config`, send the full object. `status` accepts
+`active`, `paused`, or `archived`.
+
+```bash
+curl -X POST "https://api.ads.openai.com/v1/ad_groups/adgrp_301" \
+  -H "Authorization: Bearer $OPENAI_ADS_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "context_hints": ["productivity", "workflow automation"],
+    "status": "paused",
+    "bidding_config": {
+      "billing_event_type": "impression",
+      "max_bid_micros": 75000
+    }
+  }'
+```
+
+## Change state with dedicated actions
+
+The Ads API also exposes explicit state transitions. Paused ad groups won't deliver ads to customers. Only archive objects you have no further use for, as archiving isn't reversible.
+
+- `POST /ad_groups/{ad_group_id}/activate`
+- `POST /ad_groups/{ad_group_id}/pause`
+- `POST /ad_groups/{ad_group_id}/archive`
+
+```bash
+curl -X POST "https://api.ads.openai.com/v1/ad_groups/adgrp_301/archive" \
+  -H "Authorization: Bearer $OPENAI_ADS_API_KEY"
+```
+
+```json
+{
+  "id": "adgrp_301",
+  "created_at": 1735689700,
+  "updated_at": 1735948800,
+  "name": "US English",
+  "description": "Primary English-speaking audience.",
+  "context_hints": ["productivity", "team collaboration"],
+  "status": "archived",
+  "bidding_config": {
+    "billing_event_type": "impression",
+    "max_bid_micros": 60000
+  }
+}
+```
+
+---
+
+# Ads
+
+## List ads
+
+List ads for an ad group.
+
+`GET /ads`
+
+| Parameter     | Type    | Required | Notes                              |
+| ------------- | ------- | -------- | ---------------------------------- |
+| `ad_group_id` | string  | Yes      | Parent ad group ID.                |
+| `limit`       | integer | No       | Between `1` and `500`. Default 20. |
+| `after`       | string  | No       | Cursor for the next page.          |
+| `before`      | string  | No       | Cursor for the previous page.      |
+| `order`       | string  | No       | `asc` or `desc`.                   |
+
+```bash
+curl -X GET "https://api.ads.openai.com/v1/ads?ad_group_id=adgrp_301&limit=10" \
+  -H "Authorization: Bearer $OPENAI_ADS_API_KEY"
+```
+
+```json
+{
+  "object": "list",
+  "data": [
+    {
+      "id": "ad_501",
+      "name": "Planner launch card",
+      "created_at": 1735689800,
+      "updated_at": 1735776200,
+      "creative": {
+        "type": "chat_card",
+        "title": "Try the new workspace planner",
+        "body": "Coordinate tasks, docs, and meetings in one place.",
+        "file_id": "file_901",
+        "image_url": "https://cdn.openai.com/ads/file_901.png",
+        "target_url": "https://example.com/workspace-planner"
+      },
+      "status": "active",
+      "review_status": "approved"
+    }
+  ],
+  "first_id": "ad_501",
+  "last_id": "ad_501",
+  "has_more": false
+}
+```
+
+## Create an ad
+
+Create an ad for an ad group.
+
+`POST /ads`
+
+| Field                 | Type   | Required | Notes                                                                                                         |
+| --------------------- | ------ | -------- | ------------------------------------------------------------------------------------------------------------- |
+| `ad_group_id`         | string | Yes      | Parent ad group ID.                                                                                           |
+| `name`                | string | Yes      | `3` to `1000` chars and must include a non-space character. Used for organization, is not shown to end users. |
+| `creative.type`       | string | Yes      | Today, must be `chat_card`.                                                                                   |
+| `creative.title`      | string | Yes      | `3` to `50` chars.                                                                                            |
+| `creative.body`       | string | Yes      | Maximum `100` chars.                                                                                          |
+| `creative.target_url` | string | Yes      | Destination URL.                                                                                              |
+| `creative.file_id`    | string | Yes      | File returned by `POST /upload`.                                                                              |
+| `status`              | string | Yes      | `active` or `paused`.                                                                                         |
+
+```bash
+curl -X POST "https://api.ads.openai.com/v1/ads" \
+  -H "Authorization: Bearer $OPENAI_ADS_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "ad_group_id": "adgrp_301",
+    "name": "Planner launch card",
+    "status": "active",
+    "creative": {
+      "type": "chat_card",
+      "title": "Try the new workspace planner",
+      "body": "Coordinate tasks, docs, and meetings in one place.",
+      "target_url": "https://example.com/workspace-planner",
+      "file_id": "file_901"
+    }
+  }'
+```
+
+## Retrieve an ad
+
+Fetch one ad by ID.
+
+`GET /ads/{ad_id}`
+
+```bash
+curl -X GET "https://api.ads.openai.com/v1/ads/ad_501" \
+  -H "Authorization: Bearer $OPENAI_ADS_API_KEY"
+```
+
+## Update an ad
+
+Update an ad with `POST`.
+
+`POST /ads/{ad_id}`
+
+All fields are optional on update. If you include `creative`, send the full
+creative object. `status` accepts `active`, `paused`, or `archived`.
+
+```bash
+curl -X POST "https://api.ads.openai.com/v1/ads/ad_501" \
+  -H "Authorization: Bearer $OPENAI_ADS_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Planner launch card v2",
+    "status": "paused",
+    "creative": {
+      "type": "chat_card",
+      "title": "Plan work faster",
+      "body": "Bring tasks, docs, and meetings together.",
+      "target_url": "https://example.com/workspace-planner",
+      "file_id": "file_901"
+    }
+  }'
+```
+
+## Review status
+
+Every ad response includes `review_status`, which can be:
+
+- `in_review`
+- `rejected`
+- `approved`
+
+If your ad has been rejected, it violates one of our [ads policies](https://openai.com/policies/ad-policies/). Please edit your ad for it to be re-reviewed.
+
+## Change state with dedicated actions
+
+The Ads API also exposes explicit state transitions. Paused ads won't deliver to customers. Only archive objects you have no further use for, as archiving isn't reversible.
+
+- `POST /ads/{ad_id}/activate`
+- `POST /ads/{ad_id}/pause`
+- `POST /ads/{ad_id}/archive`
+
+```bash
+curl -X POST "https://api.ads.openai.com/v1/ads/ad_501/pause" \
+  -H "Authorization: Bearer $OPENAI_ADS_API_KEY"
+```
+
+```json
+{
+  "id": "ad_501",
+  "name": "Planner launch card",
+  "created_at": 1735689800,
+  "updated_at": 1736035200,
+  "creative": {
+    "type": "chat_card",
+    "title": "Try the new workspace planner",
+    "body": "Coordinate tasks, docs, and meetings in one place.",
+    "file_id": "file_901",
+    "image_url": "https://cdn.openai.com/ads/file_901.png",
+    "target_url": "https://example.com/workspace-planner"
+  },
+  "status": "paused",
+  "review_status": "approved"
+}
+```
+
+---
+
+# Authentication
+
+## Base URL
+
+Send Ads API requests to:
+
+```text
+https://api.ads.openai.com/v1
+```
+
+## Authorization
+
+The OpenAPI spec defines a bearer security scheme. Pass your Ads API key on
+every request:
+
+| Header          | Value                        |
+| --------------- | ---------------------------- |
+| `Authorization` | `Bearer $OPENAI_ADS_API_KEY` |
+
+## Request formats
+
+Most Ads API endpoints accept `application/json`. The upload endpoint supports
+two request formats:
+
+- `application/json` with an `image_url`
+- `multipart/form-data` with a binary `file`
+
+## Example request
+
+Use `GET /ad_account` to confirm that your bearer token works.
+
+```bash
+curl -X GET "https://api.ads.openai.com/v1/ad_account" \
+  -H "Authorization: Bearer $OPENAI_ADS_API_KEY" \
+  -H "Accept: application/json"
+```
+
+```json
+{
+  "id": "act_123",
+  "name": "Acme Ads",
+  "url": "https://www.acme.example",
+  "preview_url": "https://preview.acme.example",
+  "timezone": "UTC",
+  "currency_code": "USD"
+}
+```
+
+---
+
+# Campaigns
+
+## List campaigns
+
+List campaigns in the current ad account.
+
+`GET /campaigns`
+
+| Parameter | Type    | Required | Notes                              |
+| --------- | ------- | -------- | ---------------------------------- |
+| `limit`   | integer | No       | Between `1` and `500`. Default 20. |
+| `after`   | string  | No       | Cursor for the next page.          |
+| `before`  | string  | No       | Cursor for the previous page.      |
+| `order`   | string  | No       | `asc` or `desc`.                   |
+
+```bash
+curl -X GET "https://api.ads.openai.com/v1/campaigns?limit=20&order=desc" \
+  -H "Authorization: Bearer $OPENAI_ADS_API_KEY"
+```
+
+```json
+{
+  "object": "list",
+  "data": [
+    {
+      "id": "cmpn_101",
+      "created_at": 1735689600,
+      "updated_at": 1735776000,
+      "name": "Spring launch",
+      "description": "Promote the new productivity bundle.",
+      "status": "active",
+      "start_time": 1735689600,
+      "end_time": 1738368000,
+      "budget": {
+        "lifetime_spend_limit_micros": 25000000
+      }
+    }
+  ],
+  "first_id": "cmpn_101",
+  "last_id": "cmpn_101",
+  "has_more": false
+}
+```
+
+## Create a campaign
+
+Create a campaign for the current ad account. The Ads belonging to a campaign will only show between the defined start and end time, and only in the countries specified in `targeting.locations.countries`.
+
+### Defaults
+
+If you exclude a start_time, the campaign will begin delivering immediately, and if you exclude a country, the campaign will target all countries.
+
+Note that time and currency fields will respect your account-set timezone and currency defaults.
+
+`POST /campaigns`
+
+| Field                                    | Type     | Required | Notes                                                       |
+| ---------------------------------------- | -------- | -------- | ----------------------------------------------------------- |
+| `name`                                   | string   | Yes      | `3` to `1000` chars and must include a non-space character. |
+| `description`                            | string   | No       | Campaign description.                                       |
+| `start_time`                             | integer  | No       | Unix timestamp between `946684800` and `4102444800`.        |
+| `end_time`                               | integer  | No       | Unix timestamp between `946684800` and `4102444800`.        |
+| `status`                                 | string   | Yes      | `active` or `paused`.                                       |
+| `budget.lifetime_spend_limit_micros`     | integer  | Yes      | Minimum `1000000`.                                          |
+| `targeting.locations.countries`          | string[] | No       | Included country codes.                                     |
+| `targeting.excluded_locations.countries` | string[] | No       | Excluded country codes.                                     |
+
+```bash
+curl -X POST "https://api.ads.openai.com/v1/campaigns" \
+  -H "Authorization: Bearer $OPENAI_ADS_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Spring launch",
+    "description": "Promote the new productivity bundle.",
+    "start_time": 1735689600,
+    "end_time": 1738368000,
+    "status": "active",
+    "budget": {
+      "lifetime_spend_limit_micros": 25000000
+    },
+    "targeting": {
+      "locations": {
+        "countries": ["US", "CA"]
+      }
+    }
+  }'
+```
+
+```json
+{
+  "id": "cmpn_101",
+  "created_at": 1735689600,
+  "updated_at": 1735689600,
+  "name": "Spring launch",
+  "description": "Promote the new productivity bundle.",
+  "status": "active",
+  "start_time": 1735689600,
+  "end_time": 1738368000,
+  "budget": {
+    "lifetime_spend_limit_micros": 25000000
+  },
+  "targeting": {
+    "locations": {
+      "countries": ["US", "CA"]
+    }
+  }
+}
+```
+
+## Retrieve a campaign
+
+Fetch one campaign by ID.
+
+`GET /campaigns/{campaign_id}`
+
+```bash
+curl -X GET "https://api.ads.openai.com/v1/campaigns/cmpn_101" \
+  -H "Authorization: Bearer $OPENAI_ADS_API_KEY"
+```
+
+## Update a campaign
+
+Update a campaign with `POST`, not `PATCH` or `PUT`.
+
+`POST /campaigns/{campaign_id}`
+
+All fields are optional on update. If you include `budget`, send the full
+budget object. `description`, `start_time`, `end_time`, and `targeting` can be
+set to `null` to clear them. `status` accepts `active`, `paused`, or
+`archived`.
+
+```bash
+curl -X POST "https://api.ads.openai.com/v1/campaigns/cmpn_101" \
+  -H "Authorization: Bearer $OPENAI_ADS_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "description": "Updated launch window and budget.",
+    "status": "paused",
+    "budget": {
+      "lifetime_spend_limit_micros": 30000000
+    }
+  }'
+```
+
+## Change state with dedicated actions
+
+The Ads API also exposes explicit state transitions. Each endpoint returns the
+updated campaign object. Paused campaigns won't deliver ads to customers. Only archive objects you have no further use for, as archiving isn't reversible.
+
+- `POST /campaigns/{campaign_id}/activate`
+- `POST /campaigns/{campaign_id}/pause`
+- `POST /campaigns/{campaign_id}/archive`
+
+```bash
+curl -X POST "https://api.ads.openai.com/v1/campaigns/cmpn_101/pause" \
+  -H "Authorization: Bearer $OPENAI_ADS_API_KEY"
+```
+
+```json
+{
+  "id": "cmpn_101",
+  "created_at": 1735689600,
+  "updated_at": 1735862400,
+  "name": "Spring launch",
+  "description": "Promote the new productivity bundle.",
+  "status": "paused",
+  "start_time": 1735689600,
+  "end_time": 1738368000,
+  "budget": {
+    "lifetime_spend_limit_micros": 25000000
+  }
+}
+```
+
+---
+
+# Files
+
+## Upload from an image URL
+
+Upload a remote image with JSON and receive a reusable `file_id`.
+
+`POST /upload`
+
+```bash
+curl -X POST "https://api.ads.openai.com/v1/upload" \
+  -H "Authorization: Bearer $OPENAI_ADS_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "image_url": "https://example.com/assets/workspace-planner-card.png"
+  }'
+```
+
+```json
+{
+  "file_id": "file_901"
+}
+```
+
+## Upload a binary file
+
+The same endpoint also accepts `multipart/form-data` with a binary file.
+
+```bash
+curl -X POST "https://api.ads.openai.com/v1/upload" \
+  -H "Authorization: Bearer $OPENAI_ADS_API_KEY" \
+  -F "file=@workspace-planner-card.png"
+```
+
+## Use the uploaded file in an ad
+
+Pass the returned `file_id` when you create or update an ad creative.
+
+`POST /ads`
+
+```bash
+curl -X POST "https://api.ads.openai.com/v1/ads" \
+  -H "Authorization: Bearer $OPENAI_ADS_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "ad_group_id": "adgrp_301",
+    "name": "Planner launch card",
+    "status": "active",
+    "creative": {
+      "type": "chat_card",
+      "title": "Try the new workspace planner",
+      "body": "Coordinate tasks, docs, and meetings in one place.",
+      "target_url": "https://example.com/workspace-planner",
+      "file_id": "file_901"
+    }
+  }'
+```
+
+---
+
+# Insights
+
+## Insights endpoints
+
+The Ads API exposes the same reporting envelope at four levels:
+
+- `GET /ad_account/insights`
+- `GET /campaigns/{campaign_id}/insights`
+- `GET /ad_groups/{ad_group_id}/insights`
+- `GET /ads/{ad_id}/insights`
+
+Use the endpoint that matches the scope you want to get results for. Each endpoint
+returns the same top-level response shape, with IDs and metadata appropriate to
+that scope.
+
+| Parameter           | Type     | Required | Notes                                                             |
+| ------------------- | -------- | -------- | ----------------------------------------------------------------- |
+| `time_granularity`  | string   | No       | Aggregation bucket size: `daily` or `none`.                       |
+| `aggregation_level` | string   | No       | Aggregation scope: `ad_account`, `campaign`, `ad_group`, or `ad`. |
+| `limit`             | integer  | No       | Between `1` and `10000`.                                          |
+| `before`            | string   | No       | Cursor for the previous page.                                     |
+| `after`             | string   | No       | Cursor for the next page.                                         |
+| `time_ranges`       | string[] | No       | A filter on time range.                                           |
+| `filters`           | string[] | No       | One or more filter expressions.                                   |
+| `fields`            | string[] | No       | Fields to project in each row.                                    |
+| `sort`              | string[] | No       | Sort expressions.                                                 |
+
+## Examples
+
+These examples use clicks as the ranking metric for best-performing ads. You can
+sort by another supported metric if that better matches how you measure
+performance.
+
+
+
+First, find the best-performing ad across the full window.
+
+```bash
+curl -sS -G "https://api.ads.openai.com/v1/campaigns/cmpn_101/insights" \
+  -H "Authorization: Bearer $OPENAI_ADS_API_KEY" \
+  --data-urlencode 'time_granularity=none' \
+  --data-urlencode 'aggregation_level=ad' \
+  --data-urlencode 'limit=1' \
+  --data-urlencode 'fields[]=ad_id' \
+  --data-urlencode 'fields[]=ad_name' \
+  --data-urlencode 'fields[]=clicks' \
+  --data-urlencode 'fields[]=impressions' \
+  --data-urlencode 'time_ranges[]={"type":"date_range","since":"2026-04-25","until":"2026-05-01"}' \
+  --data-urlencode 'sort[]={"field":"clicks","direction":"desc"}'
+```
+
+Then use the returned `ad_id` to get daily performance for that ad.
+
+```bash
+curl -sS -G "https://api.ads.openai.com/v1/ads/$AD_ID/insights" \
+  -H "Authorization: Bearer $OPENAI_ADS_API_KEY" \
+  --data-urlencode 'time_granularity=daily' \
+  --data-urlencode 'fields[]=readable_time' \
+  --data-urlencode 'fields[]=clicks' \
+  --data-urlencode 'fields[]=impressions' \
+  --data-urlencode 'fields[]=ctr' \
+  --data-urlencode 'time_ranges[]={"type":"date_range","since":"2026-04-25","until":"2026-05-01"}'
+```
+
+
+
+
+
+Use the ad account endpoint to rank ads across the whole project.
+
+```bash
+curl -sS -G "https://api.ads.openai.com/v1/ad_account/insights" \
+  -H "Authorization: Bearer $OPENAI_ADS_API_KEY" \
+  --data-urlencode 'time_granularity=none' \
+  --data-urlencode 'aggregation_level=ad' \
+  --data-urlencode 'limit=1' \
+  --data-urlencode 'fields[]=ad_id' \
+  --data-urlencode 'fields[]=ad_name' \
+  --data-urlencode 'fields[]=campaign_name' \
+  --data-urlencode 'fields[]=clicks' \
+  --data-urlencode 'fields[]=impressions' \
+  --data-urlencode 'time_ranges[]={"type":"date_range","since":"2026-04-25","until":"2026-05-01"}' \
+  --data-urlencode 'sort[]={"field":"clicks","direction":"desc"}'
+```
+
+
+
+
+
+Use a seven-day `date_range` with daily granularity to get one row per day.
+
+```bash
+curl -sS -G "https://api.ads.openai.com/v1/campaigns/cmpn_101/insights" \
+  -H "Authorization: Bearer $OPENAI_ADS_API_KEY" \
+  --data-urlencode 'time_granularity=daily' \
+  --data-urlencode 'fields[]=readable_time' \
+  --data-urlencode 'fields[]=clicks' \
+  --data-urlencode 'fields[]=impressions' \
+  --data-urlencode 'fields[]=spend' \
+  --data-urlencode 'time_ranges[]={"type":"date_range","since":"2026-04-25","until":"2026-05-01"}'
+```
+
+
+
+Each insights row includes `id`, `start_time`, and `end_time`, and can also
+include derived bucket fields such as `readable_time` and `timezone`, delivery
+metrics such as `impressions`, `clicks`, `spend`, `ctr`, `cpc`, and `cpm`, and
+resource metadata such as `campaign_name`, `ad_group_name`, and `ad_name`.
+
+---
+
+# Conversions API
+
+The Conversions API is a more reliable tracking source than the pixel alone. We encourage using the Conversions API when possible for more accurate insights.
+
+## Send events
+
+Send events to the Conversions API from your server only.
+
+```bash
+curl -X POST "https://bzr.openai.com/v1/events?pid=<PIXEL-ID>" \
+  -H "Authorization: Bearer <API-KEY>" \
+  -H "Content-Type: application/json" \
+  --data '{
+    "validate_only": false,
+    "events": []
+  }'
+```
+
+You can provision a Pixel ID and Conversions API key from the conversions tab on your Ads Manager account.
+| Value | Required | Description |
+| --------------- | -------- | ------------------------------------------------- |
+| `pid` | Yes | Your Pixel ID. |
+| `validate_only` | No | Validates events without saving them when `true`. |
+| `events` | Yes | The events to send. |
+
+The API accepts batches of up to 1,000 events. If one event in the batch fails,
+the full batch fails.
+
+## Event structure
+
+Each event includes the event metadata and a `data` object.
+
+```json
+{
+  "id": "order_12345",
+  "type": "order_created",
+  "timestamp_ms": 1773892800000,
+  "oppref": "oppref_abc",
+  "source_url": "https://shop.example.com/checkout/confirmation",
+  "action_source": "web",
+  "data": {
+    "type": "contents"
+  }
+}
+```
+
+| Field               | Required | Description                                                                                     |
+| ------------------- | -------- | ----------------------------------------------------------------------------------------------- |
+| `id`                | Yes      | Your unique event identifier. Used with `type` to deduplicate events.                           |
+| `type`              | Yes      | A supported standard event name, or `custom`.                                                   |
+| `timestamp_ms`      | Yes      | Event time in milliseconds. Must be within the last 7 days and no more than 10 minutes ahead.   |
+| `custom_event_name` | Depends  | Required when `type` is `custom`.                                                               |
+| `oppref`            | No       | OpenAI-provided privacy-preserving identifier.                                                  |
+| `source_url`        | Depends  | Required when `action_source` is `web`.                                                         |
+| `action_source`     | No       | One of `web`, `mobile_app`, `offline`, `physical_store`, `phone_call`, `email`, or `other`.     |
+| `user`              | No       | Optional user fields that can improve attribution accuracy for advertising conversions.         |
+| `opt_out`           | No       | Set to `true` to opt out the event from future user-level personalization. Defaults to `false`. |
+| `data`              | Yes      | Event data matching the event type.                                                             |
+
+See [Supported events](https://developers.openai.com/ads/supported-events) for event names and data shapes.
+
+Unlike the pixel, the API does not capture `oppref` for you. Capture the value
+yourself and pass it with the server event when it is available.
+
+## Example event
+
+```bash
+curl -X POST "https://bzr.openai.com/v1/events?pid=<PIXEL-ID>" \
+  -H "Authorization: Bearer <API-KEY>" \
+  -H "Content-Type: application/json" \
+  --data '{
+    "validate_only": false,
+    "events": [
+      {
+        "id": "order_12345",
+        "type": "order_created",
+        "timestamp_ms": 1773892800000,
+        "oppref": "oppref_abc",
+        "source_url": "https://shop.example.com/checkout/confirmation",
+        "action_source": "web",
+        "data": {
+          "type": "contents",
+          "amount": 2599,
+          "currency": "USD",
+          "contents": [
+            {
+              "id": "sku_123",
+              "name": "Starter bundle",
+              "content_type": "product",
+              "quantity": 1
+            }
+          ]
+        }
+      }
+    ]
+  }'
+```
+
+## Deduplicate browser and server events
+
+If you send the same conversion from the pixel and the Conversions API, reuse
+the same value as the API `id` and pixel `event_id`. Send both events with the
+same Pixel ID. For custom events, use the same `custom_event_name` on both sides
+as well.
+
+---
+
+# JavaScript Pixel
+
+The OpenAI Ads Measurement Pixel is a browser SDK for measuring website events
+after someone clicks an ad in ChatGPT. Use the pixel by adding the script to your site, initializing
+it with your Pixel ID, and call `oaiq("measure", ...)` when a conversion
+happens.
+
+## Install the Measurement Pixel
+
+Add the following snippet to the `<head>` section every page where you want to capture
+conversions. Put the script near the top of your `<head>` to ensure early conversions aren't lost while other content loads.
+
+```html
+<script>
+  (function (w, d, s, u) {
+    if (w.oaiq) return;
+    var q = function () {
+      q.q.push(arguments);
+    };
+    q.q = [];
+    w.oaiq = q;
+    var js = d.createElement(s);
+    js.async = true;
+    js.src = u;
+    var f = d.getElementsByTagName(s)[0];
+    f.parentNode.insertBefore(js, f);
+  })(window, document, "script", "https://bzrcdn.openai.com/sdk/oaiq.min.js");
+
+  oaiq("init", {
+    pixelId: "<YOUR-PIXEL-ID>",
+  });
+</script>
+```
+
+`pixelId` is required. Create a new pixelId in the conversions tab of Ads Manager. `debug` is optional and logs SDK activity to the browser
+console while you test your integration.
+
+## Send events
+
+Call `oaiq("measure", eventName, eventProps, eventOptions)` when a conversion or
+page action happens.
+
+```js
+oaiq("measure", eventName, eventProps, eventOptions);
+```
+
+| Argument       | Required | Description                                                                                               |
+| -------------- | -------- | --------------------------------------------------------------------------------------------------------- |
+| `eventName`    | Yes      | One of the <a href="/ads/supported-events">supported standard event names </a>, or `custom`.              |
+| `eventProps`   | No       | Event data. In practice, send this for every event so the `type` and any optional fields are explicit.    |
+| `eventOptions` | No       | Extra delivery options, including `event_id` for deduplication and `custom_event_name` for custom events. |
+
+We support a set of <a href="/ads/supported-events">standard event names</a>. For custom events,
+keep `eventName` as `custom`, set `eventProps.type` to `custom`, and put your
+event label in `eventOptions.custom_event_name`.
+
+> **Caution:** Put `custom_event_name` and `event_id` in `eventOptions`, not in
+> `eventProps`.
+
+## Example events
+
+Use these examples as templates for common measurement patterns.
+
+### Page and content views
+
+```js
+oaiq("measure", "page_viewed", {
+  type: "contents",
+  contents: [
+    {
+      id: "pricing",
+      name: "Pricing page",
+      content_type: "page",
+    },
+  ],
+});
+
+oaiq("measure", "contents_viewed", {
+  type: "contents",
+  contents: [
+    {
+      id: "sku_123",
+      name: "Starter bundle",
+      content_type: "product",
+    },
+  ],
+});
+```
+
+### Commerce flow
+
+Use the `contents` data shape for `items_added`, `checkout_started`, and
+`order_created`.
+
+```js
+oaiq("measure", "items_added", {
+  type: "contents",
+  amount: 2599,
+  currency: "USD",
+  contents: [
+    {
+      id: "sku_123",
+      name: "Starter bundle",
+      content_type: "product",
+      quantity: 1,
+      amount: 2599,
+      currency: "USD",
+    },
+  ],
+});
+
+oaiq("measure", "checkout_started", {
+  type: "contents",
+  amount: 2599,
+  currency: "USD",
+  contents: [
+    {
+      id: "sku_123",
+      name: "Starter bundle",
+      content_type: "product",
+      quantity: 1,
+    },
+  ],
+});
+
+oaiq("measure", "order_created", {
+  type: "contents",
+  amount: 2599,
+  currency: "USD",
+  contents: [
+    {
+      id: "sku_123",
+      name: "Starter bundle",
+      content_type: "product",
+      quantity: 1,
+    },
+  ],
+});
+```
+
+### Lead generation and registration
+
+Use the `customer_action` data shape for `lead_created`,
+`registration_completed`, and `appointment_scheduled`.
+
+```js
+oaiq("measure", "lead_created", {
+  type: "customer_action",
+});
+
+oaiq("measure", "registration_completed", {
+  type: "customer_action",
+});
+
+oaiq("measure", "appointment_scheduled", {
+  type: "customer_action",
+  amount: 5000,
+  currency: "USD",
+});
+```
+
+### Subscription and trial events
+
+Use the `plan_enrollment` data shape for `subscription_created` and
+`trial_started`.
+
+```js
+oaiq("measure", "subscription_created", {
+  type: "plan_enrollment",
+  plan_id: "pro_monthly",
+  amount: 2000,
+  currency: "USD",
+});
+
+oaiq("measure", "trial_started", {
+  type: "plan_enrollment",
+  plan_id: "pro_trial",
+});
+```
+
+### Custom events
+
+For a custom event, keep `eventName` as `custom`, set `type` to `custom`, and
+name the event in `eventOptions.custom_event_name`.
+
+```js
+oaiq(
+  "measure",
+  "custom",
+  {
+    type: "custom",
+    amount: 12999,
+    currency: "USD",
+    plan_id: "enterprise_annual",
+  },
+  {
+    custom_event_name: "quote_requested",
+    event_id: "quote_req_123",
+  }
+);
+```
+
+## Deduplicate browser and server events
+
+If you send the same conversion from both the Measurement Pixel and a
+server-side integration, reuse the same `event_id` in both places.
+
+```js
+oaiq(
+  "measure",
+  "order_created",
+  {
+    type: "contents",
+    amount: 2599,
+    currency: "USD",
+  },
+  {
+    event_id: "order_12345",
+  }
+);
+```
+
+The SDK generates an event ID when you omit one, which is enough for
+client-only delivery. When you need deduplication across browser and server
+events, generate the `event_id` yourself and reuse it on the same pixel and server-sent event. For custom events, keep
+the same `custom_event_name` on both sides as well. Deduplication matches on
+your Pixel ID, the event name, and `event_id`. For custom events,
+`custom_event_name` replaces the standard event name in that match.
+
+## What the SDK handles automatically
+
+The Pixel handles several transport details for you:
+
+- It captures `oppref` from the landing page URL, which is a privacy-preserving identifier
+- It stores `oppref` in a first-party `__oppref` cookie so later page views can
+  reuse it.
+- It adds the current page origin as `source_url`.
+- It timestamps each event and batches closely grouped `measure` calls.
+
+No manual configuration of these details is necessary when using the pixel.
+
+## Troubleshooting
+
+- Keep `debug: true` while testing so you can inspect Pixel activity in the
+  browser console.
+- Use integer values for `amount` and `quantity`.
+- Use only the documented fields inside `contents[]`.
+- Always use the pixel on the browser. Do not call the server conversions API directly from page code.
+
+---
+
+# Supported events
+
+## Supported event names
+
+| Event name               | Data type         | Use for                                                            |
+| ------------------------ | ----------------- | ------------------------------------------------------------------ |
+| `appointment_scheduled`  | `customer_action` | A user books a meeting, demo, or consultation.                     |
+| `checkout_started`       | `contents`        | A user starts checkout.                                            |
+| `contents_viewed`        | `contents`        | A user views a product, listing, article, or other content unit.   |
+| `custom`                 | `custom`          | A user-defined event that is not covered by the standard taxonomy. |
+| `items_added`            | `contents`        | A user adds one or more items to a cart, bundle, or selection.     |
+| `lead_created`           | `customer_action` | A user submits a lead form or requests contact.                    |
+| `order_created`          | `contents`        | A purchase is completed.                                           |
+| `page_viewed`            | `contents`        | A user lands on or views an important page.                        |
+| `registration_completed` | `customer_action` | A user finishes an account or event registration flow.             |
+| `subscription_created`   | `plan_enrollment` | A paid subscription starts.                                        |
+| `trial_started`          | `plan_enrollment` | A free trial starts.                                               |
+
+Use `page_viewed` for page loads. Use `contents_viewed` when a user views a
+specific product or content item, including interactions that happen after the
+page has loaded.
+
+## Event data shapes
+
+All event data objects must include a `type` field that matches the event you
+send. If you include an `amount`, also include a `currency`. Send monetary
+values as integers in the currency's lowest denomination, for example `12999`
+for $129.99 with `currency: "USD"`.
+
+### `contents`
+
+| Field      | Required | Type               | Notes                                                             |
+| ---------- | -------- | ------------------ | ----------------------------------------------------------------- |
+| `type`     | Yes      | string             | Must be `contents`.                                               |
+| `amount`   | No       | integer            | Event-level monetary value in the currency's lowest denomination. |
+| `currency` | Depends  | string             | Required when `amount` is present.                                |
+| `contents` | No       | array of `Content` | Items associated with the event.                                  |
+
+### `customer_action`
+
+| Field      | Required | Type    | Notes                                                             |
+| ---------- | -------- | ------- | ----------------------------------------------------------------- |
+| `type`     | Yes      | string  | Must be `customer_action`.                                        |
+| `amount`   | No       | integer | Event-level monetary value in the currency's lowest denomination. |
+| `currency` | Depends  | string  | Required when `amount` is present.                                |
+
+### `plan_enrollment`
+
+| Field      | Required | Type               | Notes                                                             |
+| ---------- | -------- | ------------------ | ----------------------------------------------------------------- |
+| `type`     | Yes      | string             | Must be `plan_enrollment`.                                        |
+| `plan_id`  | No       | string             | Your internal plan identifier.                                    |
+| `amount`   | No       | integer            | Event-level monetary value in the currency's lowest denomination. |
+| `currency` | Depends  | string             | Required when `amount` is present.                                |
+| `contents` | No       | array of `Content` | Optional plan-related items.                                      |
+
+### `custom`
+
+| Field      | Required | Type               | Notes                                                             |
+| ---------- | -------- | ------------------ | ----------------------------------------------------------------- |
+| `type`     | Yes      | string             | Must be `custom`.                                                 |
+| `plan_id`  | No       | string             | Optional plan identifier.                                         |
+| `amount`   | No       | integer            | Event-level monetary value in the currency's lowest denomination. |
+| `currency` | Depends  | string             | Required when `amount` is present.                                |
+| `contents` | No       | array of `Content` | Optional items associated with the custom event.                  |
+
+### `Content`
+
+Use only these fields in each `contents[]` item.
+
+| Field          | Required | Type    | Notes                                                                                                                             |
+| -------------- | -------- | ------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| `id`           | No       | string  | Your internal item identifier.                                                                                                    |
+| `name`         | No       | string  | Human-readable item name.                                                                                                         |
+| `content_type` | No       | string  | Optional non-empty category such as `product`, `plan`, or `page`.                                                                 |
+| `quantity`     | No       | integer | Quantity of the item. Use integers, not strings.                                                                                  |
+| `amount`       | No       | integer | Item-level monetary value in the currency's lowest denomination.                                                                  |
+| `currency`     | No       | string  | Include when you send an item-level `amount`, or rely on the event-level `currency` when one currency applies to the whole event. |
+
+Use lowercase letters, numbers, underscores, or dashes in
+`custom_event_name`. Keep the name between 1 and 64 characters, and do not
+reuse one of the built-in event names.

@@ -23,9 +23,10 @@ You can get the Codex extension from the [Visual Studio Code Marketplace](https:
 - [Download for Visual Studio Code Insiders](https://marketplace.visualstudio.com/items?itemName=openai.chatgpt)
 - [Download for JetBrains IDEs](#jetbrains-ide-integration)
 
-The Codex VS Code extension is available on macOS and Linux. Windows support
-  is experimental. For the best Windows experience, use Codex in a WSL workspace
-  and follow our <a href="/codex/windows">Windows setup guide</a>.
+Codex IDE integrations for VS Code-compatible editors and JetBrains IDEs are
+  available on macOS, Windows, and Linux. On Windows, run Codex natively with
+  the Windows sandbox, or use WSL2 when you need a Linux-native environment. For
+  setup details, see the <a href="/codex/windows">Windows setup guide</a>.
 
 After you install it, you'll find Codex in your editor sidebar.
 In VS Code, Codex opens in the right sidebar by default.
@@ -110,6 +111,14 @@ Use the default model or switch to other models to leverage their respective str
 ### Adjust reasoning effort
 
 Choose `low`, `medium`, or `high` to trade off speed and depth based on the task.
+
+  </BentoContent>
+
+  <BentoContent href="/codex/ide/features#image-generation">
+
+### Image generation
+
+Generate or edit images without leaving your editor, and use reference assets when you need iteration.
 
   </BentoContent>
 

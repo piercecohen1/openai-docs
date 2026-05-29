@@ -41,7 +41,9 @@ download_section() {
 
   # Always re-fetch to catch new/removed pages
   echo "Fetching llms.txt index..."
-  curl -sL "$base_url/llms.txt" \
+  local section_index
+  section_index=$(curl -sL "$base_url/llms.txt")
+  printf '%s\n' "$section_index" \
     | rg -o "$url_regex" \
     | sort -u > "$cache_file"
   echo "Found $(wc -l < "$cache_file" | tr -d ' ') markdown files"

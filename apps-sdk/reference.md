@@ -14,13 +14,13 @@ notifications.
 
 Common messages:
 
-| Category           | MCP Apps method/notification   | Purpose                                                                |
-| ------------------ | ------------------------------ | ---------------------------------------------------------------------- |
-| Tool inputs        | `ui/notifications/tool-input`  | Latest tool input that invoked the UI.                                 |
-| Tool results       | `ui/notifications/tool-result` | Latest tool result (includes `structuredContent`, `content`, `_meta`). |
-| Tool calls         | `tools/call`                   | Call an MCP tool directly from the UI.                                 |
-| Follow-up messages | `ui/message`                   | Ask the host to post a message.                                        |
-| Model context      | `ui/update-model-context`      | Update model-visible context from UI state.                            |
+| Category           | MCP Apps method/notification   | Purpose                                                                                                         |
+| ------------------ | ------------------------------ | --------------------------------------------------------------------------------------------------------------- |
+| Tool inputs        | `ui/notifications/tool-input`  | Latest tool input that invoked the UI. For approval-gated tools, this may arrive after the iframe first mounts. |
+| Tool results       | `ui/notifications/tool-result` | Latest tool result (includes `structuredContent`, `content`, `_meta`).                                          |
+| Tool calls         | `tools/call`                   | Call an MCP tool directly from the UI.                                                                          |
+| Follow-up messages | `ui/message`                   | Ask the host to post a message.                                                                                 |
+| Model context      | `ui/update-model-context`      | Update model-visible context from UI state.                                                                     |
 
 For an overview and a mapping guide from Apps SDK APIs, see
 [MCP Apps compatibility in ChatGPT](https://developers.openai.com/apps-sdk/mcp-apps-in-chatgpt).
@@ -32,20 +32,25 @@ optional ChatGPT extensions.
 
 See [build a ChatGPT UI](https://developers.openai.com/apps-sdk/build/chatgpt-ui) for implementation walkthroughs.
 
+If your tool requires confirmation, treat missing initial `toolInput` as
+expected. ChatGPT does not preload approval-gated arguments into widget globals
+before approval; instead, the host delivers them through
+`ui/notifications/tool-input` once the user approves the call.
+
 ### Capabilities
 
 | Capability          | What it does                                                                                                                                                                     | Typical use                                                                                                                                                                                      |
 | ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| State & data        | `window.openai.toolInput`                                                                                                                                                        | Arguments supplied when the tool was invoked.                                                                                                                                                    |
+| State & data        | `window.openai.toolInput`                                                                                                                                                        | Arguments supplied when the tool was invoked. For approval-gated tools, this may remain `null` until the host sends `ui/notifications/tool-input` after approval.                                |
 | State & data        | `window.openai.toolOutput`                                                                                                                                                       | Your `structuredContent`. Keep fields concise; the model reads them verbatim.                                                                                                                    |
-| State & data        | `window.openai.toolResponseMetadata`                                                                                                                                             | The `_meta` payload; only the widget sees it, never the model.                                                                                                                                   |
+| State & data        | `window.openai.toolResponseMetadata`                                                                                                                                             | Canonical widget-only tool result metadata. In ChatGPT this includes `status`, `call_tool_result`, and `mcp_tool_result`, preserving the full MCP result envelope, including hidden `_meta`.     |
 | State & data        | `window.openai.widgetState`                                                                                                                                                      | Snapshot of UI state persisted between renders.                                                                                                                                                  |
 | State & data        | `window.openai.setWidgetState(state)`                                                                                                                                            | Stores a new snapshot synchronously; call it after every meaningful UI interaction.                                                                                                              |
 | Widget runtime APIs | `window.openai.callTool(name, args)`                                                                                                                                             | Invoke another MCP tool from the widget (mirrors model-initiated calls).                                                                                                                         |
 | Widget runtime APIs | `window.openai.sendFollowUpMessage({ prompt, scrollToBottom })`                                                                                                                  | Ask ChatGPT to post a message authored by the component. `scrollToBottom` is optional, defaults to `true`, and can be set to `false` to prevent auto-scroll.                                     |
 | Widget runtime APIs | `window.openai.uploadFile(file, { library?: boolean })`                                                                                                                          | Upload a user-selected file and receive a `fileId`. Pass `{ library: true }` to also save the upload in the user's ChatGPT file library when that library is available.                          |
 | Widget runtime APIs | `window.openai.selectFiles()`                                                                                                                                                    | Open ChatGPT's file library picker and return app-authorized files as `{ fileId, fileName, mimeType }[]`. Feature-detect this helper because the file library may not be available to all users. |
-| Widget runtime APIs | `window.openai.getFileDownloadUrl({ fileId })`                                                                                                                                   | Retrieve a temporary download URL for a file uploaded by the widget, selected from the file library, or provided via file params.                                                                |
+| Widget runtime APIs | `window.openai.getFileDownloadUrl({ fileId })`                                                                                                                                   | Retrieve a temporary download URL for a file uploaded by the widget, selected from the file library, passed via file params, or returned by tool file references.                                |
 | Widget runtime APIs | `window.openai.requestDisplayMode(...)`                                                                                                                                          | Request PiP/fullscreen modes.                                                                                                                                                                    |
 | Widget runtime APIs | `window.openai.requestModal({ params, template })`                                                                                                                               | Spawn a modal owned by ChatGPT. Omit `template` to use the current template, or pass a registered template URI to switch modal content.                                                          |
 | Widget runtime APIs | `window.openai.requestClose()`                                                                                                                                                   | Ask ChatGPT to close the current widget.                                                                                                                                                         |
@@ -95,13 +100,29 @@ extensions.
 | ------------------------------------------------------- | --------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
 | `window.openai.uploadFile(file, { library?: boolean })` | Upload a user-selected file and receive a `fileId`. | Pass `{ library: true }` to also save the upload in the user's ChatGPT file library when that library is available to the current user. |
 | `window.openai.selectFiles()`                           | Open the file library picker for existing files.    | Returns `[{ fileId, fileName, mimeType }]`. Feature-detect this helper because the file library may not be available to all users.      |
-| `window.openai.getFileDownloadUrl({ fileId })`          | Request a temporary download URL for a file.        | Works for files uploaded by the widget, selected from the file library, or passed via file params.                                      |
+| `window.openai.getFileDownloadUrl({ fileId })`          | Request a temporary download URL for a file.        | Works for files uploaded by the widget, selected from the file library, passed via file params, or returned by tool file references.    |
 
 The ChatGPT file library is optional and may not be available to every user.
 Files returned from `window.openai.selectFiles()` are already authorized for
 the current app when the helper is available. Use the returned `fileId` with
 `window.openai.getFileDownloadUrl({ fileId })` or in a tool input that uses
 file params.
+
+Tool file references use snake case fields:
+
+```json
+{
+  "download_url": "https://...",
+  "file_id": "file_...",
+  "mime_type": "image/png",
+  "file_name": "input.png"
+}
+```
+
+`download_url` and `file_id` are required. `mime_type` and `file_name` are
+optional. Use `file_id` as the `fileId` value for
+`window.openai.getFileDownloadUrl({ fileId })` when a widget needs a fresh
+temporary download URL.
 
 When persisting widget state, use the structured shape (`modelContent`, `privateContent`, `imageIds`) if you want the model to see image IDs during follow-up turns.
 
@@ -111,27 +132,32 @@ Need more background on these fields? Check the [Advanced section of the MCP ser
 
 By default, a tool description should include the fields listed [here](https://modelcontextprotocol.io/specification/2025-06-18/server/tools#tool).
 
+Declare `outputSchema` for any tool that returns `structuredContent`. The
+schema should describe the exact object your tool returns so clients can
+validate results and the model can reason about follow-up tool calls.
+
 ### `_meta` fields on tool descriptor
 
 Use these `_meta` fields on the tool descriptor. Prefer the MCP Apps standard
 key `_meta.ui.resourceUri` for linking a tool to a UI template. ChatGPT supports
 OpenAI-specific metadata for compatibility and optional extensions.
 
-| Key                                       |    Placement    | Type         | Limits                          | Purpose                                                                                                          |
-| ----------------------------------------- | :-------------: | ------------ | ------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
-| `_meta["securitySchemes"]`                | Tool descriptor | array        | None                            | Back-compat mirror for clients that only read `_meta`.                                                           |
-| `_meta.ui.resourceUri`                    | Tool descriptor | string (URI) | None                            | Standard resource URI for the UI template.                                                                       |
-| `_meta.ui.visibility`                     | Tool descriptor | string[]     | default `["model", "app"]`      | Controls whether a tool is available to the model, the UI (app), or both.                                        |
-| `_meta["openai/outputTemplate"]`          | Tool descriptor | string (URI) | None                            | OpenAI-specific optional/compatibility alias for `_meta.ui.resourceUri` in ChatGPT.                              |
-| `_meta["openai/widgetAccessible"]`        | Tool descriptor | boolean      | default `false`                 | OpenAI-specific compatibility field used by existing Apps SDK apps; prefer `_meta.ui.visibility` + `tools/call`. |
-| `_meta["openai/visibility"]`              | Tool descriptor | string       | `public` (default) or `private` | OpenAI-specific compatibility field used by existing Apps SDK apps; prefer `_meta.ui.visibility`.                |
-| `_meta["openai/toolInvocation/invoking"]` | Tool descriptor | string       | ≤ 64 chars                      | Short status text while the tool runs.                                                                           |
-| `_meta["openai/toolInvocation/invoked"]`  | Tool descriptor | string       | ≤ 64 chars                      | Short status text after the tool completes.                                                                      |
-| `_meta["openai/fileParams"]`              | Tool descriptor | string[]     | None                            | List of top-level input fields that represent files (object shape `{ download_url, file_id }`).                  |
+| Key                                       |    Placement    | Type         | Limits                          | Purpose                                                                                                                       |
+| ----------------------------------------- | :-------------: | ------------ | ------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| `_meta["securitySchemes"]`                | Tool descriptor | array        | None                            | Back-compat mirror for clients that only read `_meta`.                                                                        |
+| `_meta.ui.resourceUri`                    | Tool descriptor | string (URI) | None                            | Standard resource URI for the UI template.                                                                                    |
+| `_meta.ui.visibility`                     | Tool descriptor | string[]     | default `["model", "app"]`      | Controls whether a tool is available to the model, the UI (app), or both.                                                     |
+| `_meta["openai/outputTemplate"]`          | Tool descriptor | string (URI) | None                            | OpenAI-specific optional/compatibility alias for `_meta.ui.resourceUri` in ChatGPT.                                           |
+| `_meta["openai/widgetAccessible"]`        | Tool descriptor | boolean      | default `false`                 | OpenAI-specific compatibility field used by existing Apps SDK apps; prefer `_meta.ui.visibility` + `tools/call`.              |
+| `_meta["openai/visibility"]`              | Tool descriptor | string       | `public` (default) or `private` | OpenAI-specific compatibility field used by existing Apps SDK apps; prefer `_meta.ui.visibility`.                             |
+| `_meta["openai/toolInvocation/invoking"]` | Tool descriptor | string       | ≤ 64 chars                      | Short status text while the tool runs.                                                                                        |
+| `_meta["openai/toolInvocation/invoked"]`  | Tool descriptor | string       | ≤ 64 chars                      | Short status text after the tool completes.                                                                                   |
+| `_meta["openai/fileParams"]`              | Tool descriptor | string[]     | None                            | List of top-level input fields that represent files. Each field receives `{ download_url, file_id, mime_type?, file_name? }`. |
 
 Example:
 
 ```ts
+
 
 
 registerAppTool(
@@ -140,10 +166,15 @@ registerAppTool(
   {
     title: "Public Search",
     description: "Search public documents.",
-    inputSchema: {
-      type: "object",
-      properties: { q: { type: "string" } },
-      required: ["q"],
+    inputSchema: { q: z.string() },
+    outputSchema: {
+      results: z.array(
+        z.object({
+          id: z.string(),
+          title: z.string(),
+          url: z.string(),
+        })
+      ),
     },
     securitySchemes: [
       { type: "noauth" },
@@ -161,7 +192,14 @@ registerAppTool(
       "openai/toolInvocation/invoked": "Results ready",
     },
   },
-  async ({ q }) => performSearch(q)
+  async ({ q }) => {
+    const results = await performSearch(q);
+
+    return {
+      structuredContent: { results },
+      content: [{ type: "text", text: `Found ${results.length} results.` }],
+    };
+  }
 );
 ```
 
@@ -181,19 +219,27 @@ These hints only influence how ChatGPT frames the tool call to the user; servers
 Example:
 
 ```ts
+
+
 server.registerTool(
   "list_saved_recipes",
   {
     title: "List saved recipes",
     description: "Returns the user’s saved recipes without modifying them.",
-    inputSchema: {
-      type: "object",
-      properties: {},
-      additionalProperties: false,
+    inputSchema: {},
+    outputSchema: {
+      recipes: z.array(
+        z.object({
+          id: z.string(),
+          title: z.string(),
+        })
+      ),
     },
     annotations: { readOnlyHint: true },
   },
-  async () => fetchSavedRecipes()
+  async () => ({
+    structuredContent: { recipes: await fetchSavedRecipes() },
+  })
 );
 ```
 
@@ -205,29 +251,30 @@ More detail on these resource settings lives in the [Advanced section of the MCP
 
 Set these keys on the resource template that serves your component (`registerResource`). They help ChatGPT describe and frame the rendered iframe without leaking metadata to other clients.
 
-| Key                                   |     Placement     | Type            | Purpose                                                                                                                                                          |
-| ------------------------------------- | :---------------: | --------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `_meta.ui.prefersBorder`              | Resource contents | boolean         | Hint that the component should render inside a bordered card when supported.                                                                                     |
-| `_meta.ui.csp`                        | Resource contents | object          | Define allowlists for the widget: `connectDomains` (network requests), `resourceDomains` (images, fonts, scripts), and optional `frameDomains` (iframe sources). |
-| `_meta.ui.domain`                     | Resource contents | string (origin) | Dedicated origin for hosted components (required for app submission; must be unique per app). Defaults to `https://web-sandbox.oaiusercontent.com`.              |
-| `_meta["openai/widgetDescription"]`   | Resource contents | string          | Human-readable summary surfaced to the model when the component loads, reducing redundant assistant narration.                                                   |
-| `_meta["openai/widgetPrefersBorder"]` | Resource contents | boolean         | OpenAI-specific compatibility alias for `_meta.ui.prefersBorder` in ChatGPT.                                                                                     |
-| `_meta["openai/widgetCSP"]`           | Resource contents | object          | OpenAI-specific compatibility key for CSP metadata in ChatGPT (uses snake_case field names; also supports `redirect_domains` for `openExternal`).                |
-| `_meta["openai/widgetDomain"]`        | Resource contents | string (origin) | OpenAI-specific compatibility alias for `_meta.ui.domain` in ChatGPT.                                                                                            |
+| Key                                   |     Placement     | Type            | Purpose                                                                                                                                                                                           |
+| ------------------------------------- | :---------------: | --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `_meta.ui.prefersBorder`              | Resource contents | boolean         | Hint that the component should render inside a bordered card when supported.                                                                                                                      |
+| `_meta.ui.csp`                        | Resource contents | object          | Preferred metadata surface for standard widget CSP fields: `connectDomains`, `resourceDomains`, and optional `frameDomains`.                                                                      |
+| `_meta.ui.domain`                     | Resource contents | string (origin) | Dedicated origin for hosted components (required for app submission; must be unique per app). Defaults to `https://web-sandbox.oaiusercontent.com`.                                               |
+| `_meta["openai/widgetDescription"]`   | Resource contents | string          | Human-readable summary surfaced to the model when the component loads, reducing redundant assistant narration.                                                                                    |
+| `_meta["openai/widgetPrefersBorder"]` | Resource contents | boolean         | OpenAI-specific compatibility alias for `_meta.ui.prefersBorder` in ChatGPT.                                                                                                                      |
+| `_meta["openai/widgetCSP"]`           | Resource contents | object          | Legacy ChatGPT compatibility key for widget CSP metadata. Standard CSP fields are superseded by `_meta.ui.csp`, but `redirect_domains` is still required for trusted `openExternal` destinations. |
+| `_meta["openai/widgetDomain"]`        | Resource contents | string (origin) | OpenAI-specific compatibility alias for `_meta.ui.domain` in ChatGPT.                                                                                                                             |
 
-The standard `_meta.ui.csp` object supports:
-
-- `connectDomains`: `string[]`. Domains the widget may contact via fetch/XHR.
-- `resourceDomains`: `string[]`. Domains for static assets (images, fonts, scripts, styles).
-- `frameDomains?`: `string[]`. Optional list of origins allowed for iframe embeds. By default, widgets can't render subframes; adding `frameDomains` opts in to iframe usage and triggers stricter app review.
-
-ChatGPT also supports the legacy `_meta["openai/widgetCSP"]` compatibility key
-with snake_case field names:
+ChatGPT supports the legacy `_meta["openai/widgetCSP"]` compatibility key with the following snake_case field names:
 
 - `connect_domains`: `string[]`
 - `resource_domains`: `string[]`
 - `frame_domains?`: `string[]`
 - `redirect_domains?`: `string[]`. ChatGPT extension for `window.openai.openExternal` redirect targets.
+
+The standard `_meta.ui.csp` object is generally preferred for new apps and supports:
+
+- `connectDomains`: `string[]`. Domains the widget may contact via fetch/XHR.
+- `resourceDomains`: `string[]`. Domains for static assets (images, fonts, scripts, styles).
+- `frameDomains?`: `string[]`. Optional list of origins allowed for iframe embeds. By default, widgets can't render subframes; adding `frameDomains` opts in to iframe usage and triggers stricter app review.
+
+However, `_meta.ui.csp` does not support `redirect_domains` for `window.openai.openExternal(...)` links. To allowlist redirect targets, you must still set `_meta["openai/widgetCSP"].redirect_domains`.
 
 ## Tool results
 
@@ -254,12 +301,22 @@ Example:
 ```ts
 
 
+
 registerAppTool(
   server,
   "get_zoo_animals",
   {
     title: "get_zoo_animals",
     inputSchema: { count: z.number().int().min(1).max(20).optional() },
+    outputSchema: {
+      animals: z.array(
+        z.object({
+          id: z.string(),
+          name: z.string(),
+          species: z.string(),
+        })
+      ),
+    },
     _meta: { ui: { resourceUri: "ui://widget/widget.html" } },
   },
   async ({ count = 10 }) => {
@@ -304,19 +361,30 @@ Operation-phase `_meta["openai/userAgent"]` and `_meta["openai/userLocation"]` a
 Example:
 
 ```ts
+
+
 server.registerTool(
   "recommend_cafe",
   {
     title: "Recommend a cafe",
-    inputSchema: { type: "object" },
+    inputSchema: {},
+    outputSchema: {
+      cafes: z.array(
+        z.object({
+          name: z.string(),
+          address: z.string(),
+        })
+      ),
+    },
   },
   async (_args, { _meta }) => {
     const locale = _meta?.["openai/locale"] ?? "en";
     const location = _meta?.["openai/userLocation"]?.city;
+    const cafes = await findNearbyCafes(location);
 
     return {
       content: [{ type: "text", text: formatIntro(locale, location) }],
-      structuredContent: await findNearbyCafes(location),
+      structuredContent: { cafes },
     };
   }
 );

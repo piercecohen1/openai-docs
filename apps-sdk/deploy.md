@@ -19,13 +19,13 @@ Keep the tunnel running while you iterate on your connector. When you change cod
 
 Once you have a working MCP server and component bundle, host them behind a stable HTTPS endpoint. The key requirements are low-latency streaming responses on `/mcp`, dependable TLS, and the ability to surface logs and metrics when something goes wrong.
 
-### Alpic
+### Manufact
 
-[Alpic](https://alpic.ai/) maintains a ready-to-deploy Apps SDK starter that bundles an Express MCP server and a React widget workspace.
+[Manufact](https://manufact.com/) maintains `mcp-use`, a community MCP framework for building MCP servers, clients, agents, and app widgets in TypeScript and Python.
 
-It includes a one-click deploy button that provisions a hosted endpoint, then you can paste the resulting URL into ChatGPT connector settings to go live.
+For ChatGPT apps, `mcp-use` can generate MCP Apps metadata with ChatGPT-compatible fields. It also includes a local inspector for testing tools and widgets, and supports deployment through Manufact Cloud. Use the OpenAI Apps SDK docs as the canonical reference for ChatGPT behavior, metadata, and review requirements.
 
-If you want a reference implementation with HMR for widgets plus a production deployment path, the [Alpic template](https://github.com/alpic-ai/apps-sdk-template) is a fast way to start.
+See the [`mcp-use` MCP Apps docs](https://manufact.com/docs/typescript/server/mcp-apps) and [`create-mcp-use-app`](https://manufact.com/docs/typescript/getting-started) to get started.
 
 ### Vercel
 
@@ -33,6 +33,22 @@ Vercel is another strong fit when you want quick deploys, preview environments f
 [They have announced support for ChatGPT Apps hosting](https://vercel.com/changelog/chatgpt-apps-support-on-vercel), so you can ship MCP endpoints alongside your frontend and use Vercel previews to validate connector behavior before promoting to production.
 
 You can use their Next.js [starter template](https://vercel.com/templates/ai/chatgpt-app-with-next-js) to get started.
+
+### Alpic
+
+[Alpic](https://alpic.ai/) maintains [Skybridge](https://skybridge.tech), an open-source TypeScript framework for ChatGPT and MCP Apps. Skybridge provides a full development environment with a local emulator, HMR and persistent tunnel to easily test your app inside ChatGPT. It also provides React hooks and higher-level abstractions to handle the state of your widgets and synchronize it with the model, as well as a compatibility layer to help your app work across all MCP clients.
+
+Alpic also provides a one-click deploy solution with [Alpic Cloud](https://app.alpic.ai/) and an [auditing tool](https://beacon.alpic.ai/) to check how ready your app is for publication in the store.
+
+If you’re looking for a reference implementation with HMR for widgets plus a production deployment path, the [Skybridge starter kit](https://docs.skybridge.tech/quickstart/create-new-app) gets you up and running fast.
+
+### MCPcat
+
+To understand what your users are doing with your MCP server after deployment, [MCPcat](https://mcpcat.io/) maintains open-source SDKs that work with any ChatGPT app, regardless of how it's hosted.
+
+On top of tool call and session metrics, MCPcat infers the user’s goal for each session, so you can see the actual workflows your app supports.
+
+You can use their [TypeScript](https://github.com/mcpcat/mcpcat-typescript-sdk), [Python](https://github.com/mcpcat/mcpcat-python-sdk), or [Go](https://github.com/mcpcat/mcpcat-go-sdk) SDK to get started.
 
 ### Other hosting options
 
@@ -62,4 +78,4 @@ When you are ready for production, update metadata, confirm auth and storage are
 
 - Validate tooling and telemetry with the [Test your integration](https://developers.openai.com/apps-sdk/deploy/testing) guide.
 - Keep a troubleshooting playbook handy via [Troubleshooting](https://developers.openai.com/apps-sdk/deploy/troubleshooting) so on-call responders can quickly diagnose issues.
-- Submit your app through the current review flow – learn more in the [Submit your app](https://developers.openai.com/apps-sdk/deploy/submission) guide.
+- Submit your app through the current review flow. Learn more in the [Submit your app](https://developers.openai.com/apps-sdk/deploy/submission) guide.
