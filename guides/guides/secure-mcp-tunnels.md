@@ -38,9 +38,32 @@ The private MCP server does not need a public listener. The OpenAI-hosted endpoi
 You need:
 
 - A `tunnel_id` from [Platform tunnel settings](https://platform.openai.com/settings/organization/tunnels).
-- A runtime API key for `tunnel-client`. The key principal needs Tunnels **Read** + **Use** for the target tunnel.
-- A tunnel manager with Tunnels **Read** + **Manage** if you need to create or edit tunnel metadata.
+- A runtime API key for `tunnel-client`.
 - An MCP server that `tunnel-client` can reach over stdio or HTTP from inside your network.
+
+## Permissions and access
+
+[Platform tunnel permissions](https://developers.openai.com/api/docs/guides/rbac) and ChatGPT developer-mode access are separate:
+
+- Creating or editing a tunnel requires Tunnels **Read** + **Manage**.
+- Running `tunnel-client` or selecting the tunnel in connector settings requires Tunnels **Read** + **Use**.
+- Tunnel permissions apply to a Platform organization. A Platform organization owner or RBAC administrator grants the tunnel role.
+- ChatGPT developer mode is a separate workspace permission. For Enterprise/Edu, a workspace admin grants **Permissions & Roles** > **Connected Data** > **Developer mode / Create custom MCP connectors**; the user then enables it in **Settings** > **Apps** > **Advanced Settings**. See the [developer-mode Help Center article](https://help.openai.com/en/articles/12584461-developer-mode-apps-and-full-mcp-connectors-in-chatgpt-beta) for plan-specific policy.
+
+Ask the target ChatGPT workspace admin for developer-mode access, and ask the target Platform organization owner/RBAC admin for tunnel permissions.
+
+## Associate tunnels with the right organizations and workspaces
+
+A tunnel can be associated with one or more Platform organizations or ChatGPT workspaces. Use these associations to define every OpenAI context that should be allowed to find or use the tunnel.
+
+- Include the Platform organization that owns or manages the tunnel.
+- Include the ChatGPT workspace that should list the tunnel in connector settings.
+- Include another Platform organization when Codex, the Responses API, or another supported product will call the private MCP server from that organization.
+- Use the same `tunnel_id` for `tunnel-client`; adding organizations or workspaces does not create a second tunnel or change the private MCP server endpoint.
+
+For personal accounts, use the personal Platform organization that belongs to that account. For ChatGPT and Codex testing, associate the tunnel with the target ChatGPT workspace and the Platform organization that Codex will use. A tunnel associated only with a personal Platform organization doesn't automatically appear in an Enterprise/Edu workspace.
+
+If the Platform organization and ChatGPT workspace are already linked, you can add the missing organization or workspace in [Platform tunnel settings](https://platform.openai.com/settings/organization/tunnels). If your enterprise setup can't be verified automatically, such as when the Platform organization has no corresponding ChatGPT workspace, contact your OpenAI account team to request a reviewed manual association override for the enterprise account mapping that should use the tunnel.
 
 ## Network requirements
 
@@ -95,7 +118,7 @@ Run `tunnel-client` in the same trust boundary that can already reach the privat
 
 Open [ChatGPT connector settings](https://chatgpt.com/#settings/Connectors), create a custom connector, and choose **Tunnel** under **Connection**. Select an available tunnel when ChatGPT lists it, or paste a valid `tunnel_id` if you already have one.
 
-If the tunnel does not appear in ChatGPT, verify that the tunnel is associated with the target workspace and that the connector operator has Tunnels **Read** + **Use**.
+If the tunnel does not appear in ChatGPT, verify that the tunnel is associated with the target ChatGPT workspace, not only with a Platform organization, and that the connector operator has Tunnels **Read** + **Use**.
 
 ## Security and networking
 
@@ -112,6 +135,14 @@ If the tunnel does not appear in ChatGPT, verify that the tunnel is associated w
 - Tunnel access follows the existing organization and workspace context instead of introducing a separate public ingress path.
 - `tunnel-client` supports enterprise networking requirements such as outbound proxies, custom CA bundles, control-plane client certificates, and MCP-side `mTLS`.
 
+### Logging boundaries
+
+Secure MCP Tunnel separates tunnel transport from app-level product logging:
+
+- Tunnel control-plane auth, long-poll / response traffic, and individual tunnel transport requests are not emitted as ChatGPT Compliance Platform app events by the tunnel path.
+- Tunnel metadata changes are exposed through the API Platform [Audit logs](https://developers.openai.com/api/reference/resources/admin/subresources/organization/subresources/audit_logs) surface as `tunnel.created`, `tunnel.updated`, and `tunnel.deleted`.
+- When ChatGPT reaches a custom app through Secure MCP Tunnel, the tunnel remains only the transport path. Normal app-level compliance logging still applies on the app path, including app invocation logs and app auth lifecycle logs such as `APP_AUTH_LOG` when the app is linked or unlinked.
+
 ## Advanced: allowlisted HTTP callouts
 
 Secure MCP Tunnel can also support narrowly scoped HTTP callouts from supported agent or API flows into a customer network. `tunnel-client` includes an embedded MCP server, Harpoon, that exposes configured HTTP targets by label and lets callers invoke them through the tunnel with bounded request/response limits.
@@ -120,7 +151,8 @@ Use this when you need to reach a small set of private REST endpoints without ex
 
 ## Troubleshooting
 
-- **Tunnel not visible in ChatGPT:** Check the tunnel workspace scope and the connector operator's Tunnels **Use** permission.
+- **“Tunnels access required” in Platform tunnel settings:** Tunnel permissions are organization-level, not project-level. Select the intended Platform organization, then ask an organization owner or RBAC administrator to add you to a role or group with **Read** to view tunnels, or **Read** + **Manage** to create, edit, or delete them. If no matching role exists, they can create one, assign it to a group, and add you to that group. You also need **Use** to run `tunnel-client` or select a tunnel in connector settings. Allow up to 30 minutes for a new role assignment to propagate.
+- **Tunnel not visible in ChatGPT:** Check that the tunnel includes the target ChatGPT workspace, not only a Platform organization; then check the connector operator's Tunnels **Use** permission. If the workspace cannot be linked automatically for an enterprise account, contact your OpenAI account team for a reviewed manual association override.
 - **Connector discovery or tool calls fail:** Confirm that `tunnel-client run ...` is still running, then re-run `tunnel-client doctor --profile <name> --explain`.
 - **You can inspect a tunnel but cannot edit it:** The operator likely has Tunnels **Read** but not Tunnels **Manage**.
 - `tunnel-client` exposes `/healthz`, `/readyz`, `/metrics`, and a local admin UI at `/ui`.

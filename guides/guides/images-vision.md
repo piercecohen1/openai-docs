@@ -37,7 +37,7 @@ import OpenAI from "openai";
 const openai = new OpenAI();
 
 const response = await openai.responses.create({
-    model: "gpt-4.1-mini",
+    model: "gpt-5.5",
     input: "Generate an image of gray tabby cat hugging an otter with an orange scarf",
     tools: [{type: "image_generation"}],
 });
@@ -61,12 +61,12 @@ import base64
 client = OpenAI() 
 
 response = client.responses.create(
-    model="gpt-4.1-mini",
+    model="gpt-5.5",
     input="Generate an image of gray tabby cat hugging an otter with an orange scarf",
     tools=[{"type": "image_generation"}],
 )
 
-// Save the image to a file
+# Save the image to a file
 image_data = [
     output.result
     for output in response.output
@@ -80,9 +80,9 @@ if image_data:
 ```
 
 ```cli
-openai responses create \\
-  --model gpt-5.5 \\
-  --raw-output \\
+openai responses create \
+  --model gpt-5.5 \
+  --raw-output \
   --transform 'output.#(type=="image_generation_call").result' <<'YAML' | base64 --decode > cat_and_otter.png
 tools:
   - type: image_generation
@@ -132,7 +132,7 @@ import OpenAI from "openai";
 const openai = new OpenAI();
 
 const response = await openai.responses.create({
-    model: "gpt-4.1-mini",
+    model: "gpt-5.5",
     input: [{
         role: "user",
         content: [
@@ -154,7 +154,7 @@ from openai import OpenAI
 client = OpenAI()
 
 response = client.responses.create(
-    model="gpt-4.1-mini",
+    model="gpt-5.5",
     input=[{
         "role": "user",
         "content": [
@@ -174,7 +174,7 @@ print(response.output_text)
 using OpenAI.Responses;
 
 string key = Environment.GetEnvironmentVariable("OPENAI_API_KEY")!;
-OpenAIResponseClient client = new(model: "gpt-5", apiKey: key);
+OpenAIResponseClient client = new(model: "gpt-5.5", apiKey: key);
 
 Uri imageUrl = new("https://api.nga.gov/iiif/a2e6da57-3cd1-4235-b20e-95dcaefed6c8/full/!800,800/0/default.jpg");
 
@@ -189,11 +189,11 @@ Console.WriteLine(response.GetOutputText());
 ```
 
 ```bash
-curl https://api.openai.com/v1/responses \\
-  -H "Content-Type: application/json" \\
-  -H "Authorization: Bearer $OPENAI_API_KEY" \\
+curl https://api.openai.com/v1/responses \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $OPENAI_API_KEY" \
   -d '{
-    "model": "gpt-4.1-mini",
+    "model": "gpt-5.5",
     "input": [
       {
         "role": "user",
@@ -210,9 +210,9 @@ curl https://api.openai.com/v1/responses \\
 ```
 
 ```cli
-openai responses create \\
-  --model gpt-5.5 \\
-  --raw-output \\
+openai responses create \
+  --model gpt-5.5 \
+  --raw-output \
   --transform 'output.#(type=="message").content.0.text' <<'YAML'
 input:
   - role: user
@@ -239,7 +239,7 @@ const imagePath = "path_to_your_image.jpg";
 const base64Image = fs.readFileSync(imagePath, "base64");
 
 const response = await openai.responses.create({
-    model: "gpt-4.1-mini",
+    model: "gpt-5.5",
     input: [
         {
             role: "user",
@@ -247,7 +247,7 @@ const response = await openai.responses.create({
                 { type: "input_text", text: "what's in this image?" },
                 {
                     type: "input_image",
-                    image_url: \`data:image/jpeg;base64,\${base64Image}\`,
+                    image_url: `data:image/jpeg;base64,${base64Image}`,
                 },
             ],
         },
@@ -277,7 +277,7 @@ base64_image = encode_image(image_path)
 
 
 response = client.responses.create(
-    model="gpt-4.1",
+    model="gpt-5.5",
     input=[
         {
             "role": "user",
@@ -299,7 +299,7 @@ print(response.output_text)
 using OpenAI.Responses;
 
 string key = Environment.GetEnvironmentVariable("OPENAI_API_KEY")!;
-OpenAIResponseClient client = new(model: "gpt-5", apiKey: key);
+OpenAIResponseClient client = new(model: "gpt-5.5", apiKey: key);
 
 Uri imageUrl = new("https://openai-documentation.vercel.app/images/cat_and_otter.png");
 using HttpClient http = new();
@@ -354,7 +354,7 @@ async function createFile(filePath) {
 const fileId = await createFile("path_to_your_image.jpg");
 
 const response = await openai.responses.create({
-  model: "gpt-4.1-mini",
+  model: "gpt-5.5",
   input: [
     {
       role: "user",
@@ -390,7 +390,7 @@ def create_file(file_path):
 file_id = create_file("path_to_your_image.jpg")
 
 response = client.responses.create(
-    model="gpt-4.1-mini",
+    model="gpt-5.5",
     input=[{
         "role": "user",
         "content": [
@@ -411,7 +411,7 @@ using OpenAI.Files;
 using OpenAI.Responses;
 
 string key = Environment.GetEnvironmentVariable("OPENAI_API_KEY")!;
-OpenAIResponseClient client = new(model: "gpt-5", apiKey: key);
+OpenAIResponseClient client = new(model: "gpt-5.5", apiKey: key);
 
 string filename = "cat_and_otter.png";
 Uri imageUrl = new($"https://openai-documentation.vercel.app/images/{filename}");
@@ -473,7 +473,17 @@ The `detail` parameter tells the model what level of detail to use when processi
 
 
 
-  Use the following guidance to choose a detail level:
+  ```plain
+{
+    "type": "input_image",
+    "image_url": "https://api.nga.gov/iiif/a2e6da57-3cd1-4235-b20e-95dcaefed6c8/full/!800,800/0/default.jpg",
+    "detail": "original"
+}
+```
+
+
+
+Use the following guidance to choose a detail level:
 
 | Detail level | Best for                                                                                                                                       |
 | ------------ | ---------------------------------------------------------------------------------------------------------------------------------------------- |

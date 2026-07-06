@@ -33,19 +33,24 @@ You can also sign in to the Codex app, CLI, or IDE Extension with an API key. Ge
 
 OpenAI bills API key usage through your OpenAI Platform account at standard API rates. See the [API pricing page](https://openai.com/api/pricing/).
 
-Features that rely on ChatGPT credits, such as [fast mode](https://developers.openai.com/codex/speed), are
-available only when you sign in with ChatGPT. If you sign in with an API key,
-Codex uses standard API pricing instead.
+API key authentication supports local Codex workflows, but some features that
+rely on ChatGPT workspace access or cloud services are limited or unavailable.
+Compare support by plan in
+[Feature availability](https://developers.openai.com/codex/pricing#feature-availability).
+
+When you sign in with an API key, Codex uses standard API pricing instead of
+included ChatGPT plan credits.
 
 We recommend API key authentication for programmatic Codex CLI workflows, such
 as CI/CD jobs. Don't expose Codex execution in untrusted or public environments.
 
 ### Use Codex access tokens for enterprise automation
 
-In ChatGPT Enterprise workspaces, admins can allow permitted members to create
-Codex access tokens for trusted, non-interactive Codex local workflows. Use an
-access token when automation needs ChatGPT workspace access, ChatGPT-managed
-Codex entitlements, or enterprise workspace controls without a browser sign-in.
+In ChatGPT Enterprise workspaces, admins can grant the access token
+permission so permitted members can create Codex access tokens for trusted,
+non-interactive Codex local workflows. Use an access token when automation
+needs ChatGPT workspace access, ChatGPT-managed Codex entitlements, or
+enterprise workspace controls without a browser sign-in.
 
 Access tokens are intended for trusted scripts, schedulers, and private CI
 runners. For general OpenAI API calls, continue to use Platform API keys.

@@ -13,6 +13,8 @@ Extend what Codex can do, for example:
 - Install the Google Drive plugin to work across Drive, Docs, Sheets, and
   Slides.
 - Install the Slack plugin to summarize channels or draft replies.
+- Install [Sites](https://developers.openai.com/codex/sites) to create and deploy hosted websites,
+  web apps, and games.
 
 A plugin can contain:
 
@@ -158,5 +160,7 @@ guidance.
 
 ## Plugin guides
 
-- [Codex Security plugin](https://developers.openai.com/codex/security/plugin): Scan authorized code,
-  confirm findings, and prepare reviewed fixes.
+- [Record & Replay](https://developers.openai.com/codex/record-and-replay): Show Codex a workflow
+  once and turn it into a reusable skill.
+- [Codex Security plugin quickstart](https://developers.openai.com/codex/security/plugin): Install the
+  plugin, scan authorized code, and review the result.

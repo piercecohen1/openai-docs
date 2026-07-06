@@ -67,10 +67,11 @@ curl -X POST "https://api.openai.com/v1/realtime/calls/$CALL_ID/accept" \
   -H "Content-Type: application/json" \
   -d '{
         "type": "realtime",
-        "model": "gpt-realtime-2",
+        "model": "gpt-realtime-2.1",
         "instructions": "You are Alex, a friendly concierge for Example Corp."
       }'
 ```
+
 
 The request path must include the `call_id` from the
 [`realtime.call.incoming`](https://developers.openai.com/api/docs/api-reference/webhook-events/realtime/call/incoming)
@@ -92,6 +93,7 @@ curl -X POST "https://api.openai.com/v1/realtime/calls/$CALL_ID/reject" \
   -H "Content-Type: application/json" \
   -d '{"status_code": 486}'
 ```
+
 
 If no status code is supplied the API uses `603 Decline` by default. A
 successful request responds with `200 OK` after OpenAI delivers the SIP
@@ -125,7 +127,7 @@ track progress. See [Webhooks and server-side controls](https://developers.opena
 for more information.
 
 ```javascript
-
+import WebSocket from "ws";
 
 const callId = "rtc_u1_9c6574da8b8a41a18da9308f4ad974ce";
 const ws = new WebSocket(`wss://api.openai.com/v1/realtime?call_id=${callId}`, {
@@ -143,6 +145,7 @@ ws.on("open", () => {
 });
 ```
 
+
 ## Redirect the call
 
 Transfer an active call using the
@@ -157,6 +160,7 @@ curl -X POST "https://api.openai.com/v1/realtime/calls/$CALL_ID/refer" \
   -d '{"target_uri": "tel:+14155550123"}'
 ```
 
+
 OpenAI returns `200 OK` once the REFER is relayed to your SIP provider. The
 downstream system handles the rest of the call flow for the caller.
 
@@ -170,6 +174,7 @@ terminate both SIP and WebRTC realtime sessions.
 curl -X POST "https://api.openai.com/v1/realtime/calls/$CALL_ID/hangup" \
   -H "Authorization: Bearer $OPENAI_API_KEY"
 ```
+
 
 The API responds with `200 OK` when it starts tearing down the call.
 
@@ -217,7 +222,7 @@ AUTH_HEADER = {
 call_accept = {
     "type": "realtime",
     "instructions": "You are a support agent.",
-    "model": "gpt-realtime-2",
+    "model": "gpt-realtime-2.1",
 }
 
 response_create = {

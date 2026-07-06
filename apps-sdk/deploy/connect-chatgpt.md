@@ -36,7 +36,28 @@ Once your connector is created, you can try it out in a new ChatGPT conversation
 3. Choose the connector for your app in the list of available tools. This will add your app to the conversation context for the model to use.
 4. Prompt the model to invoke tools by saying related to your app. For example, “What are my available tasks?” for a Kanban board app.
 
-ChatGPT will display tool-call payloads in the UI so you can confirm inputs and outputs. Write tools will require manual confirmation unless you choose to remember approvals for the conversation.
+ChatGPT uses each app's tool annotations and the user's app permission settings to
+decide when to request confirmation. Users can choose one of three permission
+levels:
+
+- **Always ask**: Ask before retrieving information or making changes.
+- **Ask before making changes**: Retrieve information automatically, but ask
+  before making changes.
+- **Ask only before important changes** (default): Retrieve information and make
+  routine changes automatically, but ask before consequential changes such as
+  sending, deleting, posting, or purchasing.
+
+For personal accounts, users can set a global permission level or override it for
+an individual app in **Settings > Apps**. Eligible confirmation prompts also
+offer **Always allow**, which remembers the user's permission for that app.
+
+For Business and Enterprise workspaces, admins control the workspace default and
+per-app overrides. Members don't see **Always allow**. Admins can update the
+workspace default in **Workspace settings > Permissions & roles > Connected
+data**, or configure an individual app from **Admin Apps > App permissions**.
+
+These settings apply to connected apps in ChatGPT. Apps authenticated in Codex
+use separate permission controls.
 
 ## Refreshing metadata
 
@@ -45,6 +66,8 @@ Whenever you change your tools list or descriptions, you can refresh your MCP se
 1. Update your MCP server and redeploy it (unless you are using a local server).
 2. In **Settings → Connectors**, click into your connector and choose **Refresh**.
 3. Verify the tool list updates and try a few prompts to test the updated flows.
+
+This refresh flow applies to developer mode connectors. Published apps use reviewed [app version snapshots](https://developers.openai.com/apps-sdk/deploy/submission#how-published-app-versions-work). To update a published app's tools or metadata, scan, submit, and publish a new app version.
 
 ## Using other clients
 

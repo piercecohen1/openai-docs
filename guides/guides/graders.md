@@ -2,6 +2,10 @@
 
 Graders are a way to evaluate your model's performance against reference answers. Our [graders API](https://developers.openai.com/api/docs/api-reference/graders) is a way to test your graders, experiment with results, and improve your fine-tuning or evaluation framework to get the results you want.
 
+OpenAI is deprecating graders as part of the evals and fine-tuning workflows
+  they support. See the [deprecations page](https://developers.openai.com/api/docs/deprecations) for the
+  current transition timelines.
+
 ## Overview
 
 Graders let you compare reference answers to the corresponding model-generated answer and return a grade in the range from 0 to 1. It's sometimes helpful to give the model partial credit for an answer, rather than a binary 0 or 1.
@@ -227,6 +231,7 @@ response = requests.post(
 print("run response:", response.text)
 ```
 
+
 #### Score model grader outputs
 
 Under the hood, the `score_model` grader will query the requested model with the provided prompt and sampling parameters and will request a response in a specific response format. The response format that is used is provided below
@@ -384,6 +389,7 @@ response = requests.post(
 print("run request_id:", response.headers["x-request-id"])
 print("run response:", response.text)
 ```
+
 
 **Tip:**
 If you don't want to manually put your grading function in a string, you can also load it from a Python file using `importlib` and `inspect`. For example, if your grader function is in a file named `grader.py`, you can do:

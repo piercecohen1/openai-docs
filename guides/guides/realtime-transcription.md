@@ -1,12 +1,5 @@
 # Realtime transcription
 
-import {
-  Bolt,
-  Cube,
-  Desktop,
-  Phone,
-} from "@components/react/oai/platform/ui/Icon.react";
-
 Use realtime transcription when your application needs live speech-to-text without a spoken assistant response. Realtime transcription sessions stream transcript deltas as audio arrives, so users can see text before the full utterance is complete.
 
 For the lowest-latency streaming transcription path, use [`gpt-realtime-whisper`](https://developers.openai.com/api/docs/models/gpt-realtime-whisper). For offline files or workflows that don't need streaming deltas, use the standard speech-to-text models in the Audio API.
@@ -87,6 +80,7 @@ Realtime transcription uses a session with `type: "transcription"`. You can conn
 }
 ```
 
+
 ### Session fields
 
 - `type`: Set to `transcription` for transcription-only sessions.
@@ -109,6 +103,7 @@ ws.send(
 );
 ```
 
+
 If you disable turn detection, commit the buffer when you want transcription to begin:
 
 ```javascript
@@ -118,6 +113,7 @@ ws.send(
   })
 );
 ```
+
 
 For models that support server VAD, the session commits audio automatically when it detects a turn boundary.
 
@@ -138,6 +134,7 @@ ws.on("message", (data) => {
   }
 });
 ```
+
 
 A delta event contains newly available transcript text:
 
@@ -215,6 +212,7 @@ When log probabilities are available, request them with `include`:
   }
 }
 ```
+
 
 ## Production checklist
 

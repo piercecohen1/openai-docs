@@ -29,6 +29,8 @@ The Responses API image generation tool uses its own GPT Image model selection. 
 - If you only need to generate or edit a single image from one prompt, the Image API is your best choice.
 - If you want to build conversational, editable image experiences with GPT Image, go with the Responses API.
 
+With the Image API, you choose a GPT Image model directly. With the Responses API, you choose a mainline model that supports the image generation tool; the tool handles GPT Image model selection. Responses API requests include the mainline model's token usage in addition to image generation costs.
+
 Both APIs let you [customize output](#customize-image-output) by adjusting quality, size, format, and compression. Transparent backgrounds depend on model support.
 
 This guide focuses on GPT Image.
@@ -61,7 +63,74 @@ You can set the `n` parameter to generate multiple images at once in a single re
 
 
 
-<div data-content-switcher-pane data-value="responses">
+<div data-content-switcher-pane data-value="image">
+    <div class="hidden">Image API</div>
+    Generate an image
+
+```javascript
+import OpenAI from "openai";
+import fs from "fs";
+const openai = new OpenAI();
+
+const prompt = `
+A children's book drawing of a veterinarian using a stethoscope to 
+listen to the heartbeat of a baby otter.
+`;
+
+const result = await openai.images.generate({
+    model: "gpt-image-2",
+    prompt,
+});
+
+// Save the image to a file
+const image_base64 = result.data[0].b64_json;
+const image_bytes = Buffer.from(image_base64, "base64");
+fs.writeFileSync("otter.png", image_bytes);
+```
+
+```python
+from openai import OpenAI
+import base64
+client = OpenAI()
+
+prompt = """
+A children's book drawing of a veterinarian using a stethoscope to 
+listen to the heartbeat of a baby otter.
+"""
+
+result = client.images.generate(
+    model="gpt-image-2",
+    prompt=prompt
+)
+
+image_base64 = result.data[0].b64_json
+image_bytes = base64.b64decode(image_base64)
+
+# Save the image to a file
+with open("otter.png", "wb") as f:
+    f.write(image_bytes)
+```
+
+```bash
+curl -X POST "https://api.openai.com/v1/images/generations" \
+    -H "Authorization: Bearer $OPENAI_API_KEY" \
+    -H "Content-type: application/json" \
+    -d '{
+        "model": "gpt-image-2",
+        "prompt": "A children'\''s book drawing of a veterinarian using a stethoscope to listen to the heartbeat of a baby otter."
+    }' | jq -r '.data[0].b64_json' | base64 --decode > otter.png
+```
+
+```cli
+openai images generate \
+  --model gpt-image-2 \
+  --prompt "A children's book drawing of a veterinarian using a stethoscope to listen to the heartbeat of a baby otter." \
+  --raw-output \
+  --transform 'data.0.b64_json' | base64 --decode > otter.png
+```
+
+  </div>
+  <div data-content-switcher-pane data-value="responses" hidden>
     <div class="hidden">Responses API</div>
     Generate an image
 
@@ -110,73 +179,6 @@ if image_data:
     image_base64 = image_data[0]
     with open("otter.png", "wb") as f:
         f.write(base64.b64decode(image_base64))
-```
-
-  </div>
-  <div data-content-switcher-pane data-value="image" hidden>
-    <div class="hidden">Image API</div>
-    Generate an image
-
-```javascript
-import OpenAI from "openai";
-import fs from "fs";
-const openai = new OpenAI();
-
-const prompt = \`
-A children's book drawing of a veterinarian using a stethoscope to 
-listen to the heartbeat of a baby otter.
-\`;
-
-const result = await openai.images.generate({
-    model: "gpt-image-2",
-    prompt,
-});
-
-// Save the image to a file
-const image_base64 = result.data[0].b64_json;
-const image_bytes = Buffer.from(image_base64, "base64");
-fs.writeFileSync("otter.png", image_bytes);
-```
-
-```python
-from openai import OpenAI
-import base64
-client = OpenAI()
-
-prompt = """
-A children's book drawing of a veterinarian using a stethoscope to 
-listen to the heartbeat of a baby otter.
-"""
-
-result = client.images.generate(
-    model="gpt-image-2",
-    prompt=prompt
-)
-
-image_base64 = result.data[0].b64_json
-image_bytes = base64.b64decode(image_base64)
-
-# Save the image to a file
-with open("otter.png", "wb") as f:
-    f.write(image_bytes)
-```
-
-```bash
-curl -X POST "https://api.openai.com/v1/images/generations" \\
-    -H "Authorization: Bearer $OPENAI_API_KEY" \\
-    -H "Content-type: application/json" \\
-    -d '{
-        "model": "gpt-image-2",
-        "prompt": "A childrens book drawing of a veterinarian using a stethoscope to listen to the heartbeat of a baby otter."
-    }' | jq -r '.data[0].b64_json' | base64 --decode > otter.png
-```
-
-```cli
-openai images generate \\
-  --model gpt-image-2 \\
-  --prompt "A childrens book drawing of a veterinarian using a stethoscope to listen to the heartbeat of a baby otter." \\
-  --raw-output \\
-  --transform 'data.0.b64_json' | base64 --decode > otter.png
 ```
 
   </div>
@@ -513,6 +515,11 @@ import OpenAI from "openai";
 import fs from "fs";
 const openai = new OpenAI();
 
+function saveBase64Image(filename, imageBase64) {
+  const imageBuffer = Buffer.from(imageBase64, "base64");
+  fs.writeFileSync(filename, imageBuffer);
+}
+
 const stream = await openai.responses.create({
   model: "gpt-5.5",
   input:
@@ -524,9 +531,15 @@ const stream = await openai.responses.create({
 for await (const event of stream) {
   if (event.type === "response.image_generation_call.partial_image") {
     const idx = event.partial_image_index;
-    const imageBase64 = event.partial_image_b64;
-    const imageBuffer = Buffer.from(imageBase64, "base64");
-    fs.writeFileSync(\`river\${idx}.png\`, imageBuffer);
+    saveBase64Image(`river-partial-${idx}.png`, event.partial_image_b64);
+  } else if (event.type === "response.completed") {
+    const imageData = event.response.output
+      .filter((output) => output.type === "image_generation_call")
+      .map((output) => output.result);
+
+    if (imageData.length > 0) {
+      saveBase64Image("river-final.png", imageData[0]);
+    }
   }
 }
 ```
@@ -536,6 +549,11 @@ from openai import OpenAI
 import base64
 
 client = OpenAI()
+
+def save_base64_image(filename, image_base64):
+    image_bytes = base64.b64decode(image_base64)
+    with open(filename, "wb") as f:
+        f.write(image_bytes)
 
 stream = client.responses.create(
     model="gpt-5.5",
@@ -547,10 +565,16 @@ stream = client.responses.create(
 for event in stream:
     if event.type == "response.image_generation_call.partial_image":
         idx = event.partial_image_index
-        image_base64 = event.partial_image_b64
-        image_bytes = base64.b64decode(image_base64)
-        with open(f"river{idx}.png", "wb") as f:
-            f.write(image_bytes)
+        save_base64_image(f"river-partial-{idx}.png", event.partial_image_b64)
+    elif event.type == "response.completed":
+        image_data = [
+            output.result
+            for output in event.response.output
+            if output.type == "image_generation_call"
+        ]
+
+        if image_data:
+            save_base64_image("river-final.png", image_data[0])
 ```
 
   </div>
@@ -578,7 +602,7 @@ for await (const event of stream) {
     const idx = event.partial_image_index;
     const imageBase64 = event.b64_json;
     const imageBuffer = Buffer.from(imageBase64, "base64");
-    fs.writeFileSync(\`river\${idx}.png\`, imageBuffer);
+    fs.writeFileSync(`river${idx}.png`, imageBuffer);
   }
 }
 ```
@@ -700,11 +724,11 @@ import OpenAI, { toFile } from "openai";
 
 const client = new OpenAI();
 
-const prompt = \`
+const prompt = `
 Generate a photorealistic image of a gift basket on a white background 
 labeled 'Relax & Unwind' with a ribbon and handwriting-like font, 
 containing all the items in the reference pictures.
-\`;
+`;
 
 const imageFiles = [
     "bath-bomb.png",
@@ -734,27 +758,27 @@ fs.writeFileSync("basket.png", image_bytes);
 ```
 
 ```bash
-curl -s -D >(grep -i x-request-id >&2) \\
-  -o >(jq -r '.data[0].b64_json' | base64 --decode > gift-basket.png) \\
-  -X POST "https://api.openai.com/v1/images/edits" \\
-  -H "Authorization: Bearer $OPENAI_API_KEY" \\
-  -F "model=gpt-image-2" \\
-  -F "image[]=@body-lotion.png" \\
-  -F "image[]=@bath-bomb.png" \\
-  -F "image[]=@incense-kit.png" \\
-  -F "image[]=@soap.png" \\
+curl -s -D >(grep -i x-request-id >&2) \
+  -o >(jq -r '.data[0].b64_json' | base64 --decode > gift-basket.png) \
+  -X POST "https://api.openai.com/v1/images/edits" \
+  -H "Authorization: Bearer $OPENAI_API_KEY" \
+  -F "model=gpt-image-2" \
+  -F "image[]=@body-lotion.png" \
+  -F "image[]=@bath-bomb.png" \
+  -F "image[]=@incense-kit.png" \
+  -F "image[]=@soap.png" \
   -F 'prompt=Generate a photorealistic image of a gift basket on a white background labeled "Relax & Unwind" with a ribbon and handwriting-like font, containing all the items in the reference pictures'
 ```
 
 ```cli
-openai images edit \\
-  --model gpt-image-2 \\
-  --image body-lotion.png \\
-  --image bath-bomb.png \\
-  --image incense-kit.png \\
-  --image soap.png \\
-  --prompt 'Generate a photorealistic image of a gift basket on a white background labeled "Relax & Unwind" with a ribbon and handwriting-like font, containing all the items in the reference pictures' \\
-  --raw-output \\
+openai images edit \
+  --model gpt-image-2 \
+  --image body-lotion.png \
+  --image bath-bomb.png \
+  --image incense-kit.png \
+  --image soap.png \
+  --prompt 'Generate a photorealistic image of a gift basket on a white background labeled "Relax & Unwind" with a ribbon and handwriting-like font, containing all the items in the reference pictures' \
+  --raw-output \
   --transform 'data.0.b64_json' | base64 --decode > gift-basket.png
 ```
 
@@ -781,7 +805,14 @@ If you provide multiple input images, the mask will be applied to the first imag
 
 ```python
 from openai import OpenAI
+import base64
+
 client = OpenAI()
+
+def create_file(file_path):
+    with open(file_path, "rb") as file_content:
+        result = client.files.create(file=file_content, purpose="vision")
+    return result.id
 
 fileId = create_file("sunlit_lounge.png")
 maskId = create_file("mask.png")
@@ -827,8 +858,18 @@ if image_data:
 ```
 
 ```javascript
+import fs from "fs";
 import OpenAI from "openai";
+
 const openai = new OpenAI();
+
+async function createFile(filePath) {
+  const result = await openai.files.create({
+    file: fs.createReadStream(filePath),
+    purpose: "vision",
+  });
+  return result.id;
+}
 
 const fileId = await createFile("sunlit_lounge.png");
 const maskId = await createFile("mask.png");
@@ -867,7 +908,6 @@ const imageData = response.output
 
 if (imageData.length > 0) {
   const imageBase64 = imageData[0];
-  const fs = await import("fs");
   fs.writeFileSync("lounge.png", Buffer.from(imageBase64, "base64"));
 }
 ```
@@ -879,6 +919,8 @@ if (imageData.length > 0) {
 
 ```python
 from openai import OpenAI
+import base64
+
 client = OpenAI()
 
 result = client.images.edit(
@@ -920,23 +962,23 @@ fs.writeFileSync("lounge.png", image_bytes);
 ```
 
 ```bash
-curl -s -D >(grep -i x-request-id >&2) \\
-  -o >(jq -r '.data[0].b64_json' | base64 --decode > lounge.png) \\
-  -X POST "https://api.openai.com/v1/images/edits" \\
-  -H "Authorization: Bearer $OPENAI_API_KEY" \\
-  -F "model=gpt-image-2" \\
-  -F "mask=@mask.png" \\
-  -F "image[]=@sunlit_lounge.png" \\
+curl -s -D >(grep -i x-request-id >&2) \
+  -o >(jq -r '.data[0].b64_json' | base64 --decode > lounge.png) \
+  -X POST "https://api.openai.com/v1/images/edits" \
+  -H "Authorization: Bearer $OPENAI_API_KEY" \
+  -F "model=gpt-image-2" \
+  -F "mask=@mask.png" \
+  -F "image[]=@sunlit_lounge.png" \
   -F 'prompt=A sunlit indoor lounge area with a pool containing a flamingo'
 ```
 
 ```cli
-openai images edit \\
-  --model gpt-image-2 \\
-  --image sunlit_lounge.png \\
-  --mask mask.png \\
-  --prompt "A sunlit indoor lounge area with a pool containing a flamingo" \\
-  --raw-output \\
+openai images edit \
+  --model gpt-image-2 \
+  --image sunlit_lounge.png \
+  --mask mask.png \
+  --prompt "A sunlit indoor lounge area with a pool containing a flamingo" \
+  --raw-output \
   --transform 'data.0.b64_json' | base64 --decode > out.png
 ```
 
@@ -946,9 +988,9 @@ openai images edit \\
 
 <div className="images-examples">
 
-| Image                                                                                                                                 | Mask                                                                                                                            | Output                                                                                                                                                                               |
-| ------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| <img className="images-example-image" src="https://cdn.openai.com/API/docs/images/sunlit_lounge.png" alt="A pink room with a pool" /> | <img className="images-example-image" src="https://cdn.openai.com/API/docs/images/mask.png" alt="A mask in part of the pool" /> | <img className="images-example-image" src="https://cdn.openai.com/API/docs/images/sunlit_lounge_result.png" alt="The original pool with an inflatable flamigo replacing the mask" /> |
+| Image                                                                                                                                 | Mask                                                                                                                            | Output                                                                                                                                                                                |
+| ------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| <img className="images-example-image" src="https://cdn.openai.com/API/docs/images/sunlit_lounge.png" alt="A pink room with a pool" /> | <img className="images-example-image" src="https://cdn.openai.com/API/docs/images/mask.png" alt="A mask in part of the pool" /> | <img className="images-example-image" src="https://cdn.openai.com/API/docs/images/sunlit_lounge_result.png" alt="The original pool with an inflatable flamingo replacing the mask" /> |
 
 </div>
 
@@ -971,7 +1013,7 @@ from PIL import Image
 from io import BytesIO
 
 # 1. Load your black & white mask as a grayscale image
-mask = Image.open(img_path_mask).convert("L")
+mask = Image.open("mask.png").convert("L")
 
 # 2. Convert it to RGBA so it has space for an alpha channel
 mask_rgba = mask.convert("RGBA")
@@ -1130,6 +1172,130 @@ For image generation using GPT Image models (`gpt-image-2`, `gpt-image-1.5`, `gp
 
 - `auto` (default): Standard filtering that seeks to limit creating certain categories of potentially age-inappropriate content.
 - `low`: Less restrictive filtering.
+
+### Handling blocked requests and other errors
+
+Handle image generation failures the same way you handle other API errors: check the HTTP status or SDK exception type, log the request ID, and refer to the [error codes guide](https://developers.openai.com/api/docs/guides/error-codes) for authentication, quota, rate-limit, and server failures. Retries are appropriate for transient failures like `429` and `5xx`, but not for image generation user errors that require changing the request.
+
+Some image generation failures are user-correctable and may return `error.type = "image_generation_user_error"`. Don't automatically retry these errors without modifying the prompt or input images. For programmatic handling, use `error.code` as the stable discriminator.
+
+When `error.code = "moderation_blocked"`, the error may also include an optional `error.moderation_details` object:
+
+```json
+{
+  "error": {
+    "type": "image_generation_user_error",
+    "code": "moderation_blocked",
+    "moderation_details": {
+      "moderation_stage": "input",
+      "categories": ["harassment"]
+    }
+  }
+}
+```
+
+The `moderation_details` object provides coarse debugging context without exposing internal classifier labels or scores.
+
+`moderation_stage` can be:
+
+- `input`: The block came from the prompt or request inputs.
+- `output`: The block came from a generated image or downstream output moderation stage.
+- `unknown`: A rare fallback when provenance is hard to determine.
+
+`categories` contains coarse public labels. For example, you might see values like `harassment`, `self-harm`, `sexual`, or `violence`.
+
+For most apps, keep the primary end-user message generic. Use `moderation_details` for developer logs, support workflows, analytics, and light remediation hints.
+
+For example, if `harassment` appears, suggest removing abusive or targeting language. If the block happened at the `input` stage, guide the user to revise the prompt. If it happened at the `output` stage, treat it as a generated result safety block and distinguish it in your logs. Always branch on `error.code = "moderation_blocked"` first, and treat `moderation_details` as optional extra context.
+
+Handle moderation-blocked image generation errors
+
+```javascript
+import OpenAI from "openai";
+
+const openai = new OpenAI();
+
+try {
+  // The same error handling pattern applies to image generation requests,
+  // image edits, and Responses API tool calls that generate images.
+  await openai.images.generate({
+    model: "gpt-image-2",
+    prompt: "Create a poster humiliating my coworker with insulting captions",
+  });
+} catch (error) {
+  if (error?.code !== "moderation_blocked") {
+    throw error;
+  }
+
+  const moderationDetails = error?.moderation_details;
+  const categories = moderationDetails?.categories ?? [];
+  const stage = moderationDetails?.moderation_stage;
+
+  let hint =
+    "This request could not be completed because it did not meet safety requirements.";
+
+  if (categories.includes("harassment")) {
+    hint =
+      "Try removing abusive or targeting language and focus on neutral visual details instead.";
+  } else if (stage === "input") {
+    hint = "Try revising the prompt or input images and submit the request again.";
+  } else if (stage === "output") {
+    hint = "The generated result was blocked by a safety check. Try changing the prompt and generating again.";
+  }
+
+  console.error("Image generation blocked", {
+    request_id: error?.request_id,
+    code: error?.code,
+    moderation_details: moderationDetails,
+  });
+
+  console.log(hint);
+}
+```
+
+```python
+import openai
+from openai import OpenAI
+
+client = OpenAI()
+
+try:
+    # The same error handling pattern applies to image generation requests,
+    # image edits, and Responses API tool calls that generate images.
+    client.images.generate(
+        model="gpt-image-2",
+        prompt="Create a poster humiliating my coworker with insulting captions",
+    )
+except openai.BadRequestError as error:
+    if error.code != "moderation_blocked":
+        raise
+
+    error_body = error.body if isinstance(error.body, dict) else {}
+    moderation_details = error_body.get("moderation_details") or {}
+    categories = moderation_details.get("categories") or []
+    stage = moderation_details.get("moderation_stage")
+
+    hint = "This request could not be completed because it did not meet safety requirements."
+
+    if "harassment" in categories:
+        hint = "Try removing abusive or targeting language and focus on neutral visual details instead."
+    elif stage == "input":
+        hint = "Try revising the prompt or input images and submit the request again."
+    elif stage == "output":
+        hint = "The generated result was blocked by a safety check. Try changing the prompt and generating again."
+
+    print(
+        "Image generation blocked",
+        {
+            "request_id": error.request_id,
+            "code": error.code,
+            "moderation_details": moderation_details,
+        },
+    )
+
+    print(hint)
+```
+
 
 ### Supported models
 

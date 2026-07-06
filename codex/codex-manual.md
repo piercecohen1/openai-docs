@@ -61,8 +61,8 @@ Power a few focused coding sessions each week.
 - Codex on the web, in the CLI, in the IDE extension, and on iOS
 - Cloud-based integrations like automatic code review and Slack
   integration
-- The latest models, including GPT-5.5, GPT-5.4, and GPT-5.3-Codex
-- GPT-5.4-mini for higher usage limits on routine local messages
+- The latest models, including GPT-5.5, GPT-5.4, and GPT-5.4 mini
+- GPT-5.4 mini for higher usage limits on routine local messages
 - Flexibly extend usage with [ChatGPT credits](#credits-overview)
 - Other [ChatGPT features](https://chatgpt.com/pricing) as part of the
   Plus plan
@@ -75,17 +75,15 @@ Choose 5x or 20x higher rate limits than Plus.
 
 Everything in Plus and:
 
-**Double your normal Codex usage on the $100/month tier until May 31, 2026.**
-
 - Access to GPT-5.3-Codex-Spark (research preview), a fast Codex model
   for day-to-day coding tasks
-- ~~5x~~ 10x or 20x more Codex usage than Plus\*
+- 5x or 20x more Codex usage than Plus\*
 - Other [ChatGPT features](https://chatgpt.com/pricing) as part of the
   Pro plan
 
 [Get Pro](https://chatgpt.com/explore/pro?utm_internal_source=openai_developers_codex)
 
-[\*Learn more about limits and promos on both tiers.](https://help.openai.com/en/articles/9793128-about-chatgpt-pro-plans)
+[\*Learn more about limits on both tiers.](https://help.openai.com/en/articles/9793128-about-chatgpt-pro-plans)
 
 **API Key**:
 
@@ -93,22 +91,17 @@ Great for automation in shared environments like CI.
 
 - Codex in the CLI, SDK, or IDE extension
 - No cloud-based features (GitHub code review, Slack, etc.)
-- Delayed access to new models like GPT-5.3-Codex and
-  GPT-5.3-Codex-Spark
+- Model availability follows the API models available to your key
 - Pay only for the tokens Codex uses, based on [API
   pricing](https://platform.openai.com/docs/pricing)
 
 [Learn more](/codex/auth)
 
-**Business** (Pay as you go):
+**Business** ($20 / user / month\*):
 
 Bring Codex into your startup or growing business.
 
-Everything in Plus and:
-
-- Assign standard or usage-based Codex seats based on your team's needs.
-  [Learn
-  more](https://help.openai.com/en/articles/8792828-what-is-chatgpt-business)
+- Access ChatGPT and Codex across desktop and mobile apps
 - Larger virtual machines to run cloud tasks faster
 - Flexibly extend usage with [ChatGPT credits](#credits-overview)
 - A secure, dedicated workspace with essential admin controls, SAML SSO,
@@ -118,7 +111,9 @@ Everything in Plus and:
 - Other [ChatGPT features](https://chatgpt.com/pricing) as part of the
   Business plan
 
-[Get Business](https://chatgpt.com/codex/team/start)
+[Get Business](https://chatgpt.com/team-sign-up)
+
+\*2+ users, billed annually. $25 per user per month when billed monthly.
 
 **Enterprise & Edu**:
 
@@ -675,127 +670,163 @@ No. Codex Security accelerates review and helps rank findings, but it does not r
 
 Yes. Codex Security creates the initial threat model, and you can update it as the architecture, risks, and business context change. For the editing workflow, see [Improving the threat model](/codex/security/threat-model).
 
-### Codex Security plugin
+### Codex Security plugin changelog
 
-Source: [Codex Security plugin](/codex/security/plugin.md)
+Source: [Codex Security plugin changelog](/codex/security/plugin/changelog.md)
 
-The Codex Security plugin adds security-review workflows to Codex for code that
-you have authorization to assess. Use it from an open repository to investigate
-a codebase, review a change set for security regressions, confirm plausible
-findings, and prepare minimal fixes for review.
+This changelog highlights changes that affect how you run scans, review
+results, and move findings toward remediation.
 
-This page covers the installable plugin that runs in your Codex thread. For
-the research-preview product that scans connected GitHub repositories through
-Codex Web, see [Codex Security](/codex/security).
+#### 0.1.9 (June 2026)
+
+#### Review scans in the findings workspace
+
+- Review completed scans in a dedicated workspace that brings findings,
+  coverage, severity, confidence, and scan artifacts together.
+- Filter and sort findings, including sorting by highest confidence, while
+  preserving your workspace state during refreshes.
+- Open a finding to review source evidence, validation details, reachability,
+  impact, and remediation guidance in one place.
+
+#### Run scans with less setup
+
+- Run standard scans against Git repositories, individual folders, or
+  codebases without Git history. Deep scans can also target a specific folder.
+- Cancel an active scan explicitly, resume an interrupted scan without another
+  setup prompt, and receive a warning before starting concurrent deep scans.
+- Follow clearer setup and progress states, with more compact progress
+  summaries and errors that remain visible until you address them.
+
+#### Export portable, verifiable results
+
+- Use a consistent completed-scan format with a manifest, structured findings,
+  coverage data, and a Markdown report derived from the same canonical result.
+- Export findings as JSON, CSV, or SARIF for analysis, archiving, and integration
+  with other security tools.
+- Improved scan completion and filesystem handling, including fixes for Windows
+  paths and scan locking.
+
+#### Triage and track existing findings
+
+- Triage existing findings from scanners, advisories, bug bounty reports,
+  GitHub, Jira, Linear, or Codex Security results against the current codebase.
+  The triage workflow returns an evidence-backed verdict and a prioritized
+  action queue.
+- Track selected validated findings in Linear, Jira, or GitHub issues, or create
+  a private draft GitHub Security Advisory when the repository meets the
+  advisory requirements.
+- Review duplicate checks, source context, destination visibility, and the
+  exact proposed content before approving a write. Codex reads the result back
+  after creation or update to verify it.
+
+### Codex Security plugin quickstart
+
+Source: [Codex Security plugin quickstart](/codex/security/plugin.md)
+
+Codex Security is a security-review plugin for Codex that scans your code for
+vulnerabilities, validates plausible findings, and presents evidence and
+remediation guidance in a reviewable workspace. Use it to find security issues
+in code you own or have authorization to assess before they reach production.
+
+This quickstart takes you through one recommended first run: an ordinary,
+read-only scan of a local repository in the Codex app.
+
+This page covers the plugin that runs in a local Codex thread. To scan a
+connected GitHub repository in Codex web, see [Codex Security cloud
+setup](/codex/security/setup).
 
 #### Install the plugin
 
+Open the repository you want to assess in the Codex app, then install Codex
+Security:
+
 Install the Codex Security plugin
 
-    After installation, start a new thread in the repository you want to
-    assess.
+After installation, start a new thread in that repository. Codex loads plugins
+when the thread starts, so don't continue in a thread that was already open.
 
-1. Open Codex
+#### Run your first scan
 
-   Start Codex from your repository:
+For the best scan quality, use `gpt-5.5`
+with `high` or `xhigh` reasoning effort.
 
-   ```bash
-   codex
-   ```
+1.  Ask for an ordinary scan
 
-   2. Open the plugin browser
+    Send this prompt in the new thread:
 
-      Enter:
+    ```text
+    Run a Codex Security scan on this repository.
+    ```
 
-      ```text
-      /plugins
-      ```
+2.  Confirm the setup
 
-   3. Install Codex Security
+    Codex opens a setup workspace before it starts. For your first run, use these
+    settings:
+    - **Scan type:** `Codebase`
+    - **Deep scan:** Off
+    - **Scan area:** `Entire codebase`
+    - **Threat model scoping guidance:** Leave blank unless you already know a
+      specific attack vector or application area that deserves priority.
 
-      Search for **Codex Security**, open it, and select `Install plugin`.
+    Confirm that **Codebase**, **Current branch**, and **Last commit** identify
+    the repository you intended to scan. Then select **Start scan**.
 
-   4. Start a new thread
+        Configure the scan target, scan area, branch, and optional threat model
+        guidance before starting the scan.
 
-      Start a new thread in the repository you are authorized to review.
+3.  Let the scan finish
 
-#### Choose a security workflow
+    The scan can take time. Keep the thread running until the workspace reports
+    completion. If Codex identifies a configuration limitation, review the exact
+    limitation and proposed change before allowing it to update your
+    configuration.
 
-Choose the narrowest workflow that answers your question. A diff-focused scan
-is faster to review than a repository-wide scan; a deep scan intentionally uses
-more time and tokens to search for more candidate findings.
+4.  Review the result
 
-| Goal                                   | Skill                                | Scope and output                                                                                                                              |
-| -------------------------------------- | ------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------- |
-| Review a repository or one scoped path | `$codex-security:security-scan`      | Runs threat modeling, finding discovery, validation, attack-path analysis, and produces Markdown and HTML reports.                            |
-| Run a higher-recall audit              | `$codex-security:deep-security-scan` | Repeats repository-wide discovery with delegated workers before validation and reporting. Use it only for an entire repository.               |
-| Review a change before merge           | `$codex-security:security-diff-scan` | Reviews a pull request, commit, branch diff, or working-tree patch and produces a Markdown report grounded in changed code.                   |
-| Fix one finding                        | `$codex-security:fix-finding`        | Reproduces or validates one plausible finding, makes a minimal fix when needed, and checks that the vulnerable behavior no longer reproduces. |
+    Use the UI to browse findings or open the generated report for a complete,
+    portable review.
 
-For example, to scan a repository:
+        Browse findings by severity, category, directory, patch status, and
+        review status.
+
+#### What the scan creates
+
+Every completed scan opens a findings workspace. Use it to review findings and
+coverage without inspecting raw artifacts. The scan also creates:
+
+- `report.md`, a complete portable report for sharing or archiving.
+- Structured scan data in `scan-manifest.json`, `findings.json`, and
+  `coverage.json` for automation and integrations. You normally don't need to
+  open these files yourself.
+
+#### Choose your next workflow
+
+- [Run a standard or scoped scan](/codex/security/plugin/scans) when you want
+  to scan a repository or one folder with the default workflow.
+- [Run a deep scan](/codex/security/plugin/deep-scans) when you need a more
+  comprehensive scan and can wait longer for it to finish.
+- [Review code changes](/codex/security/plugin/code-changes) when the target is
+  a pull request, commit, branch range, or working-tree patch.
+- [Triage a backlog](/codex/security/plugin/triage-backlog) when you have
+  existing security findings to review.
+- [Fix and verify a finding](/codex/security/plugin/fix-findings) after you
+  accept one finding for remediation.
+- [Export or track findings](/codex/security/plugin/export-findings) when you
+  need JSON, CSV, SARIF, an approval-gated Linear, GitHub, or Jira issue, or a
+  private draft GitHub Security Advisory.
+
+#### Install from Codex CLI
+
+To install the same plugin from the CLI, start Codex in the repository and open
+the plugin browser:
 
 ```text
-Use $codex-security:security-scan to scan this repository for security
-vulnerabilities. Keep the scan grounded in code evidence, validate plausible
-findings where feasible, and return the final report paths. Do not modify code.
+codex
+/plugins
 ```
 
-To review the current change instead:
-
-```text
-Use $codex-security:security-diff-scan to review the current branch diff for
-security regressions. Keep the review scoped to changed code and directly
-supporting files. Do not modify code.
-```
-
-#### Review the result and fix findings
-
-Repository scans use a staged workflow:
-
-1. **Threat modeling** identifies entry points, trust boundaries, sensitive
-   actions, and risky components.
-2. **Finding discovery** looks for concrete source-to-sink paths or broken
-   controls in the requested scope.
-3. **Validation** tests or otherwise verifies plausible findings and records
-   evidence or proof gaps.
-4. **Attack-path analysis** traces exploitable paths and rates severity for
-   findings that survive validation.
-5. **Reporting** writes findings, affected locations, validation evidence,
-   remediation guidance, and review directives to artifacts.
-
-An ordinary repository scan or a deep scan writes `report.md` and a readable
-`report.html` within its scan directory. A diff scan writes a focused Markdown
-report. Review affected files, evidence, assumptions, and severity before
-starting remediation.
-
-When a finding is actionable, ask for a bounded fix:
-
-```text
-Use $codex-security:fix-finding to fix finding [finding ID or report
-reference]. Add focused regression coverage, verify legitimate behavior still
-works, and show that the original issue no longer reproduces. Do not broaden
-the change beyond this finding.
-```
-
-#### Keep security work authorized and reviewable
-
-Run scans only against repositories, diffs, and systems that you own or that
-your organization authorizes you to assess. A finding is an input to review,
-not an instruction to merge code or test unrelated targets.
-
-- Keep the first scan read-only unless you explicitly ask Codex to prepare a
-  fix.
-- Review commands that build, run, or reproduce behavior before approving
-  them, especially in unfamiliar repositories.
-- Review every proposed patch and validation result before merging it.
-- Keep repository instructions and approval policies in place while using the
-  plugin. For details, see [Agent approvals and security](/codex/agent-approvals-security).
-
-#### Explore security use cases
-
-- [Run a deep security scan](/codex/use-cases/deep-security-scan)
-- [Scan code changes for security](/codex/use-cases/scan-code-changes-for-security)
-- [Remediate a vulnerability backlog](/codex/use-cases/remediate-vulnerability-backlog)
+Search for **Codex Security**, select `Install plugin`, and start a new thread.
+Then use the same first-scan prompt.
 
 ### Codex Security setup
 
@@ -889,6 +920,231 @@ You can review each finding and create a PR directly from the finding detail pag
 - [FAQ](/codex/security/faq) covers common questions.
 - [Improving the threat model](/codex/security/threat-model) explains how to improve scan context and finding prioritization.
 
+### Export and track security findings
+
+Source: [Export and track security findings](/codex/security/plugin/export-findings.md)
+
+Use a completed Codex Security scan as the source for two different handoffs:
+
+- **Export** creates a portable JSON, CSV, or SARIF file.
+- **Track findings** prepares selected findings as Linear, GitHub, or Jira issues
+  or one private draft GitHub Security Advisory, checks for duplicates, and
+  waits for your approval before writing.
+
+These workflows don't change the sealed scan bundle.
+
+#### Export a portable artifact
+
+Open the completed findings workspace, select **Export**, and choose a format:
+
+| Format | Use it for                                                        |
+| ------ | ----------------------------------------------------------------- |
+| JSON   | Preserve the sealed structured findings for tools and scripts.    |
+| CSV    | Review findings and current local triage state in a spreadsheet.  |
+| SARIF  | Send findings to tools that support the SARIF interchange format. |
+
+Select **Export findings** and use the returned artifact path. Keep the
+original `scan-manifest.json`, `findings.json`, and `coverage.json` together
+when another tool needs the complete scan context rather than a findings-only
+projection.
+
+    Export completed findings as JSON, CSV, or SARIF for downstream review and
+    tooling.
+
+#### Track selected findings
+
+The `$codex-security:track-findings` workflow accepts one validated finding or
+an explicitly selected batch of up to 25 findings from one sealed scan for
+issue tracking. Draft GitHub Security Advisories accept one finding only. One
+run uses one provider and one destination.
+
+For Linear, send a prompt like:
+
+```text
+Use $codex-security:track-findings to prepare finding [finding ID] from
+[completed scan directory] for the Linear team [team] and project [project, if
+any]. Check for duplicates and show me the exact issue title, body, metadata,
+and destination. Do not create or update anything until I approve that payload.
+```
+
+For GitHub issues, send:
+
+```text
+Use $codex-security:track-findings to prepare finding [finding ID] from
+[completed scan directory] for GitHub repository [owner/repository]. Check open
+and closed issues for duplicates and show me the exact issue title, body,
+metadata, repository visibility, and authenticated transport. Do not create or
+update anything until I approve that payload.
+```
+
+For Jira, send:
+
+```text
+Use $codex-security:track-findings to prepare finding [finding ID] from
+[completed scan directory] for Jira project [project key] as [issue type].
+Check for duplicates and show me the exact issue summary, description,
+metadata, and destination. Do not create or update anything until I approve
+that payload.
+```
+
+Jira tracking requires the native Atlassian Rovo app in Codex. Reusing an issue
+requires read access; creating or updating one requires read and write access.
+
+For a private draft GitHub Security Advisory, send:
+
+```text
+Use $codex-security:track-findings to prepare finding [finding ID] from
+[completed scan directory] as a private draft GitHub Security Advisory in
+[owner/repository]. Verify the sealed source revision, repository, affected
+paths, package metadata, and duplicate state. Show me the exact advisory
+payload, authenticated GitHub CLI identity, and disclosure warnings. Do not
+create anything until I approve that payload.
+```
+
+Draft advisories require one finding from a sealed `git_revision` scan, the
+verified public canonical source repository, and administrator access. The
+workflow doesn't batch, update, publish, or close advisories. Use an approved
+private issue destination when the source doesn't meet those requirements.
+
+#### Review the proposed write
+
+1. Confirm the finding ID and fingerprint came from the intended sealed scan.
+2. Confirm the provider, exact Linear team, GitHub repository, Jira project, or
+   advisory repository, and the live destination visibility.
+3. Review the duplicate outcome: `create`, `reuse`, `update`, or `blocked`.
+4. Read the complete proposed title, body, source locations, and provider
+   metadata. Remove exploit detail or internal evidence that the destination
+   shouldn't expose.
+5. Approve only that exact payload. A changed destination, visibility, finding
+   set, or body requires a new preview.
+
+Sensitive findings should go to a private destination. Creating an issue in an
+internal or public GitHub repository requires an explicit visibility warning
+and approval of the complete content. Treat a draft advisory description as
+eventually public and remove credentials, private evidence, and unnecessary
+exploit details before approval.
+
+#### Verify the tracked item
+
+After approval, Codex revalidates the sealed source, destination, access, and
+duplicate state. It processes a batch serially and stops on the first uncertain
+result. A create, update, or reuse is complete only after Codex reads the exact
+issue back and verifies its binding identifiers and content.
+
+Keep the returned canonical issue or advisory URL with your triage record.
+Continue with [Fix and verify a finding](/codex/security/plugin/fix-findings)
+when the owner accepts the item for remediation.
+
+### Fix and verify security findings
+
+Source: [Fix and verify security findings](/codex/security/plugin/fix-findings.md)
+
+Codex Security helps you turn a backlog of accepted findings into tested code
+changes. You can fix findings in the findings workspace UI or invoke the
+remediation workflow from a prompt, the command line, or CI/CD. In each case,
+Codex validates the issue, proposes a focused patch, adds regression coverage,
+and verifies that legitimate behavior still works.
+
+Start by fixing one accepted finding so you can evaluate the patch and
+verification quality. Once the workflow meets your standards, scale it across
+more accepted findings by processing each finding in a separate task or CI/CD
+job. Keeping each fix scoped makes the code changes and evidence easier to
+review.
+
+#### Fix a finding in the UI
+
+Open an accepted finding in the findings workspace to generate, review, apply,
+and verify its patch.
+
+1. Generate a focused patch
+
+   Open the finding, select the **Patch** tab, and select **Generate patch**.
+   Codex validates or reproduces the issue when feasible and writes a patch
+   artifact without modifying the selected checkout.
+
+2. Review the proposed diff
+
+   Read every changed source and regression-test file. Use **Open diff in
+   editor** when you want the full patch in the editor. Reject broad refactors,
+   unrelated cleanup, or changes that weaken another security control.
+
+3. Apply the patch locally
+
+   Select **Apply patch locally** only after the diff is acceptable. Codex
+   applies the exact generated patch to the working tree and records that state.
+   Review the working-tree diff before continuing.
+
+4. Verify the fix
+
+   Select **Verify fix**. Codex reruns the original reproducer or strongest
+   available exploit check, focused regression coverage, legitimate-behavior
+   checks, nearby bypass checks, and relevant repository tests.
+
+5. Close the finding deliberately
+
+   Verification doesn't automatically close a finding. Review the commands,
+   results, and remaining proof gap, then close the finding with an accurate
+   reason or keep it open for more work.
+
+   Review the proposed source and test changes before applying the patch
+   locally.
+
+#### Fix a finding from the CLI
+
+Use the Codex CLI when you already have a finding from a scan, ticket, advisory,
+disclosure, security assessment, or internal review:
+
+The commands below assume Codex Security is already installed in the
+`CODEX_HOME` used by `codex exec`. A fresh CI runner doesn't have marketplace
+plugins installed by default.
+
+```text
+Use $codex-security:fix-finding to fix finding  from . Validate the issue, make the smallest safe change, add focused regression coverage, and verify that the issue no longer reproduces.
+```
+
+Include the known source, sink, attacker input, impact, expected invariant,
+reproducer, affected files, and validation command. Codex can inspect the
+repository for missing technical details, but it should ask before guessing a
+product policy or intended security invariant.
+
+For an automated run, pass the prompt to `codex exec` after checking out the
+code, making the finding report available, and provisioning the plugin in that
+`CODEX_HOME`:
+
+```bash
+codex exec 'Use $codex-security:fix-finding to fix finding  from . Validate the issue, make the smallest safe change, add focused regression coverage, and verify that the issue no longer reproduces.'
+```
+
+#### Scan and fix findings in CI/CD
+
+Provision Codex Security in the runner's `CODEX_HOME` before invoking these
+skills. The command below uses the installed plugin; it doesn't install the
+plugin itself.
+
+In CI/CD, use one Codex run to scan the diff and generate fixes for every
+finding it discovers. The job doesn't need finding IDs or report paths as
+inputs. Codex carries the findings from the scan into remediation within the
+same run.
+
+The all-in-one run should:
+
+1. Resolve the base and head revisions for the change.
+2. Run `$codex-security:security-diff-scan` against that diff.
+3. Invoke `$codex-security:fix-finding` for every finding returned by the scan.
+4. Generate focused patches and regression coverage, then verify each fix.
+5. Return the scan results, patches, tests, verification commands, and any
+   finding it couldn't fix.
+
+For example:
+
+```bash
+codex exec 'Use $codex-security:security-diff-scan to review changes from  to HEAD. For every finding returned by the scan, use $codex-security:fix-finding to generate and verify a minimal fix. Continue until every finding has either a verified fix or an explicit explanation of why it could not be fixed. Return the scan results, patches, tests, verification commands, and remaining failures.'
+```
+
+After verification, merge the patch through your normal code-review and release
+process. To hand findings to another team before remediation, see [Export or
+track findings](/codex/security/plugin/export-findings).
+
 ### Improving the threat model
 
 Source: [Improving the threat model](/codex/security/threat-model.md)
@@ -931,6 +1187,417 @@ To review or update the threat model, go to [Codex Security scans](https://chatg
 - [Codex Security setup](/codex/security/setup) covers repository setup and findings review.
 - [Codex Security](/codex/security) gives the product overview.
 - [FAQ](/codex/security/faq) covers common questions.
+
+### Review code changes for security
+
+Source: [Review code changes for security](/codex/security/plugin/code-changes.md)
+
+Use a security change review when you need evidence about regressions introduced
+by one Git-backed change set. The workflow reviews every changed source-like
+file and directly supporting code without turning the task into a general
+repository audit.
+
+If you want to scan a full repository instead of a specific change, see [Run a
+security scan](/codex/security/plugin/scans).
+
+#### Run a manual review
+
+For uncommitted changes, send:
+
+```text
+Use $codex-security:security-diff-scan to review my current uncommitted changes for security regressions.
+```
+
+For a commit or branch range, identify both ends when needed:
+
+```text
+Use $codex-security:security-diff-scan to review the changes from origin/main to HEAD for security regressions. Focus on authentication, authorization, input handling, filesystem access, network requests, and secrets.
+```
+
+You can also name a pull request when its base and head revisions are available
+in the local checkout.
+
+#### Confirm the change in setup
+
+1. Confirm **Scan type** is `Changes`.
+2. Confirm the checked-out **Codebase**, **Current branch**, and **Last commit**.
+3. Under **Changes to review**, choose:
+   - `Uncommitted changes` for the current working tree.
+   - The latest commit for a single-commit review.
+   - A base and head revision for a branch or pull-request range.
+4. Confirm that the summary describes the change you intended to review.
+5. Select **Start scan**.
+
+The workflow doesn't check out another branch or change the selected working
+tree. If a requested revision isn't available locally, fetch it before the
+review or provide a locally available base and head.
+
+#### Act on findings
+
+After reviewing the results, [fix and verify an accepted
+finding](/codex/security/plugin/fix-findings) or [export and track
+findings](/codex/security/plugin/export-findings).
+
+#### Automate reviews in CI/CD
+
+Run the same `$codex-security:security-diff-scan` skill from CI when the runner
+can invoke the Codex CLI without interaction. The runner must already have
+Codex Security installed in the `CODEX_HOME` used by `codex exec`. A fresh
+runner doesn't have marketplace plugins installed by default, and
+`openai/codex-action` doesn't install the plugin.
+
+Before running the scan:
+
+1. Provision Codex Security in the runner's `CODEX_HOME`.
+2. Check out the exact base and head revisions with their Git history.
+3. Set the runner's platform temporary directory, such as `TMPDIR`, to a
+   writable artifact location. The diff-scan workflow reviews the checkout
+   without changing it, but it writes its sealed scan bundle and final report
+   outside the repository.
+4. Start with advisory results. Review scan quality and runtime before making
+   the job a required check.
+
+Then invoke the plugin explicitly:
+
+```bash
+export CODEX_HOME=/path/to/provisioned-codex-home
+export TMPDIR=/path/to/writable/temp
+
+codex exec \
+  --sandbox workspace-write \
+  --output-last-message "$TMPDIR/codex-security-review.md" \
+  'Use $codex-security:security-diff-scan to review changes from  to  for security regressions. Do not modify the checkout. Return the final report path, findings summary, reviewed surfaces, deferred coverage, and open questions.'
+```
+
+Archive the generated scan bundle and final report, then publish the Markdown
+summary through your CI/CD system. If you use `openai/codex-action`, point its
+`codex-home` input at the same provisioned directory and pass the skill prompt
+above. The action can install and run the Codex CLI, but plugin provisioning is
+a separate prerequisite.
+
+For API-key handling, sandbox controls, fork protections, and a GitHub Actions
+workflow, see the [Codex GitHub Action guide](/codex/github-action).
+
+### Run a Codex Security scan
+
+Source: [Run a Codex Security scan](/codex/security/plugin/scans.md)
+
+Use a Codex Security scan for your first review and for most routine repository
+or component assessments. It runs the complete scan workflow once.
+
+Once you're satisfied with the results, run a [deep scan](/codex/security/plugin/deep-scans)
+for a more comprehensive assessment. Deep scans take longer, but they're more
+thorough.
+
+#### Choose the scan area
+
+Scan the whole repository when you need broad coverage and the repository is a
+reasonable review unit:
+
+```text
+Use $codex-security:security-scan to scan this repository for security vulnerabilities.
+```
+
+Scan a folder when a monorepo is too large or one service, package, or component
+has a clear owner and security boundary:
+
+```text
+Use $codex-security:security-scan to scan this repository for security vulnerabilities, focusing on the services/billing component.
+```
+
+For a large monorepo, start with one meaningful product or service boundary.
+
+#### Configure the scan
+
+1. Confirm **Scan type** is `Codebase` and leave **Deep scan** off.
+2. Confirm the **Codebase**, **Current branch**, and **Last commit**.
+3. Set **Scan area** to `Entire codebase` or enter one repository-relative
+   folder.
+4. Add threat-model guidance only when it changes the review. Useful guidance
+   names attacker-controlled inputs, trust boundaries, sensitive actions, or a
+   specific area to prioritize.
+5. Select **Start scan**.
+
+Repository-specific guidance in `AGENTS.md` can also establish the product
+surfaces, trust boundaries, supported validation commands, and out-of-scope
+areas. Prefer concrete repository context over a generic planning step before
+the scan.
+
+#### Let the phases complete
+
+A scan runs these phases in order:
+
+1. **Threat modeling** identifies assets, entry points, trust boundaries, and
+   security invariants.
+2. **Finding discovery** reviews the requested code for plausible broken
+   controls and source-to-sink paths.
+3. **Validation** tests or otherwise checks each candidate and records evidence
+   or proof gaps.
+4. **Attack-path analysis** evaluates realistic reachability, impact, and
+   severity.
+5. **Finalization** validates the structured scan contract and generates
+   `report.md`.
+
+Codex reports phase and coverage progress as the scan runs. Don't judge the
+result from early candidates or stop the scan because one phase takes longer
+than another.
+
+#### Review the completed scan
+
+Review the result in this order:
+
+1. Confirm the target, revision, and scan area.
+2. Read reviewed surfaces and every explicit deferred or follow-up area.
+3. For each finding, inspect the root control or sink, attacker-controlled
+   input, validation method, remaining uncertainty, realistic reachability,
+   severity rationale, and proposed remediation.
+4. Dismiss findings whose evidence doesn't support the claimed path or impact.
+5. Select one accepted finding before starting a fix.
+
+   The completed workspace summarizes scan status, coverage, severity, and
+   artifacts before listing the findings.
+
+   A finding connects the relevant source to its entry point, reachability,
+   likelihood, impact, and any limits or counterevidence.
+
+#### Use the results
+
+Use the findings workspace for normal review. It presents findings, coverage,
+and follow-up areas without requiring you to inspect raw JSON. Open `report.md`
+when you need a complete portable review for sharing or archiving.
+
+Behind the workspace, each scan preserves `scan-manifest.json`, `findings.json`,
+and `coverage.json` for automation and integrations. You normally don't need to
+open these files yourself.
+
+The findings workspace can also create portable JSON, CSV, and SARIF files. See
+[Export or track findings](/codex/security/plugin/export-findings).
+
+#### Next step
+
+After a person accepts a finding, use [Fix and verify a finding](/codex/security/plugin/fix-findings)
+to generate and review one bounded patch. Don't ask Codex to fix every finding
+from a scan in one task.
+
+### Run a deep security scan
+
+Source: [Run a deep security scan](/codex/security/plugin/deep-scans.md)
+
+A deep scan is slower but more thorough than a standard scan. Use it when you
+want to reduce variability and search more comprehensively.
+
+Start with a [standard scan](/codex/security/plugin/scans). Once you're
+satisfied with the results, run a deep scan for a more thorough assessment.
+
+#### Choose between standard and deep scans
+
+|                         | Standard scan                                      | Deep scan                                             |
+| ----------------------- | -------------------------------------------------- | ----------------------------------------------------- |
+| Best for                | First runs and routine repository or folder review | More thorough reviews after a standard scan           |
+| Variability             | Standard                                           | Reduced                                               |
+| Scope                   | Repository or explicit folder                      | Repository or explicit folder                         |
+| Runtime and resources   | Lower                                              | Higher                                                |
+| Pull requests and diffs | Use the change-review workflow                     | Not supported; use the change-review workflow instead |
+
+#### Start the deep scan
+
+For a repository-wide review, send:
+
+```text
+Use $codex-security:deep-security-scan to run a deep security scan of this repository.
+```
+
+For one component in a monorepo, identify the folder explicitly:
+
+```text
+Use $codex-security:deep-security-scan to run a deep security scan of /absolute/path/to/repository/services/payments.
+```
+
+In the Codex app, a scoped deep scan resolves the selected folder as the
+**Codebase** and shows its scan area as the entire selected target.
+
+#### Confirm setup and preflight
+
+1. Confirm **Scan type** is `Codebase` and **Deep scan** is on.
+2. Confirm that **Codebase** is the repository or exact folder you intended to
+   scan.
+3. Add threat-model guidance only for concrete attack vectors, sensitive
+   application areas, or repository context that the code can't reveal.
+4. Select **Start scan**.
+5. Review the capability preflight. If it proposes a configuration change,
+   review the exact change and let Codex apply it only if it matches your
+   environment. Start a new thread if Codex tells you a restart is required.
+
+#### Review the result
+
+Deep scans use the same findings workspace and generated `report.md` as standard
+scans. Review the coverage summary before the findings. A deep scan searches
+the code more extensively, but any deferred surface or proof gap still limits
+the conclusion. For a finding you accept, continue with [Fix and verify a
+finding](/codex/security/plugin/fix-findings).
+
+To review a pull request, commit, branch range, or local patch, use [Review code
+changes](/codex/security/plugin/code-changes). A deep scan never substitutes
+for the diff-focused workflow.
+
+### Triage a backlog
+
+Source: [Triage a backlog](/codex/security/plugin/triage-backlog.md)
+
+Use `$codex-security:triage-finding` to review existing security findings
+against the current repository. This workflow performs a read-only static
+analysis: Codex treats each finding as an unproven claim and inspects repository
+evidence without executing the code.
+
+Run this workflow from a Codex project scoped to the repository you want to
+assess. Codex must be able to read the repository's source code. Jira, Linear,
+and GitHub connectors provide finding data, but they don't replace access to
+the source code.
+
+Under the hood, Codex starts from the cited code or version information. It
+traces the claimed attacker-controlled source, relevant security controls,
+dangerous sink, and reachable path. It also checks the product surface and trust
+boundary, looks for counterevidence, and records proof gaps. Codex then returns
+one verdict per finding and ranks the findings that need action or further
+review.
+
+This differs from `$codex-security:validation`, which can build or run code,
+create a focused test or proof of concept, or exercise a real interface to
+reproduce or disprove a finding. Use triage to classify and prioritize an
+existing backlog. Use validation when runtime evidence could resolve a finding
+that static evidence leaves uncertain.
+
+Backlog triage starts from existing findings. To search the repository for new
+vulnerabilities, [run a security scan](/codex/security/plugin/scans). Triage
+doesn't modify the repository or implement fixes.
+
+#### Choose the findings to triage
+
+You can supply one finding or a collection from these sources:
+
+| Source                   | What to provide                                                                                                                                                                                                                                                                                                                                                                                                                                        | Requirements                                                                                                                                                                                     |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Pasted or local findings | SARIF results, a CVE or GHSA, an advisory, a scanner ticket, a bug bounty report, a Codex Security finding artifact, or a plain-language vulnerability claim.                                                                                                                                                                                                                                                                                          | No connector required.                                                                                                                                                                           |
+| Jira or Linear           | Exact security or vulnerability issue URLs or identifiers, Jira JQL, or a Linear team, project, or search phrase. Codex retrieves the selected issue content before triage.                                                                                                                                                                                                                                                                            | [Jira through Atlassian Rovo](codex://plugins/plugin_connector_692de805e3ec8191834719067174a384) or [Linear](codex://plugins/plugin_asdk_app_69a089a326dc8191b32a3f2553f5be2c) with read access. |
+| GitHub                   | A repository and one finding source: code scanning, `Dependabot` vulnerabilities and malware, security advisories and private vulnerability reports, or all sources. If you don't specify a repository, Codex uses the GitHub repository attached to the current Codex project when available. GitHub Issues aren't included in the default GitHub sources; provide a specific issue or ask for GitHub Issues explicitly when you want to triage them. | [GitHub](codex://plugins/plugin_connector_1p_1a69035c238881919c4190932b2df699) with access to the selected repository and finding type.                                                          |
+
+Codex keeps one result for every supplied finding, in input order, so each
+source finding stays traceable. It doesn't merge or drop findings that look
+like duplicates.
+
+#### Run read-only triage
+
+For pasted findings or local artifacts, send a prompt like:
+
+```text
+Use $codex-security:triage-finding to triage these existing security findings against this repository:
+
+[Paste the findings or provide the artifact path.]
+```
+
+For Jira or Linear issues, identify the issue set and keep the source system
+read-only:
+
+```text
+Use $codex-security:triage-finding to import and triage the security findings from [Jira or Linear issue URLs, identifiers, or query] against this repository.
+Do not change the source issues.
+```
+
+For GitHub findings, name the repository and source:
+
+```text
+Use $codex-security:triage-finding to import and triage [code scanning, Dependabot vulnerabilities and malware, security advisories and private vulnerability reports, or all] from [owner/repository] against this repository.
+```
+
+To use the GitHub repository attached to the current Codex project, specify
+only the finding source:
+
+```text
+Use $codex-security:triage-finding to import and triage [code scanning, Dependabot vulnerabilities and malware, security advisories and private vulnerability reports, or all] from GitHub against this repository. Use the GitHub repository attached to the current Codex project.
+```
+
+The workflow proceeds in this order:
+
+1. Collect and organize the findings
+
+   Codex retrieves any requested issue or GitHub content, preserves source
+   identifiers and references, and creates one triage item per input. It builds
+   the complete item list before assigning verdicts.
+
+2. Confirm the repository context
+
+   Codex resolves the current repository and revision when available. It reads
+   `SECURITY.md` when present so supported versions, trusted inputs, product
+   boundaries, and out-of-scope surfaces inform the assessment.
+
+3. Inspect the static evidence
+
+   For each finding, Codex traces the claimed attacker-controlled source,
+   relevant security control, vulnerable sink, reachable path, and supported
+   security boundary. It records supporting evidence, evidence against the
+   claim, and proof gaps.
+
+4. Assign verdicts and ranks
+
+   Codex assigns a verdict and confidence to every finding. It ranks
+   `confirmed` and `needs_review` findings by exploitability in separate queues.
+
+#### Review the results
+
+| Verdict          | What it means                                                                                                                                                 |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `confirmed`      | Repository evidence shows that the vulnerable path is reachable under the stated preconditions and crosses a supported security boundary.                     |
+| `not_actionable` | Repository evidence rules out the claim, such as by showing an unaffected version, unreachable path, effective guard, or non-shipped surface.                 |
+| `needs_review`   | Repository evidence isn't enough to decide because required information is missing, ambiguous, runtime-dependent, environment-dependent, or policy-dependent. |
+
+Exploitability ranks use positive integers starting at `1`, independently
+within each verdict queue. This keeps remediation priorities separate from
+unresolved review work. Rank `1` is the most exploitable `confirmed` finding
+or the highest-priority `needs_review` finding in that result set. The rank
+isn't a scanner severity score, and `not_actionable` findings aren't ranked.
+
+For each finding, review:
+
+- the rationale for the verdict and rank
+- supporting evidence and evidence against the claim
+- open questions and remaining proof gaps
+- the affected location and component
+- the product surface and source trust level
+- the recommended next step
+- the [`$codex-security:fix-finding`](/codex/security/plugin/fix-findings)
+  handoff, when the finding is `confirmed`
+
+Triage is complete when every supplied finding has one result, Codex preserves
+its source identifier, and any uncertainty is explicit. Jira, Linear, and other
+backlog records remain unchanged unless you ask Codex to write back after
+reviewing the triage results.
+
+#### Next steps
+
+- `confirmed`: After a person accepts the finding for remediation, use
+  [`$codex-security:fix-finding`](/codex/security/plugin/fix-findings) to fix and
+  verify it. Triage prepares a prompt-ready handoff but doesn't invoke the skill
+  automatically.
+- `needs_review`: If running code can resolve the proof gap, use
+  `$codex-security:validation` to perform bounded dynamic validation. Pass
+  the finding claim, affected locations, preconditions, static evidence, and
+  proof gaps from the triage result:
+
+  ```text
+  Use $codex-security:validation to dynamically validate finding [triage item ID or source ID] from the backlog triage result. Use the strongest realistic, bounded method, record exactly what was tested, and preserve any remaining proof gaps.
+  ```
+
+  Unlike triage, validation may build or run code, create a focused test or
+  proof of concept, or exercise a real interface. Review the proposed commands
+  before approving them and keep [Codex approval and security
+  policies](/codex/agent-approvals-security) in place.
+
+- `needs_review`: If the finding depends on product policy or deployment
+  context, answer the listed open questions before changing code.
+- `not_actionable`: Keep the evidence with your triage record. Codex doesn't
+  automatically close or update the source ticket.
+- To look for vulnerabilities beyond the supplied backlog, [run a security
+  scan](/codex/security/plugin/scans).
 
 ### Agent approvals & security
 
@@ -1641,6 +2308,9 @@ region = "eu-central-1"
 If you omit `profile`, Codex uses the standard AWS credential chain. Set
 `region` to the supported Bedrock region that should handle requests.
 
+For the full setup flow, authentication options, supported models, and feature
+availability, see [Use Codex with Amazon Bedrock](/codex/amazon-bedrock).
+
 #### OSS mode (local providers)
 
 Codex can run against a local "open source" provider (for example, Ollama or LM Studio) when you pass `--oss`. If you pass `--oss` without specifying a provider, Codex uses `oss_provider` as the default.
@@ -1854,19 +2524,24 @@ You can also sign in to the Codex app, CLI, or IDE Extension with an API key. Ge
 
 OpenAI bills API key usage through your OpenAI Platform account at standard API rates. See the [API pricing page](https://openai.com/api/pricing/).
 
-Features that rely on ChatGPT credits, such as [fast mode](/codex/speed), are
-available only when you sign in with ChatGPT. If you sign in with an API key,
-Codex uses standard API pricing instead.
+API key authentication supports local Codex workflows, but some features that
+rely on ChatGPT workspace access or cloud services are limited or unavailable.
+Compare support by plan in
+[Feature availability](/codex/pricing#feature-availability).
+
+When you sign in with an API key, Codex uses standard API pricing instead of
+included ChatGPT plan credits.
 
 We recommend API key authentication for programmatic Codex CLI workflows, such
 as CI/CD jobs. Don't expose Codex execution in untrusted or public environments.
 
 #### Use Codex access tokens for enterprise automation
 
-In ChatGPT Enterprise workspaces, admins can allow permitted members to create
-Codex access tokens for trusted, non-interactive Codex local workflows. Use an
-access token when automation needs ChatGPT workspace access, ChatGPT-managed
-Codex entitlements, or enterprise workspace controls without a browser sign-in.
+In ChatGPT Enterprise workspaces, admins can grant the access token
+permission so permitted members can create Codex access tokens for trusted,
+non-interactive Codex local workflows. Use an access token when automation
+needs ChatGPT workspace access, ChatGPT-managed Codex entitlements, or
+enterprise workspace controls without a browser sign-in.
 
 Access tokens are intended for trusted scripts, schedulers, and private CI
 runners. For general OpenAI API calls, continue to use Platform API keys.
@@ -2156,7 +2831,7 @@ You can override this later in an active session with `/personality` or per thre
 
 #### TUI keymap
 
-Customize terminal shortcuts under `tui.keymap`. Context-specific bindings override `tui.keymap.global`, and an empty list unbinds the action.
+Customize terminal shortcuts under `tui.keymap`. Selected composer actions fall back to matching `tui.keymap.global` bindings; context-specific bindings take precedence when supported. An empty list unbinds the action.
 
 ```toml
 [tui.keymap.global]
@@ -2164,6 +2839,9 @@ open_transcript = "ctrl-t"
 
 [tui.keymap.composer]
 submit = ["enter", "ctrl-m"]
+
+[tui.keymap.chat]
+interrupt_turn = "f12"
 ```
 
 #### Command environment
@@ -2177,7 +2855,8 @@ include_only = ["PATH", "HOME"]
 
 #### Log directory
 
-Override where Codex writes local log files such as `codex-tui.log`.
+Override where Codex writes local log files. Setting `log_dir` explicitly also
+enables the opt-in plaintext TUI log, `codex-tui.log`, in that directory.
 
 ```toml
 log_dir = "/absolute/path/to/codex-logs"
@@ -2249,16 +2928,20 @@ subagents. The `gpt-5.3-codex-spark` model is available in research preview
 for ChatGPT Pro subscribers and is optimized for near-instant, real-time
 coding iteration.
 
-#### Alternative models
-
 #### Other models
 
-When you sign in with ChatGPT, Codex works best with the models listed above.
+When you sign in with ChatGPT, Codex works best with the recommended models listed above.
 
 You can also point Codex at any model and provider that supports either the [Chat Completions](https://platform.openai.com/docs/api-reference/chat) or [Responses APIs](https://platform.openai.com/docs/api-reference/responses) to fit your specific use case.
 
 Support for the Chat Completions API is deprecated and will be removed in
 future releases of Codex.
+
+#### Deprecated Codex models
+
+The `gpt-5.2` and `gpt-5.3-codex` models are deprecated in Codex when you sign in with ChatGPT. If your scripts, configuration files, or `codex exec --model` commands still reference deprecated models, update them to the latest model listed above.
+
+Some models that are deprecated for ChatGPT sign-in may still be available in the API. If your workflow depends on one of those models, use API-key authentication and check the [API models page](/api/docs/models) for current availability.
 
 #### Configuring models
 
@@ -2353,7 +3036,7 @@ model_provider = "openai"
 
 # background_terminal_max_timeout = 300000 # ms; max empty write_stdin poll window (default 5m)
 
-# log_dir = "/absolute/path/to/codex-logs" # directory for Codex logs; default: "$CODEX_HOME/log"
+# log_dir = "/absolute/path/to/codex-logs" # log directory; setting explicitly enables codex-tui.log; default: "$CODEX_HOME/log"
 
 # sqlite_home = "/absolute/path/to/codex-state" # optional SQLite-backed runtime state directory
 
@@ -2522,6 +3205,8 @@ mcp_oauth_credentials_store = "auto"
 # mcp_oauth_callback_port = 4321
 
 # Optional redirect URI override for MCP OAuth login (for example, remote devbox ingress).
+
+# Codex appends a server-specific callback ID before OAuth login, so register the full derived URI with your provider, not just the base host or unsuffixed path.
 
 # Custom callback paths are supported. `mcp_oauth_callback_port` still controls the listener port.
 
@@ -2877,7 +3562,7 @@ show_tooltips = true
 
 # theme = "catppuccin-mocha"
 
-# Custom key bindings. Context-specific bindings override [tui.keymap.global].
+# Custom key bindings. Selected composer actions fall back to matching [tui.keymap.global] bindings.
 
 # Use [] to unbind an action.
 
@@ -2892,6 +3577,10 @@ show_tooltips = true
 # [tui.keymap.composer]
 
 # submit = ["enter", "ctrl-m"]
+
+# [tui.keymap.chat]
+
+# interrupt_turn = "f12"
 
 # Internal tooltip state keyed by model slug. Usually managed by Codex.
 
@@ -2960,6 +3649,36 @@ enabled = true
 # skill_mcp_dependency_install = true
 
 # prevent_idle_sleep = false
+
+# Code mode namespaces. This feature is under development and off by default.
+
+# [features.code_mode]
+
+# enabled = true
+
+# excluded_tool_namespaces = ["mcp__codex_apps"]
+
+# direct_only_tool_namespaces = ["mcp__history"]
+
+# Rollout budget tracking. This feature is under development and off by default.
+
+# limit_tokens is required when enabled.
+
+# Optional reminder_interval_tokens defaults to 10% of limit_tokens.
+
+# Token weights default to 1.0.
+
+# [features.rollout_budget]
+
+# enabled = true
+
+# limit_tokens = 100000
+
+# reminder_interval_tokens = 10000
+
+# sampling_token_weight = 1.0
+
+# prefill_token_weight = 1.0
 
 ################################################################################
 
@@ -3199,6 +3918,10 @@ enabled = true
 
 # open_world_enabled = true
 
+# approvals_reviewer = "user" # user | auto_review
+
+# default_tools_approval_mode = "auto" # auto | prompt | approve
+
 #
 
 # [apps.google_drive]
@@ -3208,6 +3931,8 @@ enabled = true
 # destructive_enabled = false # block destructive-hint tools for this app
 
 # default_tools_enabled = true
+
+# approvals_reviewer = "auto_review"
 
 # default_tools_approval_mode = "prompt" # auto | prompt | approve
 
@@ -3397,29 +4122,32 @@ basics](/codex/config-basic#configuration-precedence) for more information.
 
 #### Global flags
 
-| Key                                                  | Type / Values                                        | Default | Details                                                                                                                                                                                                                        |
-| ---------------------------------------------------- | ---------------------------------------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `--add-dir`                                          | `path`                                               |         | Grant additional directories write access alongside the main workspace. Repeat for multiple paths.                                                                                                                             |
-| `--ask-for-approval, -a`                             | `untrusted \| on-request \| never`                   |         | Control when Codex pauses for human approval before running a command. `on-failure` is deprecated; prefer `on-request` for interactive runs or `never` for non-interactive runs.                                               |
-| `--cd, -C`                                           | `path`                                               |         | Set the working directory for the agent before it starts processing your request.                                                                                                                                              |
-| `--config, -c`                                       | `key=value`                                          |         | Override configuration values. Values parse as JSON if possible; otherwise the literal string is used.                                                                                                                         |
-| `--dangerously-bypass-approvals-and-sandbox, --yolo` | `boolean`                                            | `false` | Run every command without approvals or sandboxing. Only use inside an externally hardened environment.                                                                                                                         |
-| `--dangerously-bypass-hook-trust`                    | `boolean`                                            | `false` | Run enabled hooks without requiring persisted hook trust for this invocation. Intended only for automation that already vets hook sources.                                                                                     |
-| `--disable`                                          | `feature`                                            |         | Force-disable a feature flag (translates to `-c features.=false`). Repeatable.                                                                                                                                                 |
-| `--enable`                                           | `feature`                                            |         | Force-enable a feature flag (translates to `-c features.=true`). Repeatable.                                                                                                                                                   |
-| `--image, -i`                                        | `path[,path...]`                                     |         | Attach one or more image files to the initial prompt. Separate multiple paths with commas or repeat the flag.                                                                                                                  |
-| `--model, -m`                                        | `string`                                             |         | Override the model set in configuration (for example `gpt-5.4`).                                                                                                                                                               |
-| `--no-alt-screen`                                    | `boolean`                                            | `false` | Disable alternate screen mode for the TUI (overrides `tui.alternate_screen` for this run).                                                                                                                                     |
-| `--oss`                                              | `boolean`                                            | `false` | Use the local open source model provider (equivalent to `-c model_provider="oss"`). Validates that Ollama is running.                                                                                                          |
-| `--profile, -p`                                      | `string`                                             |         | Layer `$CODEX_HOME/profile-name.config.toml` on top of the base user config.                                                                                                                                                   |
-| `--remote`                                           | `ws://host:port \| wss://host:port`                  |         | Connect the interactive TUI to a remote app-server WebSocket endpoint. Supported for `codex`, `codex resume`, and `codex fork`; other subcommands reject remote mode.                                                          |
-| `--remote-auth-token-env`                            | `ENV_VAR`                                            |         | Read a bearer token from this environment variable and send it when connecting with `--remote`. Requires `--remote`; tokens are only sent over `wss://` URLs or `ws://` URLs whose host is `localhost`, `127.0.0.1`, or `::1`. |
-| `--sandbox, -s`                                      | `read-only \| workspace-write \| danger-full-access` |         | Select the sandbox policy for model-generated shell commands.                                                                                                                                                                  |
-| `--search`                                           | `boolean`                                            | `false` | Enable live web search (sets `web_search = "live"` instead of the default `"cached"`).                                                                                                                                         |
-| `PROMPT`                                             | `string`                                             |         | Optional text instruction to start the session. Omit to launch the TUI without a pre-filled message.                                                                                                                           |
+| Key                                                  | Type / Values                                                 | Default | Details                                                                                                                                                                                                                     |
+| ---------------------------------------------------- | ------------------------------------------------------------- | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `--add-dir`                                          | `path`                                                        |         | Grant additional directories write access alongside the main workspace. Repeat for multiple paths.                                                                                                                          |
+| `--ask-for-approval, -a`                             | `untrusted \| on-request \| never`                            |         | Control when Codex pauses for human approval before running a command. `on-failure` is deprecated; prefer `on-request` for interactive runs or `never` for non-interactive runs.                                            |
+| `--cd, -C`                                           | `path`                                                        |         | Set the working directory for the agent before it starts processing your request.                                                                                                                                           |
+| `--config, -c`                                       | `key=value`                                                   |         | Override configuration values. Values parse as TOML if possible; otherwise the literal string is used.                                                                                                                      |
+| `--dangerously-bypass-approvals-and-sandbox, --yolo` | `boolean`                                                     | `false` | Run every command without approvals or sandboxing. Only use inside an externally hardened environment.                                                                                                                      |
+| `--dangerously-bypass-hook-trust`                    | `boolean`                                                     | `false` | Run enabled hooks without requiring persisted hook trust for this invocation. Intended only for automation that already vets hook sources.                                                                                  |
+| `--disable`                                          | `feature`                                                     |         | Force-disable a feature flag (translates to `-c features.=false`). Repeatable.                                                                                                                                              |
+| `--enable`                                           | `feature`                                                     |         | Force-enable a feature flag (translates to `-c features.=true`). Repeatable.                                                                                                                                                |
+| `--image, -i`                                        | `path[,path...]`                                              |         | Attach one or more image files to the initial prompt. Separate multiple paths with commas or repeat the flag.                                                                                                               |
+| `--model, -m`                                        | `string`                                                      |         | Override the model set in configuration (for example `gpt-5.4`).                                                                                                                                                            |
+| `--no-alt-screen`                                    | `boolean`                                                     | `false` | Disable alternate screen mode for the TUI (overrides `tui.alternate_screen` for this run).                                                                                                                                  |
+| `--oss`                                              | `boolean`                                                     | `false` | Use the local open source model provider (equivalent to `-c model_provider="oss"`). Validates that Ollama is running.                                                                                                       |
+| `--profile, -p`                                      | `string`                                                      |         | Layer `$CODEX_HOME/profile-name.config.toml` on top of the base user config.                                                                                                                                                |
+| `--remote`                                           | `ws://host:port \| wss://host:port \| unix:// \| unix://PATH` |         | Connect to a remote app-server endpoint over WebSocket or a Unix socket. Supported for `codex`, `codex resume`, `codex fork`, `codex archive`, `codex delete`, and `codex unarchive`; other subcommands reject remote mode. |
+| `--remote-auth-token-env`                            | `ENV_VAR`                                                     |         | Read a bearer token from this environment variable and send it when connecting with `--remote`. Requires `--remote`; tokens are only sent over `wss://` URLs or local-only `ws://` URLs.                                    |
+| `--sandbox, -s`                                      | `read-only \| workspace-write \| danger-full-access`          |         | Select the sandbox policy for model-generated shell commands.                                                                                                                                                               |
+| `--search`                                           | `boolean`                                                     | `false` | Enable live web search (sets `web_search = "live"` instead of the default `"cached"`).                                                                                                                                      |
+| `--strict-config`                                    | `boolean`                                                     | `false` | Error when `config.toml` contains fields this Codex version does not recognize. Supported by runtime commands such as `codex`, `exec`, `review`, `resume`, `fork`, `app-server`, `mcp-server`, and `exec-server`.           |
+| `PROMPT`                                             | `string`                                                      |         | Optional text instruction to start the session. Omit to launch the TUI without a pre-filled message.                                                                                                                        |
 
-These options apply to the base `codex` command and propagate to each subcommand unless a section below specifies otherwise.
-When you run a subcommand, place global flags after it (for example, `codex exec --oss ...`) so Codex applies them as intended.
+These options apply to the base `codex` command. Most propagate to commands;
+see the notes above or the relevant command help for exceptions. For propagated
+flags, follow the relevant command help. For example, `codex exec --oss ...`
+applies `--oss` to `exec`.
 
 #### Command overview
 
@@ -3433,10 +4161,13 @@ interpret these labels.
 | [`codex app`](/codex/cli/reference#codex-app)                                                           | `stable`       |         | Launch the Codex desktop app on macOS or Windows. On macOS, Codex can open a workspace path; on Windows, Codex prints the path to open. |
 | [`codex app-server`](/codex/cli/reference#codex-app-server)                                             | `experimental` |         | Launch the Codex app server for local development or debugging over stdio, WebSocket, or a Unix socket.                                 |
 | [`codex apply`](/codex/cli/reference#codex-apply)                                                       | `stable`       |         | Apply the latest diff generated by a Codex Cloud task to your local working tree. Alias: `codex a`.                                     |
+| [`codex archive`](/codex/cli/reference#codex-archive-and-codex-unarchive)                               | `stable`       |         | Archive a saved interactive session by session ID or session name.                                                                      |
 | [`codex cloud`](/codex/cli/reference#codex-cloud)                                                       | `experimental` |         | Browse or execute Codex Cloud tasks from the terminal without opening the TUI. Alias: `codex cloud-tasks`.                              |
 | [`codex completion`](/codex/cli/reference#codex-completion)                                             | `stable`       |         | Generate shell completion scripts for Bash, Zsh, Fish, or PowerShell.                                                                   |
 | [`codex debug app-server send-message-v2`](/codex/cli/reference#codex-debug-app-server-send-message-v2) | `experimental` |         | Debug app-server by sending a single V2 message through the built-in test client.                                                       |
 | [`codex debug models`](/codex/cli/reference#codex-debug-models)                                         | `experimental` |         | Print the raw model catalog Codex sees, including an option to inspect only the bundled catalog.                                        |
+| [`codex delete`](/codex/cli/reference#codex-delete)                                                     | `stable`       |         | Permanently delete a saved interactive session by session ID or session name.                                                           |
+| [`codex doctor`](/codex/cli/reference#codex-doctor)                                                     | `stable`       |         | Generate a diagnostic report for local installation, config, auth, runtime, Git, terminal, app-server, and thread inventory issues.     |
 | [`codex exec`](/codex/cli/reference#codex-exec)                                                         | `stable`       |         | Run Codex non-interactively. Alias: `codex e`. Stream results to stdout or JSONL and optionally resume previous sessions.               |
 | [`codex execpolicy`](/codex/cli/reference#codex-execpolicy)                                             | `experimental` |         | Evaluate execpolicy rule files and see whether a command would be allowed, prompted, or blocked.                                        |
 | [`codex features`](/codex/cli/reference#codex-features)                                                 | `stable`       |         | List feature flags and persistently enable or disable them in `config.toml`.                                                            |
@@ -3445,10 +4176,12 @@ interpret these labels.
 | [`codex logout`](/codex/cli/reference#codex-logout)                                                     | `stable`       |         | Remove stored authentication credentials.                                                                                               |
 | [`codex mcp`](/codex/cli/reference#codex-mcp)                                                           | `experimental` |         | Manage Model Context Protocol servers (list, add, remove, authenticate).                                                                |
 | [`codex mcp-server`](/codex/cli/reference#codex-mcp-server)                                             | `experimental` |         | Run Codex itself as an MCP server over stdio. Useful when another agent consumes Codex.                                                 |
+| [`codex plugin`](/codex/cli/reference#codex-plugin)                                                     | `experimental` |         | Install, list, and remove plugins from configured marketplace sources.                                                                  |
 | [`codex plugin marketplace`](/codex/cli/reference#codex-plugin-marketplace)                             | `experimental` |         | Add, list, upgrade, or remove plugin marketplaces from Git or local sources.                                                            |
 | [`codex remote-control`](/codex/cli/reference#codex-remote-control)                                     | `experimental` |         | Ensure the local app-server daemon is running with remote-control support enabled.                                                      |
 | [`codex resume`](/codex/cli/reference#codex-resume)                                                     | `stable`       |         | Continue a previous interactive session by ID or resume the most recent conversation.                                                   |
 | [`codex sandbox`](/codex/cli/reference#codex-sandbox)                                                   | `experimental` |         | Run arbitrary commands inside Codex-provided macOS, Linux, or Windows sandboxes.                                                        |
+| [`codex unarchive`](/codex/cli/reference#codex-archive-and-codex-unarchive)                             | `stable`       |         | Restore an archived interactive session by session ID or session name.                                                                  |
 | [`codex update`](/codex/cli/reference#codex-update)                                                     | `stable`       |         | Check for and apply a Codex CLI update when the installed release supports self-update.                                                 |
 
 #### Command details
@@ -3457,7 +4190,7 @@ interpret these labels.
 
 Running `codex` with no subcommand launches the interactive terminal UI (TUI). The agent accepts the global flags above plus image attachments. Web search defaults to cached mode; use `--search` to switch to live browsing. For low-friction local work, use `--sandbox workspace-write --ask-for-approval on-request`.
 
-Use `--remote ws://host:port` or `--remote wss://host:port` to connect the TUI to an app server started with `codex app-server --listen ws://IP:PORT`. Add `--remote-auth-token-env <ENV_VAR>` when the server requires a bearer token for WebSocket authentication.
+Use `--remote ws://host:port` or `--remote wss://host:port` to connect the TUI to an app server started with `codex app-server --listen ws://IP:PORT`. For a local Unix socket, use `--remote unix://` for the default socket or `--remote unix://PATH` for an explicit path. Add `--remote-auth-token-env <ENV_VAR>` when the server requires a bearer token for WebSocket authentication.
 
 #### `codex app-server`
 
@@ -3467,14 +4200,16 @@ Launch the Codex app server locally. This is primarily for development and debug
 | ----------------------------- | ----------------------------------------------------------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `--analytics-default-enabled` | `boolean`                                                   | `false`    | Defaults analytics to enabled for first-party app-server clients unless the user opts out in config.                                                                                                                   |
 | `--listen`                    | `stdio:// \| ws://IP:PORT \| unix:// \| unix://PATH \| off` | `stdio://` | Transport listener URL. Use `stdio://` for JSONL, `ws://IP:PORT` for a TCP WebSocket endpoint, `unix://` for the default Unix socket, `unix://PATH` for a custom Unix socket, or `off` to disable the local transport. |
+| `--stdio`                     | `boolean`                                                   | `false`    | Use stdio transport. Equivalent to `--listen stdio://` and mutually exclusive with `--listen`.                                                                                                                         |
 | `--ws-audience`               | `string`                                                    |            | Expected `aud` claim for signed bearer tokens. Requires `--ws-auth signed-bearer-token`.                                                                                                                               |
 | `--ws-auth`                   | `capability-token \| signed-bearer-token`                   |            | Authentication mode for app-server WebSocket clients. If omitted, WebSocket auth is disabled; non-local listeners warn during startup.                                                                                 |
 | `--ws-issuer`                 | `string`                                                    |            | Expected `iss` claim for signed bearer tokens. Requires `--ws-auth signed-bearer-token`.                                                                                                                               |
 | `--ws-max-clock-skew-seconds` | `number`                                                    | `30`       | Clock skew allowance when validating signed bearer token `exp` and `nbf` claims. Requires `--ws-auth signed-bearer-token`.                                                                                             |
 | `--ws-shared-secret-file`     | `absolute path`                                             |            | File containing the HMAC shared secret used to validate signed JWT bearer tokens. Required with `--ws-auth signed-bearer-token`.                                                                                       |
-| `--ws-token-file`             | `absolute path`                                             |            | File containing the shared capability token. Required with `--ws-auth capability-token`.                                                                                                                               |
+| `--ws-token-file`             | `absolute path`                                             |            | File containing the shared capability token. Use with `--ws-auth capability-token` unless you provide `--ws-token-sha256` instead.                                                                                     |
+| `--ws-token-sha256`           | `hexadecimal SHA-256 digest`                                |            | Expected SHA-256 digest for capability-token authentication. Use instead of `--ws-token-file` when the client token comes from another source.                                                                         |
 
-`codex app-server --listen stdio://` keeps the default JSONL-over-stdio behavior. `--listen ws://IP:PORT` enables WebSocket transport for app-server clients. The server accepts `ws://` listen URLs; use TLS termination or a secure proxy when clients connect with `wss://`. Use `--listen unix://` to accept WebSocket handshakes on Codex's default Unix socket, or `--listen unix:///absolute/path.sock` to choose a socket path. If you generate schemas for client bindings, add `--experimental` to include gated fields and methods.
+`codex app-server --listen stdio://` keeps the default JSONL-over-stdio behavior, and `codex app-server --stdio` is an alias for that transport. `--listen ws://IP:PORT` enables WebSocket transport for app-server clients. The server accepts `ws://` listen URLs; use TLS termination or a secure proxy when clients connect with `wss://`. Use `--listen unix://` to accept WebSocket handshakes on Codex's default Unix socket, or `--listen unix:///absolute/path.sock` to choose a socket path. If you generate schemas for client bindings, add `--experimental` to include gated fields and methods.
 
 #### `codex remote-control`
 
@@ -3526,6 +4261,44 @@ Apply the most recent diff from a Codex cloud task to your local repository. You
 
 Codex prints the patched files and exits non-zero if `git apply` fails (for example, due to conflicts).
 
+#### `codex archive` and `codex unarchive`
+
+Archive or restore a saved interactive session by session ID or session name.
+Use these commands when you want to clean up the session picker without deleting
+the transcript. Session IDs take precedence over session names.
+
+```bash
+codex archive
+codex unarchive
+```
+
+| Key                       | Type / Values                                                 | Default | Details                                                                                     |
+| ------------------------- | ------------------------------------------------------------- | ------- | ------------------------------------------------------------------------------------------- |
+| `--remote`                | `ws://host:port \| wss://host:port \| unix:// \| unix://PATH` |         | Connect to a remote app-server endpoint before changing archive state.                      |
+| `--remote-auth-token-env` | `ENV_VAR`                                                     |         | Read a bearer token from this environment variable when `--remote` requires authentication. |
+| `SESSION`                 | `session ID \| session name`                                  |         | Saved session to archive or restore. Session IDs take precedence over session names.        |
+
+#### `codex delete`
+
+Permanently delete a saved interactive session by session ID or session name.
+Use this only when you want to remove the transcript instead of hiding it from
+active session lists.
+
+```bash
+codex delete
+codex delete <SESSION_UUID> --force
+```
+
+| Key                       | Type / Values                                                 | Default | Details                                                                                                      |
+| ------------------------- | ------------------------------------------------------------- | ------- | ------------------------------------------------------------------------------------------------------------ |
+| `--force`                 | `boolean`                                                     | `false` | Delete without prompting. The session argument must be a UUID; names still require interactive confirmation. |
+| `--remote`                | `ws://host:port \| wss://host:port \| unix:// \| unix://PATH` |         | Connect to a remote app-server endpoint before deleting the session.                                         |
+| `--remote-auth-token-env` | `ENV_VAR`                                                     |         | Read a bearer token from this environment variable when `--remote` requires authentication.                  |
+| `SESSION`                 | `session ID \| session name`                                  |         | Saved session to delete. Session IDs take precedence over session names.                                     |
+
+Use `--force` only with a session UUID. Named sessions still require
+confirmation so Codex doesn't delete a repeated or ambiguous name without a prompt.
+
 #### `codex cloud`
 
 Interact with Codex cloud tasks from the terminal. The default command opens an interactive picker; `codex cloud exec` submits a task directly, and `codex cloud list` returns recent tasks for scripting or quick inspection.
@@ -3558,16 +4331,6 @@ Generate shell completion scripts and redirect the output to the appropriate loc
 | Key     | Type / Values                                  | Default | Details                                                     |
 | ------- | ---------------------------------------------- | ------- | ----------------------------------------------------------- |
 | `SHELL` | `bash \| zsh \| fish \| power-shell \| elvish` | `bash`  | Shell to generate completions for. Output prints to stdout. |
-
-#### `codex features`
-
-Manage feature flags stored in `~/.codex/config.toml` or the selected profile file. The `enable` and `disable` commands persist changes so they apply to future sessions. When you launch with `--profile profile-name`, Codex writes to `$CODEX_HOME/profile-name.config.toml` instead of the base user config.
-
-| Key                  | Type / Values             | Default | Details                                                                                                                                         |
-| -------------------- | ------------------------- | ------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
-| `Disable subcommand` | `codex features disable ` |         | Persistently disable a feature flag in the active config file. With `--profile profile-name`, writes to `$CODEX_HOME/profile-name.config.toml`. |
-| `Enable subcommand`  | `codex features enable `  |         | Persistently enable a feature flag in the active config file. With `--profile profile-name`, writes to `$CODEX_HOME/profile-name.config.toml`.  |
-| `List subcommand`    | `codex features list`     |         | Show known feature flags, their maturity stage, and their effective state.                                                                      |
 
 ### Agent internet access
 
@@ -3717,8 +4480,9 @@ Source: [Automations](/codex/app/automations.md)
 
 Automate recurring tasks in the background. Codex adds findings to the inbox, or automatically archives the task if there's nothing to report. You can combine automations with [skills](/codex/skills) for more complex tasks.
 
-For project-scoped automations, the app needs to be running, and the selected
-project needs to be available on disk.
+For project-scoped automations, the machine running the local Codex app must be
+powered on, Codex must be running, and the selected project must still be
+available on disk when the automation is scheduled to run.
 
 In Git repositories, you can choose whether an automation runs in your local
 project or on a new [worktree](/codex/app/worktrees). Both options run in the
@@ -3957,6 +4721,7 @@ Use these commands and keyboard shortcuts to navigate the Codex app.
 |             | Clear the terminal | Ctrl + L                   |
 | **Thread**  |                    |                            |
 |             | New thread         | Cmd + N or Cmd + Shift + O |
+|             | Search threads     | Cmd + G                    |
 |             | Find in thread     | Cmd + F                    |
 |             | Previous thread    | Cmd + Shift + [            |
 |             | Next thread        | Cmd + Shift + ]            |
@@ -3965,6 +4730,17 @@ Use these commands and keyboard shortcuts to navigate the Codex app.
 To find, customize, or reset shortcuts, open **Settings > Keyboard Shortcuts**.
 You can search by command name or switch the search field into keystroke mode
 and press the shortcut you want to find.
+
+#### Search past threads and find in a thread
+
+Use thread search (Cmd/Ctrl + G) to reopen a
+past conversation. When expanded matching is available in your Codex desktop
+app, it can also match conversation content and Git branch names, so you can
+search for a phrase from the thread or a branch such as `fix/login-redirect`.
+
+Use **Find in thread** (Cmd + F) after opening a thread
+to find text within that current conversation. It doesn't search across other
+threads.
 
 #### Slash commands
 
@@ -3985,6 +4761,7 @@ Enabled skills also appear in the slash command list.
 | ------------- | -------------------------------------------------------------------------------------- |
 | `/feedback`   | Open the feedback dialog to submit feedback and optionally include logs.               |
 | `/goal`       | Set a persistent goal for Codex to work toward; use `/plan` first to shape it.         |
+| `/init`       | Generate an `AGENTS.md` scaffold for the current project.                              |
 | `/mcp`        | Open MCP status to view connected servers.                                             |
 | `/plan`       | Toggle plan mode for multi-step planning.                                              |
 | `/review`     | Start code review mode to review uncommitted changes or compare against a base branch. |
@@ -4016,30 +4793,39 @@ For guidance on writing effective goals, see [Goal mode](/codex/prompting#goal-m
 
 #### Deep links
 
-The Codex app registers the `codex://` URL scheme so links can open specific parts of the app directly.
+The Codex app registers the `codex://` URL scheme so links can open specific parts of the app directly. Encode query string values before adding them to a URL.
 
-#### Common links
+#### Supported links
 
-Use these links when you just need to open a common app destination. The sections below list the full reference by link type.
+Use these canonical forms when you create links. The sections below list the full reference by link type.
 
-| Deep link             | Opens                                                 |
-| --------------------- | ----------------------------------------------------- |
-| `codex://threads/new` | A new local thread.                                   |
-| `codex://threads/`    | A local thread. `` must be the thread's session UUID. |
-| `codex://settings`    | Settings.                                             |
-| `codex://skills`      | Skills.                                               |
-| `codex://automations` | Automations with the create flow open.                |
+| Deep link                                    | Opens                                                            |
+| -------------------------------------------- | ---------------------------------------------------------------- |
+| `codex://threads/new`                        | A new local thread.                                              |
+| `codex://new?`                               | A new local thread with at least one new-thread query parameter. |
+| `codex://threads/`                           | A local thread. `` must be the thread's session UUID.            |
+| `codex://settings`                           | Settings.                                                        |
+| `codex://settings/connections/`              | Computer, device, or SSH connection settings.                    |
+| `codex://settings/connections/ssh/add?name=` | Adds a host from your SSH config to Codex.                       |
+| `codex://skills`                             | Skills.                                                          |
+| `codex://automations`                        | Automations with the create flow open.                           |
+| `codex://plugins/install/?marketplace=`      | The install flow for a plugin from a known marketplace.          |
+| `codex://plugins/`                           | A plugin detail page.                                            |
+| `codex://plugins/?marketplacePath=`          | A local plugin detail page from a local marketplace.             |
+| `codex://pets/install?name=&imageUrl=`       | The pet install flow.                                            |
 
 #### Threads
 
 Use these links when you need to open an existing local thread or start a new one.
 
-| Deep link             | Opens                                                 |
-| --------------------- | ----------------------------------------------------- |
-| `codex://threads/`    | A local thread. `` must be the thread's session UUID. |
-| `codex://threads/new` | A new local thread.                                   |
+| Deep link              | Opens                                                                                                          |
+| ---------------------- | -------------------------------------------------------------------------------------------------------------- |
+| `codex://threads/`     | A local thread. `` must be the thread's session UUID.                                                          |
+| `codex://threads/new`  | A new local thread.                                                                                            |
+| `codex://threads/new?` | A new local thread with optional query parameters.                                                             |
+| `codex://new?`         | A new local thread. Include at least one of `prompt`, `path`, or `originUrl`; otherwise the link does nothing. |
 
-For `codex://threads/new`, add any of these query parameters as needed; you can combine them in the same URL.
+For `codex://threads/new` or `codex://new`, add any of these query parameters as needed; you can combine them in the same URL.
 
 | Query parameter | Required | What it does                                                                                                                                                    |
 | --------------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -4053,12 +4839,22 @@ Example: [Show me some fun stats about how I've been using Codex](codex://thread
 
 Use these links when you need to open Settings or a specific settings page.
 
-| Deep link                                     | Opens                                    |
-| --------------------------------------------- | ---------------------------------------- |
-| `codex://settings`                            | Settings.                                |
-| `codex://settings/browser-use`                | Browser use settings.                    |
-| `codex://settings/computer-use/google-chrome` | Google Chrome settings for computer use. |
-| `codex://settings/connections`                | Remote connections settings.             |
+| Deep link                                     | Opens                                                                                        |
+| --------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| `codex://settings`                            | Settings.                                                                                    |
+| `codex://settings/browser-use`                | Browser settings.                                                                            |
+| `codex://settings/computer-use/google-chrome` | Google Chrome settings for computer use.                                                     |
+| `codex://settings/connections`                | Remote connections settings.                                                                 |
+| `codex://settings/connections/computer`       | Settings for controlling this Mac or PC from another device.                                 |
+| `codex://settings/connections/devices`        | Settings for controlling other devices.                                                      |
+| `codex://settings/connections/ssh`            | SSH connection settings.                                                                     |
+| `codex://settings/connections/ssh/add?name=`  | Adds the named host alias as a Codex-managed connection, then opens SSH connection settings. |
+
+The `name` value must match a host alias in `~/.ssh/config`. The link disables
+automatic connection for the added host. If Codex can't find the named host, it
+opens SSH connection settings and shows an error.
+
+Unsupported `codex://settings/...` paths open the main Settings page.
 
 #### Skills
 
@@ -4078,7 +4874,21 @@ Use these links when you need to open Automations.
 
 #### Plugins
 
-Plugin links use different forms depending on whether you are opening a plugin, installing from a marketplace, or working from a local `marketplace.json`. For plugin basics, see [Plugins](/codex/plugins). For local or repo marketplace setup, see [Build plugins](/codex/plugins/build#build-your-own-curated-plugin-list).
+Plugin links use different forms depending on whether you are installing from a marketplace, opening a plugin, or working from a local `marketplace.json`. For plugin basics, see [Plugins](/codex/plugins). For local or repo marketplace setup, see [Build plugins](/codex/plugins/build#build-your-own-curated-plugin-list).
+
+#### Plugin install
+
+Use this form to open the install flow for a plugin from a marketplace that Codex already knows about.
+
+| Deep link                               | Opens                                           |
+| --------------------------------------- | ----------------------------------------------- |
+| `codex://plugins/install/?marketplace=` | The plugin detail or install flow for a plugin. |
+
+| Query parameter | Required | What it does                                                                    |
+| --------------- | -------- | ------------------------------------------------------------------------------- |
+| `marketplace=`  | Yes      | Identifies the marketplace. For an OpenAI-curated plugin, use `openai-curated`. |
+
+The install link accepts only the `marketplace` query parameter. If Codex can't find the requested marketplace or plugin, it opens the Plugins page instead.
 
 #### Plugin detail
 
@@ -4088,12 +4898,12 @@ Plugin links use different forms depending on whether you are opening a plugin, 
 
 ``must identify the plugin. For an OpenAI-curated plugin, use the form`@openai-curated`.
 
-Codex-generated plugin links can also include these query parameters. Omit both when you handwrite a link.
+Codex-generated plugin links can also include these query parameters. Omit both when you write a link manually.
 
 | Query parameter | Required | What it does                                                                                                                                    |
 | --------------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
 | `hostId=`       | No       | Identifies the Codex host that owns the plugin context, such as `local` or one of your configured remote connections. Codex provides these IDs. |
-| `source=manage` | No       | Preserves the app's plugin-management entry point. It is not admin-only.                                                                        |
+| `source=manage` | No       | Preserves the app's plugin-management entry point. It's not admin-only.                                                                         |
 
 Example: [Open the OpenAI Developers plugin](codex://plugins/openai-developers@openai-curated)
 
@@ -4145,6 +4955,12 @@ The sections below note platform-specific exceptions.
 
 Use one Codex app window to run tasks across projects. Add a project for each
 codebase and switch between them as needed.
+
+When available in your Codex desktop app, you can ask Codex to manage threads
+in your local projects or worktrees. For example, ask it to find a related
+thread, continue an existing thread, or pin or archive a thread. To create a
+separate background thread, make that request explicit: `Create a separate
+background thread in a worktree for this project to update the tests.`
 
 If you've used the [Codex CLI](/codex/cli), a project is like starting a
 session in a specific directory.
@@ -4266,16 +5082,13 @@ blocked websites from settings.
 
 #### Computer use
 
-[Computer use](/codex/app/computer-use) helps Codex operate a macOS app by
-seeing, clicking, and typing. This is useful for testing desktop apps, checking
-browser or simulator flows, working with data sources that aren't available as
-plugins, changing app settings, and reproducing GUI-only bugs.
+[Computer use](/codex/app/computer-use) helps Codex operate a macOS or Windows
+app by seeing, clicking, and typing. This is useful for testing desktop apps,
+checking browser or simulator flows, working with data sources that aren't
+available as plugins, changing app settings, and reproducing GUI-only bugs.
 
 Because computer use can affect app and system state outside your project
 workspace, keep tasks narrow and review permission prompts before continuing.
-
-The feature isn't available in the European Economic Area, the United Kingdom, or
-Switzerland at launch.
 
 #### Work with non-code artifacts
 
@@ -4381,9 +5194,23 @@ press Cmd+,.
 
 #### General
 
-Choose where files open and how much command output appears in threads. You can also
-require Cmd+Enter for multiline prompts or prevent sleep while a
-thread runs.
+Choose where files open, how much command output appears in threads, and where
+terminal tabs open by default. You can also require Cmd+Enter
+for multiline prompts or prevent sleep while a thread runs.
+
+#### Profile
+
+Use **Profile** to review activity insights, lifetime tokens, peak tokens,
+streaks, your longest task, and token activity. You can also update your profile
+details, such as your picture, display name, and username, and save a profile
+card with usage highlights. Sharing profile cards is available on consumer
+ChatGPT plans.
+
+Eligible users can also send Codex invitations from the profile menu. Choose
+**Invite a friend** on an eligible personal plan or **Invite a coworker** in an
+eligible Business workspace. See
+[Invite friends and coworkers](/codex/pricing#invite-friends-and-coworkers) for
+current rewards, limits, and eligibility.
 
 #### Keyboard shortcuts
 
@@ -4450,23 +5277,27 @@ add your own. If a server requires OAuth, the app starts the auth flow. These se
 also apply to the Codex CLI and IDE extension because the MCP configuration lives in
 `config.toml`. See the [Model Context Protocol docs](/codex/mcp) for details.
 
-#### Browser use
+#### Browser
 
 Use these settings to install or enable the bundled Browser plugin, set up the
-[Codex Chrome extension](/codex/app/chrome-extension), and manage allowlisted
-and blocklisted websites. Codex asks before using a website unless you've
-allowlisted it. Removing a site from the blocklist lets Codex ask again before
-using it in the browser.
+[Codex Chrome extension](/codex/app/chrome-extension), and manage allowed and
+blocked websites. Codex asks before using a website unless you've allowed it.
+Removing a blocked site lets Codex ask again before using it in the browser.
+
+Under **Developer mode**, turn on **Enable full CDP access** to let Codex use
+the Chrome DevTools Protocol for performance profiling and deeper browser
+debugging. If your organization has disabled full CDP access, you can't enable
+it locally. See [Developer mode](/codex/app/browser#developer-mode) for setup,
+risk, approval details, and the administrator requirement.
 
 See [In-app browser](/codex/app/browser) for browser preview, comment, and
 browser use workflows.
 
 #### Computer Use
 
-On macOS, check your Computer Use settings to review desktop-app access and related
-preferences after setup. To revoke system-level access, update Screen Recording
-or Accessibility permissions in macOS Privacy & Security settings. The feature
-isn't available in the EEA, the United Kingdom, or Switzerland at launch.
+Check your Computer Use settings to review desktop-app access and related
+preferences after setup. On macOS, revoke system-level access by updating Screen
+Recording or Accessibility permissions in macOS Privacy & Security settings.
 
 #### Personalization
 
@@ -4716,10 +5547,11 @@ chmod 600 "$TOKEN_FILE"
 codex app-server --listen ws://0.0.0.0:4500 --ws-auth capability-token --ws-token-file "$TOKEN_FILE"
 ```
 
-`--remote` accepts explicit `ws://host:port` and `wss://host:port` addresses.
-Plain WebSocket connections are appropriate for localhost and SSH
-port-forwarding workflows. For non-local clients, use WebSocket auth and put the
-connection behind TLS.
+`--remote` accepts explicit `ws://host:port`, `wss://host:port`, `unix://`, and
+`unix://PATH` addresses. Use `unix://` for Codex's default local Unix socket or
+`unix://PATH` for an explicit local socket path. Plain WebSocket connections are
+appropriate for localhost and SSH port-forwarding workflows. For non-local
+clients, use WebSocket auth and put the connection behind TLS.
 
 Codex supports these WebSocket authentication modes:
 
@@ -4731,7 +5563,7 @@ Codex supports these WebSocket authentication modes:
 
 The TUI sends the remote auth token as an `Authorization: Bearer ` header
 during the WebSocket handshake. Codex only accepts remote auth tokens over
-`wss://` URLs or loopback `ws://` URLs.
+`wss://` URLs or local-only `ws://` URLs.
 
 ```bash
 export CODEX_REMOTE_TOKEN="$(cat "$TOKEN_FILE")"
@@ -4745,7 +5577,7 @@ remote-control support enabled.
 
 #### Models and reasoning
 
-For most tasks in Codex, `gpt-5.5` is the recommended model. It is OpenAI's newest frontier model for complex coding, computer
+For most tasks in Codex, `gpt-5.5` is the recommended model. It's OpenAI's newest frontier model for complex coding, computer
 use, knowledge work, and research workflows, with stronger planning, tool use,
 and follow-through on multi-step tasks. For extra fast tasks, ChatGPT Pro subscribers have
 access to the GPT-5.3-Codex-Spark model in research preview.
@@ -4768,7 +5600,9 @@ codex features enable unified_exec
 codex features disable shell_snapshot
 ```
 
-`codex features enable ` and `codex features disable ` write to `~/.codex/config.toml`. If you launch Codex with `--profile profile-name`, Codex writes to `$CODEX_HOME/profile-name.config.toml` instead.
+`codex features enable ` and `codex features disable ` write
+to `$CODEX_HOME/config.toml`. The `features` subcommand doesn't accept
+`--profile`.
 
 #### Subagents
 
@@ -5079,16 +5913,15 @@ You can also run `codex features enable goals` from the CLI or ask Codex to run 
 
 Source: [Computer Use](/codex/app/computer-use.md)
 
-In the Codex app, computer use is currently available on macOS, except in the
-European Economic Area, the United Kingdom, and Switzerland at launch. Install
-the Computer Use plugin, then grant Screen Recording and Accessibility
-permissions when macOS prompts you.
+In supported regions, computer use in the Codex app is available on macOS and
+Windows. Install the Computer Use plugin. On macOS, grant Screen Recording and
+Accessibility permissions when prompted.
 
-With computer use, Codex can see and operate graphical user interfaces on macOS.
-Use it for tasks where command-line tools or structured integrations aren't
-enough, such as checking a desktop app, using a browser, changing app settings,
-working with a data source that isn't available as a plugin, or reproducing a
-bug that only happens in a graphical user interface.
+With computer use, Codex can see and operate graphical user interfaces on macOS
+or Windows. Use it for tasks where command-line tools or structured integrations
+aren't enough, such as checking a desktop app, using a browser, changing app
+settings, working with a data source that isn't available as a plugin, or
+reproducing a bug that only happens in a graphical user interface.
 
 Because computer use can affect app and system state outside your project
 workspace, use it for scoped tasks and review permission prompts before
@@ -5097,11 +5930,12 @@ continuing.
 #### Set up computer use
 
 In Codex settings, open **Computer Use** and click **Install** to install the
-Computer Use plugin before you ask Codex to operate desktop apps. When macOS
-prompts for access, grant Screen Recording and Accessibility permissions if you
-want Codex to see and interact with the target app.
+Computer Use plugin before you ask Codex to operate desktop apps. On Windows,
+keep the target app visible on the active desktop while the task runs. On
+macOS, grant Screen Recording and Accessibility permissions when prompted so
+Codex can see and interact with the target app.
 
-To use computer use, grant:
+On macOS, grant:
 
 - **Screen Recording** permission so Codex can see the target app.
 - **Accessibility** permission so Codex can click, type, and navigate.
@@ -5113,18 +5947,31 @@ hard to verify through files or command output alone.
 
 Good fits include:
 
-- Testing a macOS app, an iOS simulator flow, or another desktop app that Codex
-  is building.
+- Testing a macOS app, Windows app, iOS simulator flow, or another desktop app
+  that Codex is building.
 - Performing a task that requires your web browser.
 - Reproducing a bug that only appears in a graphical interface.
 - Changing app settings that require clicking through a UI.
 - Inspecting information in an app or data source that isn't available through a
   plugin.
-- Running a scoped task in the background while you keep working elsewhere.
+- On macOS, running a scoped task in the background while you keep working
+  elsewhere.
 - Executing a workflow that spans more than one app.
 
 For web apps you are building locally, use the
 [in-app browser](/codex/app/browser) first.
+
+#### Windows foreground use
+
+On Windows, computer use runs on the active desktop. It can't operate in the
+background while you keep using the same Windows session, so expect Codex to
+move the pointer, type, and take over the foreground while the task runs.
+
+For Windows tasks that should continue while you step away, keep the Windows
+device unlocked and connected to the internet. Use
+[remote control](/codex/remote-connections) from your phone to check progress
+or send follow-up instructions, or run the Codex app inside a Windows virtual
+machine so computer use takes over the VM instead of your main desktop.
 
 #### Start a computer use task
 
@@ -5147,10 +5994,11 @@ computer use when Codex needs to inspect or operate the app visually.
 
 #### Permissions and approvals
 
-The macOS system permissions for computer use are separate from app approvals in
-Codex. The macOS permissions let Codex see and operate apps. App approvals
-determine which apps you allow Codex to use. File reads, file edits, and shell
-commands still follow the sandbox and approval settings for the thread.
+System permissions for computer use are separate from app approvals in Codex.
+On macOS, Screen Recording and Accessibility permissions let Codex see and
+operate apps. App approvals determine which apps you allow Codex to use. File
+reads, file edits, and shell commands still follow the sandbox and approval
+settings for the thread.
 
 With computer use, Codex can see and take action only in the apps you allow.
 During a task, Codex asks for your permission before it can use an app on your
@@ -5162,9 +6010,33 @@ Codex may also ask for permission before taking sensitive or disruptive actions.
 
 If Codex can't see or control an app, open **System Settings > Privacy &
 Security** and check **Screen Recording** and **Accessibility** for the Codex
-app.
+app on macOS. On Windows, make sure the target app is visible in the active
+desktop session.
+
+#### Configure Windows app policy
+
+On Windows, Computer Use stores persistent app decisions in
+`$CODEX_HOME/computer-use/config.toml`. List apps that Computer Use can open
+without prompting and apps that it must decline:
+
+```toml
+[apps]
+allowed = ["mspaint.exe"]
+denied = ["calc.exe"]
+```
+
+Use the app identifier that Windows Computer Use reports, such as an executable
+name for a desktop app or an app user model ID for a packaged app. Denied apps
+take precedence over allowed apps. Codex prompts for apps that don't appear in
+either list.
+
+This file stores local Computer Use decisions. It's separate from the
+admin-enforced `requirements.toml`, where administrators can disable Computer
+Use with `[features].computer_use = false`.
 
 #### Locked use
+
+Locked use is for macOS. On Windows, computer use works in the foreground.
 
 Locked computer use lets Codex use Computer Use after your Mac locks, but only
 after you enable it. Use it when a Codex task needs to use desktop apps from a
@@ -5212,6 +6084,8 @@ Keep tasks narrow and stay present for sensitive flows:
 - Give Codex one clear target app or flow at a time.
 - You can stop the task or take over your computer at any time.
 - Keep sensitive apps closed unless they're required for the task.
+- On Windows, expect Codex to take over foreground input while it works; use a
+  secondary device, a VM, or stop the task before using that desktop yourself.
 - Avoid tasks that require secrets unless you're present and can approve each
   step.
 - Review app permission prompts before allowing Codex to use an app.
@@ -5348,6 +6222,36 @@ enough to review in one pass.
 
 For repository changes, use the [review pane](/codex/app/review) to inspect the
 changes and leave comments.
+
+#### Developer mode
+
+Developer mode works with Browser use in Chrome and the Codex in-app browser.
+It gives Codex controlled access to the Chrome DevTools Protocol (CDP). Use it
+when you want Codex to profile JavaScript, inspect console output and network
+traffic, examine page state such as the DOM and applied styles, or diagnose an
+issue directly in the live browser.
+
+To enable it, open [**Settings > Browser**](codex://settings/browser-use) and,
+under **Developer mode**, turn on **Enable full CDP access**. If your
+organization has disabled this setting, you can't enable it locally. Admins can
+set `browser_use_full_cdp_access = false` under `[features]` in
+[`requirements.toml`](/codex/enterprise/managed-configuration#pin-feature-flags).
+
+Full CDP access lets Codex inspect and control sensitive browser internals that
+may put your data at risk. Codex asks for explicit approval before it uses full
+CDP to inspect a website. Review the site, task, and requested access before you
+approve it.
+
+Use `@Browser` for the in-app browser. To use Developer mode in Chrome,
+[set up the Codex Chrome extension](/codex/app/chrome-extension) and invoke
+`@Chrome`.
+
+For example:
+
+```text
+This app is slow. Use @Browser to capture a performance trace and inspect
+network traffic, then identify the bottleneck.
+```
 
 ### Local environments
 
@@ -5530,8 +6434,10 @@ completion still works before you queue the command.
 | [`/agent`](#switch-agent-threads-with-agent)                                    | Switch the active agent thread.                                 | Inspect or continue work in a spawned subagent thread.                                                     |
 | [`/apps`](#browse-apps-with-apps)                                               | Browse apps (connectors) and insert them into your prompt.      | Attach an app as `$app-slug` before asking Codex to use it.                                                |
 | [`/plugins`](#browse-plugins-with-plugins)                                      | Browse installed and discoverable plugins.                      | Inspect plugin tools, install suggested plugins, or manage plugin availability.                            |
-| [`/hooks`](#review-hooks-with-hooks)                                            | Review lifecycle hooks.                                         | Inspect configured hooks, trust new or changed hooks, or disable non-managed hooks before they run.        |
+| [`/hooks`](#view-and-manage-lifecycle-hooks-with-hooks)                         | View and manage lifecycle hooks.                                | Inspect configured hooks, trust new or changed hooks, or disable non-managed hooks before they run.        |
 | [`/clear`](#clear-the-terminal-and-start-a-new-chat-with-clear)                 | Clear the terminal and start a fresh chat.                      | Reset the visible UI and conversation together when you want a fresh start.                                |
+| [`/archive`](#archive-the-current-session-with-archive)                         | Archive the current session and exit Codex.                     | Remove the current session from active session lists without deleting its transcript.                      |
+| [`/delete`](#delete-the-current-session-with-delete)                            | Permanently delete the current session and exit Codex.          | Remove the transcript and descendant sessions when archiving isn't enough.                                 |
 | [`/compact`](#keep-transcripts-lean-with-compact)                               | Summarize the visible conversation to free tokens.              | Use after long runs so Codex retains key points without blowing the context window.                        |
 | [`/copy`](#copy-the-latest-response-with-copy)                                  | Copy the latest completed Codex output.                         | Grab the latest finished response or plan text without manually selecting it. You can also press `Ctrl+O`. |
 | [`/diff`](#review-changes-with-diff)                                            | Show the Git diff, including files Git isn't tracking yet.      | Review Codex's edits before you commit or run tests.                                                       |
@@ -5540,7 +6446,7 @@ completion still works before you queue the command.
 | [`/approve`](#approve-an-auto-review-denial-with-approve)                       | Approve one retry of a recent auto review denial.               | Retry a command or action that the auto reviewer denied.                                                   |
 | [`/memories`](#configure-memories-with-memories)                                | Configure memory use and generation.                            | Turn memory injection or memory generation on or off without leaving the TUI.                              |
 | [`/skills`](#use-skills-with-skills)                                            | Browse and use skills.                                          | Improve task-specific behavior by selecting a relevant local skill.                                        |
-| [`/hooks`](#view-lifecycle-hooks-with-hooks)                                    | View and manage lifecycle hooks.                                | Inspect hook configuration loaded into the current session.                                                |
+| [`/import`](#import-claude-code-configuration-with-import)                      | Import Claude Code setup, project files, and recent chats.      | Migrate supported external-agent artifacts into Codex configuration and local files.                       |
 | [`/feedback`](#send-feedback-with-feedback)                                     | Send logs to the Codex maintainers.                             | Report issues or share diagnostics with support.                                                           |
 | [`/init`](#generate-agentsmd-with-init)                                         | Generate an `AGENTS.md` scaffold in the current directory.      | Capture persistent instructions for the repository or subdirectory you're working in.                      |
 | [`/logout`](#sign-out-with-logout)                                              | Sign out of Codex.                                              | Clear local credentials when using a shared machine.                                                       |
@@ -5554,13 +6460,14 @@ completion still works before you queue the command.
 | [`/ps`](#check-background-terminals-with-ps)                                    | Show experimental background terminals and their recent output. | Check long-running commands without leaving the main transcript.                                           |
 | [`/stop`](#stop-background-terminals-with-stop)                                 | Stop all background terminals.                                  | Cancel background terminal work started by the current session.                                            |
 | [`/fork`](#fork-the-current-conversation-with-fork)                             | Fork the current conversation into a new thread.                | Branch the active session to explore a new approach without losing the current transcript.                 |
-| [`/side`](#start-a-side-conversation-with-side)                                 | Start an ephemeral side conversation.                           | Ask a focused follow-up without disrupting the main thread's transcript.                                   |
+| [`/side`, `/btw`](#start-a-side-conversation-with-side)                         | Start an ephemeral side conversation.                           | Ask a focused follow-up without disrupting the main thread's transcript.                                   |
 | [`/raw`](#toggle-raw-scrollback-with-raw)                                       | Toggle raw scrollback mode.                                     | Make terminal selection and copying less formatted while reviewing long output.                            |
 | [`/resume`](#resume-a-saved-conversation-with-resume)                           | Resume a saved conversation from your session list.             | Continue work from a previous CLI session without starting over.                                           |
 | [`/new`](#start-a-new-conversation-with-new)                                    | Start a new conversation inside the same CLI session.           | Reset the chat context without leaving the CLI when you want a fresh prompt in the same repo.              |
 | [`/quit`](#exit-the-cli-with-quit-or-exit)                                      | Exit the CLI.                                                   | Leave the session immediately.                                                                             |
 | [`/review`](#ask-for-a-working-tree-review-with-review)                         | Ask Codex to review your working tree.                          | Run after Codex completes work or when you want a second set of eyes on local changes.                     |
 | [`/status`](#inspect-the-session-with-status)                                   | Display session configuration and token usage.                  | Confirm the active model, approval policy, writable roots, and remaining context capacity.                 |
+| [`/usage`](#view-account-usage-with-usage)                                      | View account token usage or use a rate-limit reset.             | Inspect daily, weekly, or cumulative ChatGPT token activity from inside the TUI.                           |
 | [`/debug-config`](#inspect-config-layers-with-debug-config)                     | Print config layer and requirements diagnostics.                | Debug precedence and policy requirements, including experimental network constraints.                      |
 | [`/statusline`](#configure-footer-items-with-statusline)                        | Configure TUI status-line fields interactively.                 | Pick and reorder footer items (model/context/limits/git/tokens/session) and persist in config.toml.        |
 | [`/title`](#configure-terminal-title-items-with-title)                          | Configure terminal window or tab title fields interactively.    | Pick and reorder title items such as project, status, thread, branch, model, and task progress.            |
@@ -5669,12 +6576,16 @@ Expected: Codex updates the relevant memory settings for future sessions.
 Expected: Codex inserts the selected skill context so the next request follows
 that skill's instructions.
 
-#### View lifecycle hooks with `/hooks`
+#### Import Claude Code configuration with `/import`
 
-1. Type `/hooks`.
-2. Review the loaded lifecycle hook configuration.
+1. Type `/import`.
+2. Choose the Claude Code setup, project files, or recent chats you want to migrate.
 
-Expected: Codex shows the hooks that can run in the current session.
+Expected: Codex opens the external-agent import picker and imports the selected
+supported artifacts into Codex configuration and local files.
+
+Run `/import` from a local TUI session. It's unavailable while a task is running,
+in remote sessions, and while connected to the local app-server daemon.
 
 #### Clear the terminal and start a new chat with `/clear`
 
@@ -5687,32 +6598,6 @@ Unlike Ctrl+L, `/clear` starts a new conversation.
 
 Ctrl+L only clears the terminal view and keeps the current
 chat. Codex disables both actions while a task is in progress.
-
-#### Update permissions with `/permissions`
-
-1. Type `/permissions` and press Enter.
-2. Select the approval preset that matches your comfort level, for example
-   `Auto` for hands-off runs or `Read Only` to review edits.
-
-Expected: Codex announces the updated policy. Future actions respect the
-updated approval mode until you change it again.
-
-#### Include IDE context with `/ide`
-
-1. Type `/ide`.
-2. Add optional inline text if you want to explain what Codex should do with the
-   current IDE selection or open files.
-
-Expected: Codex includes available IDE context in the next prompt.
-
-#### Toggle Vim mode with `/vim`
-
-1. Type `/vim`.
-2. Continue editing in the composer.
-
-Expected: Codex toggles composer Vim mode for the current session. To make Vim
-mode the default for new sessions, set `tui.vim_mode_default = true` in
-`config.toml`.
 
 ### Troubleshooting
 
@@ -5757,12 +6642,13 @@ section.
 
 #### Code doesn't run on a worktree
 
-Worktrees are created in a different directory and only inherit the files that
-are checked into Git. Depending on how you manage dependencies and tooling
-for your project you might have to run some setup scripts on your worktree using a
-[local environment](/codex/app/local-environments). Alternatively you can check out
-the changes in your regular local project. Check out the
-[worktrees documentation](/codex/app/worktrees) to learn more.
+Worktrees are created in a different directory and inherit files checked into
+Git by default. Depending on how you manage dependencies and tooling for your
+project, you might have to run setup scripts on your worktree using a
+[local environment](/codex/app/local-environments) or copy ignored setup files
+with [`.worktreeinclude`](/codex/app/worktrees#copy-ignored-local-files-into-managed-worktrees).
+Alternatively, you can check out the changes in your regular local project. See
+the [worktrees documentation](/codex/app/worktrees) to learn more.
 
 #### App doesn't pick up a teammate's shared local environment
 
@@ -5865,15 +6751,11 @@ It runs natively on Windows using PowerShell and the
 [Windows sandbox](/codex/windows#windows-sandbox), or you can configure it to
 run in [Windows Subsystem for Linux 2 (WSL2)](#windows-subsystem-for-linux-wsl).
 
-#### Download and update the Codex app
+#### Download the Codex app
 
-Download the Codex app from the
-[Microsoft Store](https://get.microsoft.com/installer/download/9PLM9XGG6VKS?cid=website_cta_psi).
+Download the [Codex app](https://get.microsoft.com/installer/download/9PLM9XGG6VKS?cid=website_cta_psi) for Windows.
 
 Then follow the [quickstart](/codex/quickstart?setup=app) to get started.
-
-To update the app, open the Microsoft Store, go to **Downloads**, and click
-**Check for updates**. The Store installs the latest version afterward.
 
 For enterprises, administrators can deploy the app with Microsoft Store app
 distribution through enterprise management tools.
@@ -6143,7 +7025,7 @@ Each thread keeps the same associated worktree over time. If you hand the thread
 
 You can also go the other direction. If you're already working in Local and want to free up the foreground, use **Hand off** to move the thread to a worktree. This is useful when you want Codex to keep working in the background while you switch your attention back to something else locally.
 
-Since Handoff uses Git operations, any files that are part of your `.gitignore` file won't move with the thread.
+Since Handoff uses Git operations, any files that are part of your `.gitignore` file won't move with the thread unless Codex copies them into a local managed worktree with `.worktreeinclude`.
 
 #### Advanced details
 
@@ -6151,11 +7033,28 @@ Since Handoff uses Git operations, any files that are part of your `.gitignore` 
 
 By default, threads use a Codex-managed worktree. These are meant to feel lightweight and disposable. A Codex-managed worktree is typically dedicated to one thread, and Codex returns that thread to the same worktree if you hand it back there later.
 
-If you want a long-lived environment, create a permanent worktree from the three-dot menu on a project in the sidebar. This creates a new permanent worktree as its own project. Permanent worktrees are not automatically deleted, and you can start multiple threads from the same worktree.
+If you want a long-lived environment, create a permanent worktree from the three-dot menu on a project in the sidebar. This creates a new permanent worktree as its own project. Permanent worktrees aren't automatically deleted, and you can start multiple threads from the same worktree.
 
 #### How Codex manages worktrees for you
 
 Codex creates worktrees in `$CODEX_HOME/worktrees`. The starting commit will be the `HEAD` commit of the branch selected when you start your thread. If you chose a branch with local changes, the uncommitted changes will be applied to the worktree as well. The worktree will _not_ be checked out as a branch. It will be in a [detached HEAD](https://git-scm.com/docs/git-checkout#_detached_head) state. This lets Codex create several worktrees without polluting your branches.
+
+#### Copy ignored local files into managed worktrees
+
+Local Codex-managed worktrees start from a Git checkout, so tracked files are already present. If your repository ignores local setup files that a new worktree needs, add a `.worktreeinclude` file to the repository root and list the ignored paths or `.gitignore`-style patterns to copy when Codex creates a managed worktree.
+
+Use this for files Git intentionally ignores, such as `.env`, `.env.local`, or `config/secrets.json`. Codex only copies ignored files that match `.worktreeinclude`; it doesn't copy other local files that Git doesn't track. Don't list tracked files.
+
+Codex automatically copies an ignored `AGENTS.override.md` into local managed worktrees, so you don't need to list it in `.worktreeinclude`.
+
+```text
+# .worktreeinclude
+.env
+.env.local
+config/secrets.json
+```
+
+Codex skips source symlinks and won't overwrite files that already exist in the new checkout. This behavior applies to local Codex app managed worktrees, not remote worktrees or Git worktrees you create yourself from the command line.
 
 #### Branch limitations
 
@@ -6313,8 +7212,8 @@ ChatGPT Plus, Pro, Business, Edu, and Enterprise plans include Codex. Learn more
 
 The Codex app is available on macOS and Windows.
 
-Most Codex app features are available on both platforms. Platform-specific
-exceptions are noted in the relevant docs.
+Most Codex app features are available on both platforms. The relevant docs
+describe platform-specific exceptions.
 
 1. Download and install the Codex app
 
@@ -6324,7 +7223,7 @@ exceptions are noted in the relevant docs.
 
    Once you downloaded and installed the Codex app, open it and sign in with your ChatGPT account or an OpenAI API key.
 
-   If you sign in with an OpenAI API key, some functionality such as [cloud threads](/codex/prompting#threads) might not be available.
+   If you sign in with an OpenAI API key, [some functionality might not be available](/codex/pricing#feature-availability).
 
 3. Select a project
 
@@ -6445,7 +7344,7 @@ Skills are available in the Codex CLI, IDE extension, and Codex app.
 
 Skills use **progressive disclosure** to manage context efficiently: Codex starts with each skill's name, description, and file path. Codex loads the full `SKILL.md` instructions only when it decides to use a skill.
 
-Codex includes an initial list of available skills in context so it can choose the right skill for a task. To avoid crowding out the rest of the prompt, this list is capped at roughly 2% of the model’s context window, or 8,000 characters when the context window is unknown. If many skills are installed, Codex shortens skill descriptions first. For very large skill sets, some skills may be omitted from the initial list, and Codex will show a warning.
+Codex includes an initial list of available skills in context so it can choose the right skill for a task. To avoid crowding out the rest of the prompt, this list uses at most 2% of the model’s context window, or 8,000 characters when the context window is unknown. If many skills are installed, Codex shortens skill descriptions first. For large skill sets, Codex may omit some skills from the initial list and show a warning.
 
 This budget applies only to the initial skills list. When Codex selects a skill, it still reads the full SKILL.md instructions for that skill.
 
@@ -6462,7 +7361,11 @@ Because implicit matching depends on `description`, write concise descriptions w
 
 #### Create a skill
 
-Use the built-in creator first:
+If you already know the workflow and it's easier to show than describe, use
+[Record & Replay](/codex/record-and-replay). Codex records the workflow,
+inspects the steps, and drafts a reusable skill from the demonstration.
+
+If you want to describe the skill instead, use the built-in creator:
 
 ```text
 $skill-creator
@@ -6787,7 +7690,7 @@ Expected: The output lists files relative to the custom `.codex` directory.
 
 - Run `codex --ask-for-approval never "Summarize the current instructions."` from a repository root. Codex should echo guidance from global and project files in precedence order.
 - Use `codex --cd subdir --ask-for-approval never "Show which instruction files are active."` to confirm nested overrides replace broader rules.
-- Check `~/.codex/log/codex-tui.log` (or the most recent `session-*.jsonl` file if you enabled session logging) after a session if you need to audit which instruction files Codex loaded.
+- To audit which instruction files Codex loaded, opt into a plaintext TUI log with `codex -c log_dir=./.codex-log` and check `./.codex-log/codex-tui.log`, or inspect the most recent `session-*.jsonl` file if you enabled session logging.
 - If instructions look stale, restart Codex in the target directory. Codex rebuilds the instruction chain on every run (and at the start of each TUI session), so there is no cache to clear manually.
 
 #### Troubleshoot discovery issues
@@ -7114,7 +8017,7 @@ remote MCP stdio.
 
 If your OAuth provider requires a fixed callback port, set the top-level `mcp_oauth_callback_port` in `config.toml`. If unset, Codex binds to an ephemeral port.
 
-If your MCP OAuth flow must use a specific callback URL (for example, a remote Devbox ingress URL or a custom callback path), set `mcp_oauth_callback_url`. Codex uses this value as the OAuth `redirect_uri` while still using `mcp_oauth_callback_port` for the callback listener port. Local callback URLs (for example `localhost`) bind on the local interface; non-local callback URLs bind on `0.0.0.0` so the callback can reach the host.
+If your MCP OAuth flow must use a specific callback URL (for example, a remote Devbox ingress URL or a custom callback path), set `mcp_oauth_callback_url`. Codex uses this value as the base callback URL, then appends a server-specific callback ID to produce the OAuth `redirect_uri` it sends during login. Register the full derived `redirect_uri` with your OAuth provider, including the appended callback ID and any configured path, query, or port, rather than registering only the base host or unsuffixed path. Local callback URLs (for example `localhost`) bind on the local interface; non-local callback URLs bind on `0.0.0.0` so the callback can reach the host.
 
 If the MCP server advertises `scopes_supported`, Codex prefers those
 server-advertised scopes during OAuth login. Otherwise, Codex falls back to the
@@ -7753,16 +8656,8 @@ jobs:
       - uses: actions/checkout@v5
         with:
           ref: refs/pull/${{ github.event.pull_request.number }}/merge
+          fetch-depth: 0
           persist-credentials: false
-
-      - name: Pre-fetch base and head refs
-        env:
-          PR_BASE_REF: ${{ github.event.pull_request.base.ref }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
-        run: |
-          git fetch --no-tags origin \
-            "$PR_BASE_REF" \
-            "+refs/pull/$PR_NUMBER/head"
 
       - name: Run Codex
         id: run_codex
@@ -7852,6 +8747,8 @@ Use the SDK when you need to:
 - Build Codex into your own internal tools and workflows
 - Integrate Codex within your own application
 
+Use the Codex SDK for coding-focused Codex threads. If Codex is one specialist inside a broader orchestrated workflow, [run Codex CLI as an MCP server and orchestrate it with the Agents SDK](/codex/guides/agents-sdk).
+
 #### TypeScript library
 
 The TypeScript library provides a way to control Codex from within your application that's more comprehensive and flexible than non-interactive mode.
@@ -7901,28 +8798,34 @@ For more details, check out the [TypeScript repo](https://github.com/openai/code
 
 #### Python library
 
-The Python SDK is experimental and controls the local Codex app-server over JSON-RPC. It requires Python 3.10 or later and a local checkout of the open-source Codex repo.
+The Python SDK controls the local Codex app-server over JSON-RPC. It requires Python 3.10 or later. Published SDK builds include a pinned Codex CLI runtime dependency.
 
 #### Installation
 
-From the Codex repo root, install the SDK in editable mode:
+To install the SDK run:
 
 ```bash
-cd sdk/python
-python -m pip install -e .
+pip install openai-codex
 ```
 
-For manual local SDK usage, pass `AppServerConfig(codex_bin=...)` to point at a local `codex` binary, or use the repo examples and notebook bootstrap.
+Published SDK builds automatically use their pinned runtime. Pass `CodexConfig(codex_bin=...)` only when you intentionally want to run against a specific local Codex executable.
+
+While the Python SDK is in beta, `pip install openai-codex` selects the latest
+published beta build. After a stable SDK release exists, use
+`pip install --pre openai-codex` to opt in to newer prerelease builds.
 
 #### Usage
 
 Start Codex, create a thread, and run a prompt:
 
 ```python
-from codex_app_server import Codex
+from openai_codex import Codex, Sandbox
 
 with Codex() as codex:
-    thread = codex.thread_start(model="gpt-5.4")
+    thread = codex.thread_start(
+        model="gpt-5.4",
+        sandbox=Sandbox.workspace_write,
+    )
     result = thread.run("Make a plan to diagnose and fix the CI failures")
     print(result.final_response)
 ```
@@ -7932,7 +8835,7 @@ Use `AsyncCodex` when your application is already asynchronous:
 ```python
 import asyncio
 
-from codex_app_server import AsyncCodex
+from openai_codex import AsyncCodex
 
 async def main() -> None:
     async with AsyncCodex() as codex:
@@ -7942,6 +8845,30 @@ async def main() -> None:
 
 asyncio.run(main())
 ```
+
+#### Sandbox presets
+
+Use the same `Sandbox` presets when creating a thread or changing its filesystem
+access for a later turn:
+
+```python
+from openai_codex import Codex, Sandbox
+
+with Codex() as codex:
+    thread = codex.thread_start(sandbox=Sandbox.workspace_write)
+    thread.run("Make the requested change.")
+    review = thread.run("Review the diff only.", sandbox=Sandbox.read_only)
+```
+
+Available presets:
+
+- `Sandbox.read_only`: Read files without allowing writes.
+- `Sandbox.workspace_write`: Read files and write inside the workspace and configured writable roots.
+- `Sandbox.full_access`: Run without filesystem access restrictions.
+
+When you omit `sandbox=`, app-server uses its configured default. A sandbox
+passed to `run(...)` or `turn(...)` applies to that turn and later turns
+on the thread.
 
 For more details, check out the [Python repo](https://github.com/openai/codex/tree/main/sdk/python).
 
@@ -8515,11 +9442,95 @@ Codex will read the designer's brief, create an `index.html` file, and write the
 
 Windows, enterprise controls, OSS notes, and product or policy caveats that shape deployment choices.
 
+### Environment variables
+
+Source: [Environment variables](/codex/environment-variables.md)
+
+Codex uses `config.toml` for durable settings. Use environment variables for
+shell-scoped overrides, automation secrets, installer behavior, or diagnostics.
+
+This page lists stable public environment variables that Codex reads directly.
+It does not list internal development variables, test variables, or
+provider-specific secret names you choose yourself with
+[`env_key`](/codex/config-advanced#custom-model-providers).
+
+#### Core locations
+
+| Variable            | Used by                                    | Default      | Description                                                                                                                                                      |
+| ------------------- | ------------------------------------------ | ------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `CODEX_HOME`        | CLI, IDE extension, app-server, installers | `~/.codex`   | Sets the root for Codex state, including config, auth, logs, sessions, skills, and standalone package metadata. If you set it, the directory must already exist. |
+| `CODEX_SQLITE_HOME` | CLI and app-server state                   | `CODEX_HOME` | Sets where SQLite-backed state is stored. The `sqlite_home` config option takes precedence. Relative paths resolve from the current working directory.           |
+
+For more about the files stored under `CODEX_HOME`, see
+[Config and state locations](/codex/config-advanced#config-and-state-locations).
+
+#### Installer variables
+
+These variables apply to the standalone install scripts served from
+`https://chatgpt.com/codex/install.sh` and
+`https://chatgpt.com/codex/install.ps1`.
+
+| Variable                | Default                                                                              | Description                                                                                                                                                     |
+| ----------------------- | ------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `CODEX_NON_INTERACTIVE` | `false`                                                                              | Set to `1`, `true`, or `yes` to skip installer prompts. Prompts use their default response, so use this for scripted installs and updates, not first-run setup. |
+| `CODEX_INSTALL_DIR`     | `~/.local/bin` on macOS/Linux; `%LOCALAPPDATA%\Programs\OpenAI\Codex\bin` on Windows | Changes where the visible `codex` command is installed. The standalone package cache still lives under `CODEX_HOME/packages/standalone`.                        |
+
+For unattended installs, set `CODEX_NON_INTERACTIVE=1` on the shell that runs
+the downloaded installer:
+
+```bash
+curl -fsSL https://chatgpt.com/codex/install.sh | CODEX_NON_INTERACTIVE=1 sh
+```
+
+```powershell
+$env:CODEX_NON_INTERACTIVE=1; irm https://chatgpt.com/codex/install.ps1 | iex
+```
+
+#### Authentication and network
+
+| Variable               | Used by                             | Description                                                                                                                                                               |
+| ---------------------- | ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `CODEX_API_KEY`        | `codex exec`                        | Provides an API key for a single non-interactive run. This is only supported in `codex exec`; set it inline rather than job-wide when running repository-controlled code. |
+| `CODEX_ACCESS_TOKEN`   | CLI, app-server, trusted automation | Provides a ChatGPT or Codex access token for trusted automation. For persisted login, pipe it to `codex login --with-access-token`.                                       |
+| `CODEX_CA_CERTIFICATE` | HTTPS, login, and WebSocket clients | Points to a PEM CA bundle for environments with corporate TLS interception or private root CAs. Takes precedence over `SSL_CERT_FILE`.                                    |
+| `SSL_CERT_FILE`        | HTTPS, login, and WebSocket clients | Fallback PEM CA bundle path when `CODEX_CA_CERTIFICATE` is unset.                                                                                                         |
+
+For provider API keys, set
+[`env_key`](/codex/config-advanced#custom-model-providers) in the model provider
+configuration. Codex reads the variable named by that config, so the variable
+name itself is not a fixed Codex environment variable.
+
+For automation secret handling, see
+[Use API key auth](/codex/noninteractive#use-api-key-auth).
+For access token setup, see [Access tokens](/codex/enterprise/access-tokens).
+
+#### Diagnostics
+
+| Variable   | Used by            | Description                                                                                                             |
+| ---------- | ------------------ | ----------------------------------------------------------------------------------------------------------------------- |
+| `RUST_LOG` | CLI and app-server | Controls Rust log filtering and verbosity. `codex exec` defaults to `error` output unless you set a more verbose value. |
+
+`RUST_LOG` accepts values such as `error`, `warn`, `info`, `debug`, and
+`trace`. It also accepts more targeted Rust logging filters, such as
+`codex_core=debug,codex_tui=debug`.
+
+The interactive CLI records diagnostics in bounded local stores by default, but
+the plaintext `codex-tui.log` file is opt-in. Set `log_dir` explicitly when you
+need a plaintext log for troubleshooting:
+
+```bash
+RUST_LOG=debug codex -c log_dir=./.codex-log
+tail -F ./.codex-log/codex-tui.log
+```
+
+In non-interactive mode, `codex exec` prints messages inline instead of writing
+to a separate TUI log file.
+
 ### Access tokens
 
 Source: [Access tokens](/codex/enterprise/access-tokens.md)
 
-Codex access tokens let trusted automation run Codex local with a ChatGPT workspace identity. Use them when a script, scheduled job, or CI runner needs repeatable, non-interactive Codex access.
+Codex access tokens are ChatGPT access tokens scoped to Codex permissions that let trusted automation run Codex local with a ChatGPT workspace identity. Use them when a script, scheduled job, or CI runner needs repeatable, non-interactive Codex access.
 
 Codex access tokens are currently supported for ChatGPT Business and
 Enterprise workspaces.
@@ -8529,6 +9540,12 @@ Access tokens are created in the ChatGPT admin console at [Access tokens](https:
 If a Platform API key works for your automation, keep using API key auth. Use
 Codex access tokens when the workflow specifically needs ChatGPT workspace
 access, ChatGPT-managed Codex entitlements, or enterprise workspace controls.
+
+Need to trigger a published ChatGPT workspace agent from your own system? Use
+a Workspace Agent access token for the Workspace Agents API instead. Codex
+access tokens authenticate Codex local workflows; they do not authenticate
+workspace agent trigger calls. See [Authenticate with Workspace Agent access
+tokens](/workspace-agents/authentication).
 
 #### How access tokens work
 
@@ -8548,18 +9565,23 @@ Main risks to avoid:
 - **Untrusted runners:** public CI, forked pull requests, or shared machines can expose tokens to people outside your workspace. Use access tokens only on trusted runners.
 - **Shared identities:** one person's token reused across unrelated teams makes ownership and audit trails harder to interpret. Create tokens for a specific workflow owner.
 - **Stale credentials:** long-lived tokens can remain active after the workflow changes. Prefer finite expirations and revoke tokens that are no longer used.
-- **Wrong credential type:** access tokens are for Codex local workflows. Use Platform API keys for general OpenAI API calls.
+- **Wrong credential type:** Codex access tokens are for Codex local workflows. Use Workspace Agent access tokens to trigger published ChatGPT workspace agents, and use Platform API keys for general OpenAI API calls.
 
 #### Enable access token creation
 
-Use the Codex Local controls in workspace settings to turn on access token creation for allowed members.
+Use the access token permission in workspace settings to turn on access token creation for allowed members.
 
-1. Go to [Workspace Settings > Settings and Permissions](https://chatgpt.com/admin/settings).
-2. In the Codex Local section, make sure **Allow members to use Codex Local** is turned on.
-3. Turn on **Allow members to use Codex access tokens** if all allowed members should be able to create access tokens.
-4. If you use custom roles for a narrower rollout, assign the access token permission only to groups that need to create tokens.
+1. Go to [Workspace Settings > Permissions & roles](https://chatgpt.com/admin/settings).
+2. In the **Access tokens** section, turn on **Allow users to create access tokens** if all allowed members should be able to create access tokens.
+3. If members need to use those tokens with the Codex app, CLI, or IDE extension, make sure **Allow members to use Codex Local** is also turned on in the **Codex Local** section.
 
 Keep access token creation limited to people or service owners who understand where the token will be stored, which automation will use it, and how it will be rotated.
+
+#### Set an access token expiration limit
+
+Workspace owners and admins can set the longest expiration that members can choose when they create a Codex access token. Go to [Workspace Settings > Permissions & roles](https://chatgpt.com/admin/settings), then set **Access token expiration limit** in the Codex Local section.
+
+The limit applies to new access tokens. Existing tokens keep their current expiration.
 
 #### Create an access token
 
@@ -8608,7 +9630,7 @@ From the Access tokens page, workspace owners and admins can revoke any workspac
 
 #### Permission model
 
-Access token permissions are separate from the general Codex local permission. A member can have access to the Codex app, CLI, or IDE extension without being allowed to create access tokens.
+Access token creation is controlled by the workspace's access token permission, which is separate from the general Codex local permission. A member can have access to the Codex app, CLI, or IDE extension without being allowed to create access tokens.
 
 | Capability                                                    | Workspace owners and admins                          | Member with access token permission           | Member without access token permission |
 | ------------------------------------------------------------- | ---------------------------------------------------- | --------------------------------------------- | -------------------------------------- |
@@ -8625,7 +9647,7 @@ In short: workspace owners and admins manage access at the workspace level. Memb
 
 #### The access tokens page returns 404 or forbidden
 
-Ask a workspace owner or admin to confirm that Codex access tokens are enabled and that your role includes the access token permission.
+Ask a workspace owner or admin to confirm that your role includes **Allow users to create access tokens** and that **Allow members to use Codex Local** is enabled if you plan to use the token with Codex.
 
 #### `codex login --with-access-token` fails
 
@@ -8651,7 +9673,6 @@ Use this page as the step-by-step rollout guide. For detailed policy, configurat
 Codex supports ChatGPT Enterprise security features, including:
 
 - No training on enterprise data
-- Zero data retention for the App, CLI, and IDE (code stays in the developer environment)
 - Residency and retention that follow ChatGPT Enterprise policies
 - Granular user access controls
 - Data encryption at rest (AES-256) and in transit (TLS 1.2+)
@@ -8692,7 +9713,7 @@ Turn on **Allow members to use Codex Local**.
 
 This enables use of the Codex app, CLI, and IDE extension for allowed users.
 
-If members need programmatic Codex local workflows, also turn on **Allow members to use Codex access tokens** or grant the access token permission through a custom role. For setup and permission details, see [Access tokens](/codex/enterprise/access-tokens).
+If members need programmatic Codex local workflows, grant **Allow users to create access tokens** in the **Access tokens** section or through a custom role. Workspace owners and admins can use **Access token expiration limit** in the **Codex Local** section to set the longest expiration members can choose for new tokens. For setup and permission details, see [Access tokens](/codex/enterprise/access-tokens).
 
 If the Codex Local toggle is off, users who attempt to use the Codex app, CLI, or IDE will see the following error: “403 - Unauthorized. Contact your ChatGPT administrator for access.”
 
@@ -8775,7 +9796,7 @@ This separation makes it easier to roll out Codex while keeping analytics, envir
 
 Codex Admins can deploy admin-enforced `requirements.toml` policies from the Codex [Policies page](https://chatgpt.com/codex/settings/policies).
 
-Use this page when you want to apply different local Codex constraints to different groups without distributing device-level files first. The managed policy uses the same `requirements.toml` format described in [Managed configuration](/codex/enterprise/managed-configuration), so you can define allowed approval policies, sandbox modes, web search behavior, network access requirements, MCP server allowlists, feature pins, and restrictive command rules. To disable Browser Use, the in-app browser, or Computer Use, see [Pin feature flags](/codex/enterprise/managed-configuration#pin-feature-flags).
+Use this page when you want to apply different local Codex constraints to different groups without distributing device-level files first. The managed policy uses the same `requirements.toml` format described in [Managed configuration](/codex/enterprise/managed-configuration), so you can define allowed approval policies, sandbox modes, web search behavior, MCP server allowlists, feature pins, and restrictive command rules. To disable Browser Use, the in-app browser, or Computer Use, see [Pin feature flags](/codex/enterprise/managed-configuration#pin-feature-flags).
 
 Recommended setup:
 
@@ -8790,6 +9811,10 @@ These cloud-managed policies apply across Codex local surfaces when users sign i
 
 Use cloud-managed `requirements.toml` policies to enforce the guardrails you want for each group. The snippets below are examples you can adapt, not required settings.
 
+For Codex 0.138.0 or later, prefer `allowed_permission_profiles` with managed
+`default_permissions`. Use `allowed_sandbox_modes` only for legacy deployments
+that still configure `sandbox_mode`.
+
 Example: limit web search, sandbox mode, and approvals for a standard local rollout:
 
 ```toml
@@ -8798,29 +9823,27 @@ allowed_sandbox_modes = ["workspace-write"]
 allowed_approval_policies = ["on-request"]
 ```
 
-Example: disable Browser Use, the in-app browser, and Computer Use:
+Example: allow the standard permission profiles for an upgraded fleet:
+
+Permission-profile allowlists require Codex 0.138.0 or later. Use this example
+only after every managed client runs a supporting release.
+
+```toml
+default_permissions = ":workspace"
+
+[allowed_permission_profiles]
+":read-only" = true
+":workspace" = true
+```
+
+Example: constrain Browser Use, the in-app browser, and Computer Use:
 
 ```toml
 [features]
 browser_use = false
+browser_use_full_cdp_access = false
 in_app_browser = false
 computer_use = false
-```
-
-Example: define administrator-owned network requirements:
-
-```toml
-experimental_network.enabled = true
-experimental_network.dangerously_allow_all_unix_sockets = true
-experimental_network.allow_local_binding = true
-experimental_network.allowed_domains = [
-  "api.openai.com",
-  "*.example.com",
-]
-experimental_network.denied_domains = [
-  "blocked.example.com",
-  "*.exfil.example.com",
-]
 ```
 
 Example: add a restrictive command rule when you want admins to block or gate specific commands:
@@ -9177,21 +10200,33 @@ Enterprise admins can control local Codex behavior in two ways:
 
 #### Admin-enforced requirements (requirements.toml)
 
-Requirements constrain security-sensitive settings (approval policy, approvals reviewer, automatic review policy, sandbox mode, web search mode, managed hooks, and optionally which MCP servers users can enable). When resolving configuration (for example from `config.toml`, [profile files](/codex/config-advanced#profiles), or CLI config overrides), if a value conflicts with an enforced rule, Codex falls back to a compatible value and notifies the user. If you configure an `mcp_servers` allowlist, Codex enables an MCP server only when both its name and identity match an approved entry; otherwise, Codex disables it.
+Requirements constrain security-sensitive settings (approval policy, approvals reviewer, automatic review policy, sandbox mode, permission profiles, web search mode, managed hooks, which MCP servers users can enable, and which user-configured plugin marketplace sources they can add, install from, or refresh). When resolving configuration (for example from `config.toml`, [profile files](/codex/config-advanced#profiles), or CLI config overrides), if a value conflicts with an enforced rule, Codex falls back to a compatible value and notifies the user. If you configure an `mcp_servers` allowlist, Codex enables an MCP server only when both its name and identity match an approved entry; otherwise, Codex disables it.
 
 Requirements can also constrain [feature flags](/codex/config-basic/#feature-flags) via the `[features]` table in `requirements.toml`. Note that features aren't always security-sensitive, but enterprises can pin values if desired. Omitted keys remain unconstrained.
+
+For Codex 0.138.0 or later, prefer [permission profiles](/codex/permissions)
+with `allowed_permission_profiles` and managed `default_permissions`. Use
+`allowed_sandbox_modes` only for legacy deployments that still configure
+`sandbox_mode`.
 
 For the exact key list, see the [`requirements.toml` section in Configuration Reference](/codex/config-reference#requirementstoml).
 
 #### Locations and precedence
 
-Codex applies requirements layers in this order (earlier wins per field):
+Codex checks requirement sources in this order. If the same setting appears more
+than once, the first value wins:
 
 1. Cloud-managed requirements (ChatGPT Business or Enterprise)
 2. macOS managed preferences (MDM) via `com.openai.codex:requirements_toml_base64`
 3. System `requirements.toml` (`/etc/codex/requirements.toml` on Unix systems, including Linux/macOS, or `%ProgramData%\OpenAI\Codex\requirements.toml` on Windows)
 
-Across layers, Codex merges requirements per field: if an earlier layer sets a field (including an empty list), later layers don't override that field, but lower layers can still fill fields that remain unset.
+Codex checks these sources from top to bottom. For ordinary settings and lists,
+it uses the first value it finds. A later source can still provide a setting
+that earlier sources leave unset.
+
+Tables combine one entry at a time. For `allowed_permission_profiles`, a later
+source can add profile names that earlier sources don't mention. If two sources
+set the same profile name, the earlier source wins.
 
 For backwards compatibility, Codex also interprets legacy `managed_config.toml` fields `approval_policy` and `sandbox_mode` as requirements (allowing only that single value).
 
@@ -9242,6 +10277,145 @@ allowed_approval_policies = ["untrusted", "on-request"]
 allowed_sandbox_modes = ["read-only", "workspace-write"]
 ```
 
+#### Disable Appshots
+
+To disable Appshots for managed users, set the top-level `allow_appshots` requirement:
+
+```toml
+allow_appshots = false
+```
+
+Codex treats only `allow_appshots = false` as disabling Appshots. If the key is omitted, Appshots remain unconstrained by requirements and use normal product availability checks. App-server clients that read effective requirements through `configRequirements/read` receive the same restriction as `allowAppshots`; an omitted or `null` `allowAppshots` value doesn't disable Appshots.
+
+#### Disable device remote control
+
+To disable [device remote control](/codex/remote-connections#pick-up-work-from-another-device)
+for managed users, set the top-level `allow_remote_control` requirement:
+
+```toml
+allow_remote_control = false
+```
+
+Codex treats only `allow_remote_control = false` as disabling device remote
+control. If the key is omitted, device remote control remains unconstrained by
+requirements and uses normal product availability checks. This requirement does
+not disable SSH remote connections.
+
+#### Control available permission profiles
+
+Use `allowed_permission_profiles` to control which built-in and custom
+[permission profiles](/codex/permissions) users can select. This is the
+permission-profile equivalent of `allowed_sandbox_modes`; use the allowlist that
+matches how your users select permissions.
+
+Permission-profile allowlists require Codex 0.138.0 or later. Codex 0.137.0 and
+earlier ignore `allowed_permission_profiles` and managed
+`default_permissions`.
+
+Use the permission-profile examples below only after every managed client runs a
+supporting release. Don't deploy managed custom profiles until the fleet upgrade
+is complete.
+
+When the table is present, it's the complete list of allowed profiles. Profiles
+set to `true` are allowed. Profiles that are omitted or set to `false` are
+denied, including built-ins added in future Codex versions.
+
+#### Allow the standard profiles
+
+This policy allows read-only and workspace access, but not full access:
+
+```toml
+default_permissions = ":workspace"
+
+[allowed_permission_profiles]
+":read-only" = true
+":workspace" = true
+# ":danger-full-access" is omitted, so it is denied.
+```
+
+#### Add a managed least-privilege default
+
+Admins can define a custom profile in the same requirements source. Use
+organization-specific profile names that won't collide with names in users'
+loaded config. Custom names can't start with `:` or use the reserved `filesystem`
+name.
+
+Don't deploy managed custom profiles to clients running Codex 0.137.0 or
+earlier. Those clients recognize the profile table but not the managed default
+that selects it.
+
+For example:
+
+```toml
+default_permissions = "acme_review_only"
+
+[allowed_permission_profiles]
+":read-only" = true
+":workspace" = true
+acme_review_only = true
+# ":danger-full-access" is intentionally omitted, so it is denied.
+
+[permissions.acme_review_only]
+description = "Review code without modifying the workspace."
+extends = ":read-only"
+```
+
+#### Allow only enterprise-defined profiles
+
+Omit all built-ins when users should select only admin-defined profiles:
+
+```toml
+default_permissions = "acme_workspace"
+
+[allowed_permission_profiles]
+acme_workspace = true
+
+[permissions.acme_workspace]
+description = "Workspace access with sensitive files denied."
+extends = ":workspace"
+
+[permissions.acme_workspace.filesystem]
+glob_scan_max_depth = 3
+
+[permissions.acme_workspace.filesystem.":workspace_roots"]
+"**/*.env" = "deny"
+```
+
+The custom profile can extend `:workspace` even though users can't select the
+built-in `:workspace` profile directly.
+
+#### Turn off a profile allowed by another source
+
+Permission allowlists combine by profile name. Because Codex checks cloud
+requirements before system requirements, cloud requirements can use `false` to
+turn off a profile allowed by the system file.
+
+Cloud requirements:
+
+```toml
+default_permissions = ":read-only"
+
+[allowed_permission_profiles]
+":read-only" = true
+":workspace" = false
+```
+
+System requirements:
+
+```toml
+[allowed_permission_profiles]
+":read-only" = true
+":workspace" = true  # Not honored because cloud requirements set this to false.
+```
+
+Set `default_permissions` explicitly to an allowed profile. If it's omitted,
+Codex defaults to `:workspace` only when both `:workspace` and `:read-only` are
+explicitly allowed. When `allowed_permission_profiles` is absent, managed
+requirements don't restrict which profile names users can select. Every entry
+must name a built-in profile or a custom profile defined in a loaded config or
+requirements source. Define custom profiles in managed requirements when their
+behavior should be controlled centrally.
+
 #### Override sandbox requirements by host
 
 Use `[[remote_sandbox_config]]` when one managed policy should apply different
@@ -9278,16 +10452,20 @@ For example, `allowed_web_search_modes = ["cached"]` prevents live web search ev
 
 #### Configure network access requirements
 
+`[experimental_network]` is experimental and may change. Do not enable these
+requirements broadly across an enterprise deployment without validating them
+on the Codex client versions and operating systems your users run. Windows
+support is still limited; avoid applying this policy to Windows users unless
+you have tested it in your environment.
+
 Use `[experimental_network]` in `requirements.toml` when administrators should
 define network access requirements centrally. These requirements are separate
-from the user `features.network_proxy` toggle: they can configure sandboxed
-networking without that feature flag, but they do not grant command network
+from the user `features.network_proxy` toggle: they can configure sandbox
+networking without that feature flag, but they don't grant command network
 access when the active sandbox keeps networking off.
 
 ```toml
 experimental_network.enabled = true
-experimental_network.dangerously_allow_all_unix_sockets = true
-experimental_network.allow_local_binding = true
 experimental_network.allowed_domains = [
   "api.openai.com",
   "*.example.com",
@@ -9300,11 +10478,11 @@ experimental_network.denied_domains = [
 
 Use `experimental_network.managed_allowed_domains_only = true` only when you
 also define administrator-owned `allowed_domains` and want that allowlist to be
-exclusive. If it is `true` without managed allow rules, user-added domain allow
-rules do not remain effective.
+exclusive. If it's `true` without managed allow rules, user-added domain allow
+rules don't remain effective.
 
 The domain syntax, local/private destination rules, deny-over-allow behavior,
-and DNS rebinding limitations are the same as the sandboxed networking behavior
+and DNS rebinding limitations are the same as the sandbox networking behavior
 described in [Agent approvals & security](/codex/agent-approvals-security#network-isolation).
 
 #### Pin feature flags
@@ -9319,6 +10497,7 @@ unified_exec = false
 
 # Disable specific Codex feature surfaces when needed.
 browser_use = false
+browser_use_full_cdp_access = false
 in_app_browser = false
 computer_use = false
 ```
@@ -9327,11 +10506,27 @@ Use the canonical feature keys from `config.toml`'s `[features]` table. Codex no
 
 - `in_app_browser = false` disables the in-app browser pane.
 - `browser_use = false` disables Browser Use and Browser Agent availability.
-- `computer_use = false` disables Computer Use availability and related
+- `browser_use_full_cdp_access = false` prevents users from enabling full CDP
+  access in Browser Developer mode.
+- `computer_use = false` disables Computer Use, Record & Replay, and related
   install or setup flows.
 
 If omitted, these features are allowed by policy, subject to normal client,
 platform, and rollout availability.
+
+#### Restrict locked computer use
+
+To prevent [Computer Use](/codex/app/computer-use#locked-use) from operating
+after a managed Mac locks, add this requirement:
+
+```toml
+[computer_use]
+allow_locked_computer_use = false
+```
+
+This requirement doesn't enable Computer Use. It only prevents locked use on
+macOS. If you omit it, locked use remains unconstrained by requirements and is
+still subject to normal product availability and the user's local setting.
 
 #### Configure automatic review policy
 
@@ -9359,148 +10554,6 @@ guardian_policy_config = """
   destinations.
 """
 ```
-
-#### Enforce deny-read requirements
-
-Admins can deny reads for exact paths or glob patterns with
-`[permissions.filesystem]`. Users can't weaken these requirements with local
-configuration.
-
-```toml
-[permissions.filesystem]
-deny_read = [
-  # values can be absolute paths...
-  "/**/*.env",
-  # ...or relative to $HOME/%USERPROFILE% using `~`.
-  "~/.ssh",
-  # But relative paths starting with `./` are not allowed.
-]
-```
-
-When deny-read requirements are present, Codex constrains local sandbox mode to
-`read-only` or `workspace-write` so Codex can enforce them. On native
-Windows, managed `deny_read` applies to direct file tools; shell subprocess
-reads don't use this sandbox rule.
-
-#### Enforce managed hooks from requirements
-
-Admins can also define managed lifecycle hooks directly in `requirements.toml`.
-Use `[hooks]` for the hook configuration itself, and point `managed_dir` at the
-directory where your MDM or endpoint-management tooling installs the referenced
-scripts.
-
-To enforce managed hooks even for users who disabled hooks locally, pin
-`[features].hooks = true` alongside `[hooks]`. To skip user, project, session,
-and plugin hooks while still allowing managed hooks, set
-`allow_managed_hooks_only = true`.
-
-```toml
-allow_managed_hooks_only = true
-
-[features]
-hooks = true
-
-[hooks]
-managed_dir = "/enterprise/hooks"
-windows_managed_dir = 'C:\enterprise\hooks'
-
-[[hooks.PreToolUse]]
-matcher = "^Bash$"
-
-[[hooks.PreToolUse.hooks]]
-type = "command"
-command = "python3 /enterprise/hooks/pre_tool_use_policy.py"
-command_windows = 'py -3 C:\enterprise\hooks\pre_tool_use_policy.py'
-timeout = 30
-statusMessage = "Checking managed Bash command"
-```
-
-Notes:
-
-- Codex enforces the hook configuration from `requirements.toml`, but it does
-  not distribute the scripts in `managed_dir`.
-- Deliver those scripts separately with your MDM or device-management solution.
-- Managed hook commands should reference absolute script paths under the
-  configured managed directory.
-- `allow_managed_hooks_only = true` skips hooks from user, project, session, and
-  plugin sources, but still loads hooks from `requirements.toml` and other
-  managed config layers.
-
-#### Enforce command rules from requirements
-
-Admins can also enforce restrictive command rules from `requirements.toml`
-using a `[rules]` table. These rules merge with regular `.rules` files, and the
-most restrictive decision still wins.
-
-Unlike `.rules`, requirements rules must specify `decision`, and that decision
-must be `"prompt"` or `"forbidden"` (not `"allow"`).
-
-```toml
-[rules]
-prefix_rules = [
-  { pattern = [{ token = "rm" }], decision = "forbidden", justification = "Use git clean -fd instead." },
-  { pattern = [{ token = "git" }, { any_of = ["push", "commit"] }], decision = "prompt", justification = "Require review before mutating history." },
-]
-```
-
-To restrict which MCP servers Codex can enable, add an `mcp_servers` approved list. For stdio servers, match on `command`; for streamable HTTP servers, match on `url`:
-
-```toml
-[mcp_servers.docs]
-identity = { command = "codex-mcp" }
-
-[mcp_servers.remote]
-identity = { url = "https://example.com/mcp" }
-```
-
-If `mcp_servers` is present but empty, Codex disables all MCP servers.
-
-#### Managed defaults (`managed_config.toml`)
-
-Managed defaults merge on top of a user's local `config.toml` and take precedence over any CLI `--config` overrides, setting the starting values when Codex launches. Users can still change those settings during a session; Codex reapplies managed defaults the next time it starts.
-
-Make sure your managed defaults meet your requirements; Codex rejects disallowed values.
-
-#### Precedence and layering
-
-Codex assembles the effective configuration in this order (top overrides bottom):
-
-- Managed preferences (macOS MDM; highest precedence)
-- `managed_config.toml` (system/managed file)
-- `config.toml` (user's base configuration)
-
-CLI `--config key=value` overrides apply to the base, but managed layers override them. This means each run starts from the managed defaults even if you provide local flags.
-
-Cloud-managed requirements affect the requirements layer (not managed defaults). See the Admin-enforced requirements section above for precedence.
-
-#### Locations
-
-- Linux/macOS (Unix): `/etc/codex/managed_config.toml`
-- Windows/non-Unix: `~/.codex/managed_config.toml`
-
-If the file is missing, Codex skips the managed layer.
-
-#### macOS managed preferences (MDM)
-
-On macOS, admins can push a device profile that provides base64-encoded TOML payloads at:
-
-- Preference domain: `com.openai.codex`
-- Keys:
-  - `config_toml_base64` (managed defaults)
-  - `requirements_toml_base64` (requirements)
-
-Codex parses these "managed preferences" payloads as TOML. For managed defaults (`config_toml_base64`), managed preferences have the highest precedence. For requirements (`requirements_toml_base64`), precedence follows the cloud-managed requirements order described above. The same requirements-side `[features]` table works in `requirements_toml_base64`; use canonical feature keys there as well.
-
-#### MDM setup workflow
-
-Codex honors standard macOS MDM payloads, so you can distribute settings with tooling like `Jamf Pro`, `Fleet`, or `Kandji`. A lightweight deployment looks like:
-
-1. Build the managed payload TOML and encode it with `base64` (no wrapping).
-2. Drop the string into your MDM profile under the `com.openai.codex` domain at `config_toml_base64` (managed defaults) or `requirements_toml_base64` (requirements).
-3. Push the profile, then ask users to restart Codex and confirm the startup config summary reflects the managed values.
-4. When revoking or changing policy, update the managed payload; the CLI reads the refreshed preference the next time it launches.
-
-Avoid embedding secrets or high-churn dynamic values in the payload. Treat the managed TOML like any other MDM setting under change control.
 
 ### Subagents
 
@@ -9787,22 +10840,23 @@ members of your ChatGPT workspace from the Codex app.
 1. Open **Plugins** in the Codex app.
 2. Go to **Created by you** and open the plugin details page.
 3. Select **Share**.
-4. Add workspace members or copy a share link.
+4. Add workspace members or workspace groups, or copy a share link.
 5. Choose who has access, then send the invitation or link.
 
 People you share with can find the plugin under **Shared with you** in the
 plugin directory. Sharing a local plugin with your workspace doesn't publish
 it to the public Plugin Directory. Shared plugins stay within your workspace
 and organization boundary; accounts that aren't signed in to that workspace
-can't access them. Use a marketplace when you want repo or CLI distribution,
-and use workspace sharing when you want selected teammates to install a plugin
-from the Codex app.
+can't access them. Use groups when a team or role should share the same plugin
+access. Use a marketplace when you want repo or CLI distribution, and use
+workspace sharing when you want selected teammates to install a plugin from the
+Codex app.
 
 Workspace admins can disable plugin sharing from cloud-managed requirements by
-adding `plugin_sharing = false` to `requirements.toml`:
+adding `features.plugin_sharing = false` to `requirements.toml`:
 
 ```toml
-plugin_sharing = false
+features.plugin_sharing = false
 ```
 
 ### Chronicle
@@ -9810,9 +10864,9 @@ plugin_sharing = false
 Source: [Chronicle](/codex/memories/chronicle.md)
 
 Chronicle is in an **opt-in research preview**. It is only available for
-ChatGPT Pro subscribers on macOS, and is not yet available in the EU, UK and
-Switzerland. Please review the [Privacy and Security](#privacy-and-security)
-section for details and to understand the current risks before enabling.
+ChatGPT Pro subscribers on macOS. Please review the [Privacy and
+Security](#privacy-and-security) section for details and to understand the
+current risks before enabling.
 
 Chronicle augments Codex memories with context from your screen. When you prompt
 Codex, those memories can help it understand what you’ve been working on with
@@ -9938,14 +10992,18 @@ Source: [Codex Security](/codex/security/index.md)
 
 [Install plugin in Codex App](https://chatgpt.com/plugins/share/676aca3811d54fa7bcdef5255236b3c4)
 
-For installation steps, supported skills, and review boundaries, see the
-[Codex Security plugin guide](/codex/security/plugin).
+For a prescriptive first local scan, start with the [Codex Security plugin
+quickstart](/codex/security/plugin).
 
 #### Explore plugin use cases
 
-- [Run a deep security scan](/codex/use-cases/deep-security-scan) to perform a higher-recall repository-wide audit.
-- [Scan code changes for security](/codex/use-cases/scan-code-changes-for-security) before you merge a pull request or branch.
-- [Remediate a vulnerability backlog](/codex/use-cases/remediate-vulnerability-backlog) with bounded fixes for approved findings.
+- [Run a security scan](/codex/security/plugin/scans) for a repository or one scoped folder.
+- [Run a deep security scan](/codex/security/plugin/deep-scans) when you need a more comprehensive scan and can wait longer for it to finish.
+- [Review code changes](/codex/security/plugin/code-changes) before you merge a pull request or branch.
+- [Triage a backlog](/codex/security/plugin/triage-backlog) when you have existing security findings to review.
+- [Fix and verify findings](/codex/security/plugin/fix-findings) with bounded patches for approved findings.
+- [Export or track findings](/codex/security/plugin/export-findings) as portable artifacts or approval-gated tracking destinations.
+- [See what's new](/codex/security/plugin/changelog) in the Codex Security plugin.
 
 The plugin runs in your Codex thread. Codex Security cloud scans connected
 GitHub repositories through Codex Web. For Codex sandboxing, approvals,
@@ -9980,10 +11038,16 @@ Codex Security is available for ChatGPT Enterprise, Edu, Business, and Pro users
 
 #### Security overview references
 
-- [Codex Security plugin guide](/codex/security/plugin) covers local repository and diff-review workflows in Codex.
-- [Codex Security cloud setup](/codex/security/setup) covers setup, scanning, and findings review.
+- [Codex Security plugin quickstart](/codex/security/plugin) walks through installation and a first local scan.
+- [Codex Security cloud setup](/codex/security/setup) details setup, scanning, and findings review.
 - [Improving the threat model](/codex/security/threat-model) explains how to tune scope, attack surface, and criticality assumptions.
 - [FAQ](/codex/security/faq) covers common product questions.
+
+### Glossary
+
+Source: [Glossary](/codex/glossary.md)
+
+Use this glossary as a quick reference for Codex terms across the app, CLI, IDE extension, cloud, SDK, and related integrations.
 
 ### Hooks
 
@@ -10032,7 +11096,7 @@ Codex discovers hooks next to active config layers in either of these forms:
 
 Installed plugins can also bundle lifecycle config through their plugin
 manifest or a default `hooks/hooks.json` file. See [Build
-plugins](/codex/plugins/build#bundled-mcp-servers-and-lifecycle-config) for the
+plugins](/codex/plugins/build#bundled-mcp-servers-and-lifecycle-hooks) for the
 plugin packaging rules.
 
 In practice, the four most useful locations are:
@@ -10229,14 +11293,90 @@ Examples:
 - `startup|resume|clear|compact`
 - `manual|auto`
 
+### Import to Codex
+
+Source: [Import to Codex](/codex/import.md)
+
+Use the import flow to bring your instructions, settings, skills, plugins,
+projects, and recent chat sessions from other agents into Codex. Codex imports
+the supported items directly and lets you finish setup for any imported plugins
+or connections that need authorization.
+
+Importing does not change or delete your existing agent setup.
+
+#### Start an import
+
+1. In the Codex app, open **Settings**.
+2. Under **General**, find **Import other agent setup**.
+3. Select **Import**.
+4. Choose the agents you want to import from, then select **Continue**.
+5. On **Select items to import**, select **Continue** to import everything or **Customize** to choose specific items.
+6. If you customize the import, select the items to bring over, then select **Confirm**.
+7. After the import finishes, open an imported project or thread to continue working.
+
+#### How importing works
+
+Codex checks both your user-level setup and your existing projects. User-level
+setup comes from files on your machine. Project-level setup comes from files in
+the repositories and folders you select.
+
+When you import, Codex:
+
+1. Detects supported setup and recent work.
+2. Imports the items you select.
+3. Leaves your existing agent setup unchanged.
+4. Checks whether imported plugins or connections still need setup.
+5. Shows a status card when follow-up is required.
+
+#### What Codex can import
+
+| Imported item                       | Codex destination                      |
+| ----------------------------------- | -------------------------------------- |
+| Instruction files                   | [`AGENTS.md`](/codex/guides/agents-md) |
+| `settings.json`                     | [`config.toml`](/codex/config-basic)   |
+| Skills                              | [Codex skills](/codex/skills)          |
+| Plugins                             | Codex plugins                          |
+| Existing project folders            | Codex projects using the same folders  |
+| Chat sessions from the last 30 days | Codex threads                          |
+| MCP server configuration            | [Codex MCP configuration](/codex/mcp)  |
+| Hooks                               | [Codex hooks](/codex/hooks)            |
+| Slash commands                      | [Codex skills](/codex/skills)          |
+| Subagents                           | [Codex agents](/codex/subagents)       |
+
+#### Finish setup after importing
+
+When the import completes, Codex shows a status card in the lower-left corner.
+If an imported plugin or connection still needs setup, the card calls it out.
+
+When Codex flags an item that needs attention, select **Finish** and follow the
+prompts to complete setup.
+
+#### What to review after importing
+
+Review imported setup before you rely on it, especially:
+
+- Tool restrictions or permissions in imported skills and agents.
+- MCP server settings that use custom authentication, headers, environment
+  variables, or transports. You may need to sign in again.
+- Hooks whose behavior may differ in Codex.
+- Plugins, marketplaces, or other setup that needs manual follow-up.
+- Prompt templates or command-style prompts that depend on arguments, shell
+  interpolation, or file-path placeholders.
+
+#### After you import
+
+Once the import finishes, open one of your imported projects and continue from
+there. If you are new to Codex, see the [quickstart](/codex/quickstart) for the
+rest of the setup flow.
+
 ### Memories
 
 Source: [Memories](/codex/memories.md)
 
-Memories are off by default and aren't available in the European Economic
-Area, the United Kingdom, or Switzerland at launch. Enable them in Codex
-settings, or set `memories = true` in the `[features]` table in
-`~/.codex/config.toml`.
+Memories are off by default. In the European Economic Area, the United
+Kingdom, and Switzerland, Codex uses or generates memories only after you
+enable them in Codex settings, or set `memories = true` in the `[features]`
+table in `~/.codex/config.toml`.
 
 Memories let Codex carry useful context from earlier threads into future work.
 After you enable memories, Codex can remember stable preferences, recurring
@@ -10332,82 +11472,6 @@ Don't store secrets in memories. Codex redacts secrets from generated memory
 fields, but you should still review memory files before sharing your Codex home
 directory or generated memory artifacts.
 
-### Migrate to Codex
-
-Source: [Migrate to Codex](/codex/migrate.md)
-
-Use the import flow to bring your instructions, configuration, skills, MCP
-servers, hooks, subagents, and recent sessions from another agent into Codex.
-Codex migrates the parts it can handle directly and can open a follow-up thread
-to help migrate anything that remains.
-
-#### Start the migration
-
-1. Open **Settings** in the Codex app.
-2. On the **General** page, find **Import other agent setup**.
-3. Select **Import** or **Import again**.
-4. Review what Codex found, choose what to bring over, then select **Import**.
-5. After the import finishes, select **View imported files** if you want to inspect the result.
-
-#### How migration works
-
-Codex checks both your user-level setup and the current project. User-level
-setup comes from files on your machine; project-level setup comes from files in
-the repository you have open.
-
-When you import, Codex:
-
-1. Detects the setup it can find.
-2. Imports the selected items it can migrate directly.
-3. Checks again after the import finishes.
-4. Offers to continue the migration in a new thread if anything still needs
-   follow-up work.
-
-#### What Codex can import
-
-| Detected setup                        | Codex destination                      |
-| ------------------------------------- | -------------------------------------- |
-| Instruction files                     | [`AGENTS.md`](/codex/guides/agents-md) |
-| `settings.json`                       | [`config.toml`](/codex/config-basic)   |
-| Skills                                | [Codex skills](/codex/skills)          |
-| Recent sessions from the last 30 days | Codex threads and projects             |
-| MCP server configuration              | [Codex MCP configuration](/codex/mcp)  |
-| Hooks                                 | [Codex hooks](/codex/hooks)            |
-| Slash commands                        | [Codex skills](/codex/skills)          |
-| Subagents                             | [Codex agents](/codex/subagents)       |
-
-#### Finish remaining setup in a new thread
-
-Some detected setup does not have a clean one-to-one mapping into Codex. For
-those items, Codex can open a new thread with the
-[`migrate-to-codex`](https://github.com/openai/skills/tree/main/skills/.curated/migrate-to-codex)
-skill to help finish the migration.
-
-When that happens, Codex shows the remaining setup and offers **Continue in
-Codex**.
-
-If you continue, Codex opens a new thread with the remaining work already filled
-in. The thread keeps user-level setup separate from project-level setup so you
-can see where each remaining item belongs.
-
-#### What to review after import
-
-Review any migrated setup before you rely on it, especially:
-
-- Tool restrictions or permissions in imported skills and agents.
-- MCP server settings that use custom authentication, headers, environment
-  variables, or transports.
-- Hooks whose behavior may differ in Codex.
-- Plugins, marketplaces, or other remaining setup that needs manual follow-up.
-- Prompt templates or command-style prompts that depend on arguments, shell
-  interpolation, or file-path placeholders.
-
-#### After you switch
-
-Once the import finishes, open one of your migrated projects and continue from
-there. If you are new to Codex, see the [quickstart](/codex/quickstart) for the
-rest of the setup flow.
-
 ### Open Source
 
 Source: [Open Source](/codex/open-source.md)
@@ -10441,57 +11505,24 @@ When you file an issue, include which component you are using (CLI, SDK, IDE ext
 
 Source: [Permissions](/codex/permissions.md)
 
-#### Define and select a profile
+#### Filesystem permissions
 
-Codex includes three built-in permission profiles:
+Filesystem entries use `read`, `write`, or `deny`:
 
-- `:read-only` keeps local command execution read-only.
-- `:workspace` allows writes inside the active workspace roots.
-- `:danger-full-access` removes local sandbox restrictions and should be used
-  only when that broad access is intentional.
+| Access  | Meaning                                                                                                                           |
+| ------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| `read`  | Allows commands to read files and list directories under the path. Commands cannot create, modify, rename, or delete files there. |
+| `write` | Allows commands to read and modify files under the path, including creating, renaming, and deleting files when the OS allows it.  |
+| `deny`  | Denies both reads and writes under the path. Use it to carve out a denied subpath from a broader `read` or `write` grant.         |
 
-Create a named profile under `[permissions.]`, then set the top-level
-`default_permissions` key to that profile name or to one of the built-ins above.
-In this example, `project-edit` is a user-defined profile name, not a built-in
-value.
+More specific entries override broader entries. When two entries target the
+same path, `deny` takes precedence over `write`, and `write` takes precedence
+over `read`.
 
-Custom profiles use two related concepts:
-
-- `[permissions..workspace_roots]` adds concrete directories that should
-  count as workspace roots for that profile.
-- `[permissions..filesystem.":workspace_roots"]` defines the filesystem
-  rules Codex applies inside every effective workspace root: the current
-  session's runtime workspace roots plus the profile-defined roots above.
-
-Profiles also use the normal config-layer model. Higher-precedence layers can
-add or replace entries under the same profile name without restating the whole
-profile.
-
-For example, an organization-level config and a user-level config can extend
-the same profile independently:
+This precedence lets a profile describe a broad working area first, then carve
+out files or directories that should stay unreadable:
 
 ```toml
-# /etc/codex/config.toml
-[permissions.server.workspace_roots]
-"~/code/server" = true
-```
-
-```toml
-# ~/.codex/config.toml
-[permissions.server.workspace_roots]
-"~/code/mobile-app" = true
-```
-
-When `server` is active, both workspace roots participate in the effective
-profile.
-
-```toml
-default_permissions = "project-edit"
-
-[permissions.project-edit.workspace_roots]
-"~/code/app" = true
-"~/code/shared-lib" = true
-
 [permissions.project-edit.filesystem]
 ":minimal" = "read"
 
@@ -10499,62 +11530,208 @@ default_permissions = "project-edit"
 "." = "write"
 ".devcontainer" = "read"
 "**/*.env" = "deny"
-
-[permissions.project-edit.network]
-enabled = true
-
-[permissions.project-edit.network.domains]
-"api.openai.com" = "allow"
-"objects.githubusercontent.com" = "allow"
-"*.github.com" = "allow"
-"tracking.example.com" = "deny"
 ```
 
-This profile:
+In this example, the workspace root stays writable, `.devcontainer/` stays
+readable without becoming writable, and matching environment files remain
+unavailable to sandboxed commands.
 
-- Reads the minimal runtime paths common developer tools need.
-- Applies the same workspace-root rules to the current session and the
-  profile-defined roots.
-- Keeps IDE-adjacent settings such as `.devcontainer/` read-only under each
-  root.
-- Denies matching environment files with a glob rule.
-- Allows network access only through the configured domain policy.
-
-Inside an active profile, narrower deny rules stay in force even when a broader
-path is readable or writable. For example, a profile can make workspace roots
-writable while still setting a matching `.env` path to `deny`.
-
-#### Extend a profile
-
-Use `extends` when a profile is mostly the same as a built-in or another named
-profile. Prefer extending a built-in profile over starting from scratch so
-baseline protections carry forward. Extending `:workspace`, for example, keeps
-the workspace root's `.codex` directory read-only unless you explicitly
-override it. Set the parent once, then add or override only the rules that
-differ.
+A more specific path can also reopen a narrower subtree inside a broader deny:
 
 ```toml
-default_permissions = "project-edit"
+[permissions.project-edit.filesystem]
+"~/Documents" = "deny"
+"~/Documents/codex" = "write"
+```
 
-[permissions.project-edit]
-description = "Project editing with OpenAI API access."
-extends = ":workspace"
+Supported path forms:
+
+| Path               | Meaning                                                                                     | Scoped subpaths |
+| ------------------ | ------------------------------------------------------------------------------------------- | --------------- |
+| `:root`            | The filesystem root                                                                         | `.` only        |
+| `:minimal`         | Platform and runtime paths needed by common tools                                           | `.` only        |
+| `:workspace_roots` | The current session's workspace roots plus any enabled profile-defined workspace roots      | Yes             |
+| `:tmpdir`          | The `$TMPDIR` location, when one is available                                               | `.` only        |
+| `:slash_tmp`       | The `/tmp` folder, if it exists                                                             | `.` only        |
+| `/absolute/path`   | A platform absolute path, such as `/path` on macOS/Linux/WSL or `C:\path` on native Windows | Yes             |
+| `~/path`           | A path under the current user's home directory                                              | Yes             |
+
+On native Windows, home-relative paths can also use backslashes, such as
+`~\work`.
+
+Use `:root` only when a profile intentionally needs broad read coverage:
+
+```toml
+[permissions.audit.filesystem]
+":root" = "read"
+```
+
+Use nested entries under `:workspace_roots` to scope access to workspace-root
+relative subpaths:
+
+```toml
+[permissions.project-edit.filesystem.":workspace_roots"]
+"." = "write"          # each workspace root
+"docs" = "read"        # each workspace-root docs directory
+"generated" = "deny"   # each workspace-root generated directory
+```
+
+Nested subpaths must stay inside their workspace root. Parent traversal such as
+`../other-repo` is rejected.
+
+#### Deny reads with exact paths or globs
+
+Use `deny` for files or subtrees that Codex should not read, even when a broader
+profile rule grants access nearby. Exact paths work well for stable locations
+such as `~/.ssh`. Glob patterns work better when a profile needs to cover a
+family of sensitive files whose exact locations vary across repositories.
+
+When a glob sits under `:workspace_roots`, Codex interprets it relative to each
+effective workspace root. For example:
+
+```toml
+[permissions.project-edit.filesystem.":workspace_roots"]
+"**/*.env" = "deny"
+```
+
+This rule denies reads for matching `.env` files found beneath each runtime or
+profile-defined workspace root. Use it when you want to preserve normal
+workspace writes while keeping environment files, generated secrets, or similar
+credential-bearing files unreadable.
+
+`deny` glob patterns are supported as deny-read rules. `read` or `write` globs
+are less portable on Linux, WSL, and native Windows sandboxing, so prefer exact
+paths or subtree rules such as `"docs/**" = "read"` when possible.
+
+On Linux, WSL, and native Windows, an unbounded `**` deny-read pattern may need
+bounded pre-expansion before the sandbox starts. Set `glob_scan_max_depth` when
+you use an unbounded pattern such as `"**/*.env" = "deny"`:
+
+```toml
+[permissions.project-edit.filesystem]
+glob_scan_max_depth = 3
 
 [permissions.project-edit.filesystem.":workspace_roots"]
 "**/*.env" = "deny"
-
-[permissions.project-edit.network]
-enabled = true
-
-[permissions.project-edit.network.domains]
-"api.openai.com" = "allow"
 ```
 
-This profile starts with `:workspace`, keeps matching `.env` files denied, and
-allows requests to `api.openai.com`. A profile can extend `:read-only`,
-`:workspace`, or another named profile. It cannot extend
-`:danger-full-access`; Codex also rejects unknown parents and inheritance
-cycles.
+`glob_scan_max_depth` must be at least `1`. Higher values scan deeper before
+sandbox startup, which can add startup work on Linux, WSL, and native Windows.
+If you prefer not to use bounded expansion, enumerate explicit depths such as
+`*.env`, `*/*.env`, and `*/*/*.env`.
+
+Add reusable workspace roots to the profile when the same rules should apply to
+more than the current session root:
+
+```toml
+[permissions.project-edit.workspace_roots]
+"~/code/app" = true
+"~/code/shared-lib" = true
+```
+
+When this profile is active, Codex applies the `:workspace_roots` rules to the
+current session's runtime workspace roots and to each enabled profile-defined
+workspace root.
+
+On native Windows, drive-letter paths such as `D:\work` and UNC paths such as
+`\\server\share` are supported as absolute paths.
+
+#### Network permissions
+
+Set `enabled = true` to allow network access for the selected profile:
+
+```toml
+[permissions.project-edit.network]
+enabled = true
+```
+
+When network access is enabled, Codex uses full network behavior by default.
+Most profiles should also define domain rules:
+
+```toml
+[permissions.project-edit.network.domains]
+"example.com" = "allow"      # exact host
+"*.example.com" = "allow"    # subdomains only
+"**.example.com" = "allow"   # apex and subdomains
+"ads.example.com" = "deny"   # deny wins over allow
+```
+
+The network sandbox proxy binds to local listeners by default:
+
+```toml
+[permissions.project-edit.network]
+enabled = true
+proxy_url = "http://127.0.0.1:3128"
+enable_socks5 = true
+socks_url = "http://127.0.0.1:8081"
+enable_socks5_udp = true
+```
+
+Leave these listener settings at their defaults unless you are integrating with
+a specific runtime. The `dangerously_*` network keys are escape hatches for
+specialized environments and should not be used for ordinary local development.
+
+#### Local and private networks
+
+Codex applies a local/private-network guard by default as a defense against DNS
+rebinding and accidental access to local services. To intentionally allow a
+literal local target, allowlist the exact host or IP literal:
+
+```toml
+[permissions.project-edit.network.domains]
+"localhost" = "allow"
+"127.0.0.1" = "allow"
+```
+
+Set `allow_local_binding = true` only when the profile must reach allowlisted
+hostnames that resolve to local or private addresses:
+
+```toml
+[permissions.project-edit.network]
+enabled = true
+allow_local_binding = true
+
+[permissions.project-edit.network.domains]
+"localhost" = "allow"
+```
+
+#### Unix sockets
+
+Unix socket proxying is a local escape hatch for tools such as Docker. Use it
+sparingly:
+
+```toml
+[permissions.project-edit.network.unix_sockets]
+"/var/run/docker.sock" = "allow"
+"/tmp/old.sock" = "deny"
+```
+
+Use `deny` to reject a socket path, including an inherited allow entry. Denied
+socket paths are omitted from the effective allowlist.
+
+When Unix sockets are enabled, keep proxy listeners bound to loopback addresses.
+
+#### Migrate from older sandbox settings
+
+Permission profiles replace the older combination of `sandbox_mode` and
+`sandbox_workspace_write` when you want one reusable profile to describe both
+filesystem and network behavior. Use one system or the other for a session, not
+both.
+
+Suggested starting points:
+
+- For a read-only workflow, use the built-in `:read-only` profile or define a
+  custom profile with read access only where needed.
+- For workspace editing, use the built-in `:workspace` profile or define a
+  custom profile that writes through `:workspace_roots` and adds only the extra
+  temp or cache paths the workflow needs.
+- For unrestricted local execution, use `:danger-full-access` only when you
+  intentionally want the broadest local access model.
+
+Profiles describe the local default posture for a session. Organization-managed
+requirements can still add restrictions that user configuration should not
+broaden. See [Managed configuration](/codex/enterprise/managed-configuration)
+for admin-enforced filesystem and network constraints.
 
 ### Plugins
 
@@ -10573,6 +11750,8 @@ Extend what Codex can do, for example:
 - Install the Google Drive plugin to work across Drive, Docs, Sheets, and
   Slides.
 - Install the Slack plugin to summarize channels or draft replies.
+- Install [Sites](/codex/sites) to create and deploy hosted websites,
+  web apps, and games.
 
 A plugin can contain:
 
@@ -10686,8 +11865,88 @@ guidance.
 
 #### Plugin guides
 
-- [Codex Security plugin](/codex/security/plugin): Scan authorized code,
-  confirm findings, and prepare reviewed fixes.
+- [Record & Replay](/codex/record-and-replay): Show Codex a workflow
+  once and turn it into a reusable skill.
+- [Codex Security plugin quickstart](/codex/security/plugin): Install the
+  plugin, scan authorized code, and review the result.
+
+### Record & Replay
+
+Source: [Record & Replay](/codex/record-and-replay.md)
+
+Record & Replay is available on macOS. Initial availability excludes the
+European Economic Area, the United Kingdom, and Switzerland. Computer Use must
+also be available and enabled.
+
+Record & Replay lets you demonstrate a workflow on your
+Mac and turn it into a reusable skill. Use it when the workflow is repetitive,
+depends on your preferences, or is easier to show than to describe in a prompt.
+
+For example, you might record how you file an expense, book a parking space,
+create a correctly configured issue, publish a video, or download a recurring
+report. Codex can package the pattern into a skill that you can use again with
+Computer Use, browser actions, connected plugins, or a combination of them.
+
+#### Before you start
+
+Pick a workflow that you already know how to complete. Record & Replay works
+best when the steps are stable and the success criteria are clear.
+
+#### Start a recording
+
+1. Open **Plugins** in the Codex app.
+2. Open the **+** menu.
+3. Select **Record a skill**.
+4. Review the suggested prompt, give Codex any helpful context, and submit it.
+5. When Codex asks for permission to record your actions, approve the request
+   once you are ready to demonstrate the workflow.
+6. Perform the workflow on your Mac.
+7. When you are done, stop recording from the menu bar, overlay, or tell Codex
+   that you are done.
+
+During recording, Codex observes the actions and window content needed to learn
+the workflow. Recording continues until you stop it. Keep the recording focused
+on the task you want Codex to learn.
+
+After you stop recording, Codex inspects the captured workflow and drafts a
+skill. The skill explains when to use the workflow, what inputs it needs, what
+steps to follow, and how to verify the result. You can also ask Codex to
+refine the skill further.
+
+#### Replay the workflow
+
+Start a new thread and ask Codex to use the generated skill. Give it the
+values that are different this time, such as the file to upload, the issue to
+create, or the date range for the report.
+
+Codex uses the skill as reusable context for the task. It can then complete the
+workflow with the tools available in the current environment, including
+Computer Use, browser actions, and installed plugins.
+
+#### Tips for better recordings
+
+- Keep the demonstration short and complete.
+- Let Codex know your goal and any specific inputs that might vary between
+  skill uses before you start recording.
+- Use realistic inputs, but avoid secrets and sensitive data.
+- Refine the skill after recording to call out hidden preferences that matter,
+  such as naming conventions, field defaults, or decision points.
+- Stop recording when the workflow is complete instead of continuing into
+  unrelated cleanup.
+
+#### When to build another plugin
+
+Record & Replay is a fast way to create a skill from a demonstrated workflow.
+If you want to distribute a separate stable package across a team, bundle
+multiple skills, include app integrations, add MCP servers, or manage install
+metadata, package that workflow as its own plugin. See
+[Build plugins](/codex/plugins/build).
+
+#### I don't see Record & Replay
+
+If your organization manages Codex with `requirements.toml`, the
+`[features].computer_use` requirement controls Record & Replay too. Setting
+`computer_use = false` makes both features unavailable.
 
 ### Remote connections
 
@@ -10700,9 +11959,9 @@ Terminal,
 } from "@components/react/oai/platform/ui/Icon.react";
 
 Remote connections let you use Codex from another device or another machine.
-Use Codex in the ChatGPT mobile app to work with Codex on a connected Mac,
-continue work from another Codex App device, or connect the Codex App to
-projects on an SSH host.
+Use Codex in the ChatGPT mobile app to work with Codex on a connected Mac or
+Windows device, continue work from another supported Codex App device, or connect
+the Codex App to projects on an SSH host.
 
 Remote access uses the connected host's projects, threads, files, credentials,
 permissions, plugins, Computer Use, browser setup, and local tools.
@@ -10722,17 +11981,18 @@ App host. To connect Codex to a project on an SSH host, see
 
 #### Before you set up mobile access
 
-Codex mobile setup currently requires the Codex App for macOS. The Codex App
-for Windows does not support mobile setup yet.
+Codex mobile setup supports Codex App hosts on macOS and Windows. You can
+control a Windows host from ChatGPT on iOS or Android, or from a Mac running
+Codex. Windows can't currently control another computer from the Codex App.
 
 Make sure you have:
 
 - Codex access in the ChatGPT account and workspace you want to use.
-- The latest ChatGPT mobile app on an iOS or Android device. If you do not see
+- The latest ChatGPT mobile app on an iOS or Android device. If you don't see
   Codex in the ChatGPT mobile app, update ChatGPT first.
-- The latest Codex App for macOS running on a Mac host that is awake, online,
-  and signed in to the same account and workspace. Mobile setup starts from the
-  Codex App; you cannot set it up from the Codex CLI or IDE Extension.
+- The latest Codex App for macOS or Windows running on a host that's awake,
+  online, and signed in to the same account and workspace. Mobile setup starts
+  from the Codex App; you can't set it up from the Codex CLI or IDE Extension.
 - Any required multi-factor authentication, SSO, or passkey configuration for
   that account or workspace.
 
@@ -10743,6 +12003,12 @@ Remote Control access before you can connect from your phone.
 
 Start in the Codex App on the host you want to connect. The setup flow enables
 remote access for that host, then shows a QR code you can scan from your phone.
+The QR code pairs that phone with that host. Pair every phone or supported Codex
+App device with every host you want it to control.
+
+Existing connections used since June 8, 2026, remain paired. If you haven't
+used an existing connection since June 8, 2026, update both apps and pair the
+devices again.
 
 1. Start Codex mobile setup.
 
@@ -10769,43 +12035,48 @@ remote access for that host, then shows a QR code you can scan from your phone.
 
 #### Choose what to connect
 
-Start with the Mac laptop or desktop where you already use Codex. Add an
-always-on Mac or SSH host when you need continuous access or a different
-environment.
+Start with the laptop or desktop where you already use Codex. Add an always-on
+computer or SSH host when you need continuous access or a different environment.
 
-#### Your Mac laptop or desktop
+#### Your laptop or desktop
 
-Connect the Mac where you already run Codex day to day. This gives remote access
-to the same projects, threads, credentials, plugins, and local setup you already
-use.
+Connect the Mac or Windows PC where you already run Codex day to day. This gives
+remote access to the same projects, threads, credentials, plugins, and local
+setup you already use.
 
-If that Mac sleeps, loses network access, or closes Codex, remote access stops
-until it is available again. If you use this computer as your host device, keep
-it plugged in and turn on **Keep this Mac awake** in the host's connection
-settings.
+If that computer sleeps, loses network access, or closes Codex, remote access
+stops until it's available again. If you use this computer as your host device,
+keep it plugged in and use the host's connection settings to keep it awake where
+available.
 
-On a Mac laptop, remote access can stay available with the lid open while the
-computer is plugged in. With the lid closed, connect an external display as
-well. Choosing **Sleep** still stops remote access.
+On a Mac laptop, remote access can stay available with the lid open and power
+connected. With the lid closed, connect an external display as well. Choosing
+**Sleep** still stops remote access.
 
-#### A dedicated always-on Mac
+On a Windows host, keep the session unlocked and available for tasks that use
+[Computer Use](/codex/app/computer-use). Computer use on Windows runs in the
+foreground, so remote control is best for starting or checking work while you
+dedicate the host desktop to the task.
 
-Use a dedicated always-on Mac when you want Codex to stay reachable for
-longer-running work.
+#### A dedicated always-on computer
+
+Use a dedicated always-on Mac or Windows PC when you want Codex to stay
+reachable for longer-running work.
 
 Install the projects, credentials, plugins, MCP servers, and tools Codex should
 use on that machine.
 
 #### A remote development environment
 
-Use an SSH host or managed devbox when the project already lives in a remote
-environment. Connect the Codex App host to that environment first; your phone
-still connects to the Codex App host, and Codex works in the remote environment
-with its dependencies, security policies, and compute resources.
+Use an SSH host or managed remote development environment when the project
+already lives in a remote environment. Connect the Codex App host to that
+environment first; your phone still connects to the Codex App host, and Codex
+works in the remote environment with its dependencies, security policies, and
+compute resources.
 
 For SSH setup details, see [connect to an SSH host](#connect-to-an-ssh-host).
 
-For browser or desktop tasks on an always-on Mac or remote host, enable
+For browser or desktop tasks on an always-on computer or remote host, enable
 Computer Use and install the Chrome extension on that host.
 
 #### What comes from the connected host
@@ -10822,8 +12093,8 @@ That means:
   configuration.
 - Signed-in websites and desktop apps are available only when the host can
   access them.
-- Sandboxing, security controls, and action approvals still apply to the
-  connected session.
+- The sandboxing settings, security controls, and action approvals still apply
+  to the connected session.
 
 Codex uses a secure relay layer to keep trusted machines reachable across your
 authorized ChatGPT devices without exposing them directly to the public
@@ -10831,14 +12102,17 @@ internet.
 
 #### Pick up work from another device
 
-You can continue work from another signed-in Codex App device. For example, if
-your laptop is unavailable, you can start a thread from your phone on an
-always-on host, then later open Codex on your laptop and continue that same
-thread there.
+You can continue work from another signed-in Codex App device that supports
+remote control. For example, if your laptop is unavailable, you can start
+a thread from your phone on an always-on host, then later open Codex on your
+laptop and continue that same thread there.
 
-In Codex on the laptop, use **Settings > Connections > Control other devices**
-to add the other host. A device can allow remote access and control another
-device at the same time.
+In Codex on a Mac, use **Settings > Connections > Control other devices** to add
+the other host. A device can allow remote access and control another device at
+the same time. You can control Windows hosts from a Mac or from ChatGPT on iOS
+or Android, but you can't use Windows to control another computer. For example,
+you can control a Windows device from your Mac or phone, but you can't use a
+Windows device to control another Windows device.
 
 #### Connect to an SSH host
 
@@ -10877,14 +12151,126 @@ unauthenticated public listeners.
 4. In the Codex App, open **Settings > Connections**, add or enable the SSH
    host, then choose a remote project folder.
 
-#### Authentication and network exposure
+### Sites
 
-Remote connections use SSH to start and manage the remote Codex app server.
-Don't expose app-server transports directly on a shared or public network.
+Source: [Sites](/codex/sites.md)
 
-If you need to reach a remote machine outside your current network, use a VPN
-or mesh networking tool instead of exposing the app server directly to the
-internet.
+Sites lets Codex create, save, deploy, and inspect websites, web apps, and
+games hosted by OpenAI. Use the **Sites** plugin when you want to turn a prompt
+or a compatible existing project into a hosted site without setting up a
+separate deployment workflow.
+
+Every Sites deployment URL is a production deployment. If you want to review a
+build before it becomes live, ask Codex to save a version without deploying
+it.
+
+#### Understand projects, versions, and deployments
+
+A Sites project links a local source project to hosting managed through Sites.
+Codex stores that linkage and optional storage binding names in
+`.openai/hosting.json`. A newly created local starter can begin without a
+`project_id`; Sites adds one after it provisions the hosted project.
+
+For example, a provisioned site that uses a relational database binding and no
+file storage can contain:
+
+```json
+{
+  "project_id": "",
+  "d1": "DB",
+  "r2": null
+}
+```
+
+Sites publishing has two separate stages:
+
+1. **Save a version.** Codex builds the deployable site and associates that
+   version with the source Git commit used for the build. Use this stage when
+   you want a reviewable deployment candidate.
+2. **Deploy a version.** Codex publishes a saved version and reports the
+   production URL when deployment succeeds. Use this only when you intend for
+   the selected audience to access the site.
+
+Ask Codex to list or inspect saved versions when you need to identify a
+previous deployment candidate.
+
+#### Choose a supported site shape
+
+Sites hosts projects that build Cloudflare Worker-compatible output as ES
+modules. For new projects, the Sites workflow can start with its recommended
+site starter. For an existing site, ask Codex to confirm that the project's
+build can produce compatible deployment artifacts before you request a
+deployment.
+
+Tell Codex about the product behavior you need so it can select the appropriate
+site shape:
+
+| Site need                                                      | What to ask Sites for                                                         |
+| -------------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| Content-led website or landing page                            | A site with no persistent application state unless the experience requires it |
+| Saved records, user progress, or game scores                   | D1, a relational database for durable structured data                         |
+| Images, documents, audio, video, or other uploads              | R2, object storage for files                                                  |
+| Uploaded files with searchable metadata                        | D1 for metadata and R2 for file contents                                      |
+| Internal site that needs the current workspace user's identity | Workspace-authenticated user identity                                         |
+| Public sign-in or an external identity provider                | An authentication-enabled Sites project                                       |
+
+Don't request durable storage for temporary presentation state, such as a
+theme choice or a dismissed banner. Do request it for product data that people
+expect the hosted site to remember.
+
+#### Control access and secrets
+
+Set the audience before you share a deployed URL. For a new site, keep access
+limited to the owner and workspace admins until you have reviewed the content,
+data handling, and expected audience.
+
+You can ask Sites to apply one of these access modes:
+
+| Access mode                      | Who can access the site                                                                       |
+| -------------------------------- | --------------------------------------------------------------------------------------------- |
+| Owner and admins (`admins_only`) | The site owner and workspace admins                                                           |
+| Workspace (`workspace_all`)      | All active users in the workspace                                                             |
+| Custom (`custom`)                | Specific active users or workspace groups that you choose; Sites continues to allow the owner |
+
+For example:
+
+```text
+@Sites Change this deployed site's access to everyone in my workspace after
+showing me the current site and confirming the deployment URL.
+```
+
+#### Configure runtime environment values
+
+Open **Sites** in the app sidebar and select a project to add, update, or remove
+hosted environment variables and secrets in the Sites panel. Don't store these
+values in `.openai/hosting.json`. Keep local `.env` and `.env.example` files
+aligned with the keys needed for local development, and don't commit secret
+values.
+
+When you add, update, or remove hosted environment values, ask Codex to
+redeploy the approved saved version so the next deployment uses the updated
+configuration.
+
+#### Review before you share
+
+Before you deploy or widen access:
+
+- Review the source changes and any database migrations in the Codex
+  [review pane](/codex/app/review).
+- Confirm that the build succeeded and that the selected saved version is the
+  version you intend to publish.
+- Check that only the intended audience can access the site.
+- Confirm that you configured runtime secret values through Sites and didn't
+  commit them in source files.
+- After deployment, ask Codex to confirm deployment status and the production
+  URL before you share it.
+
+#### Related documentation
+
+- [Plugins](/codex/plugins) explains how to install and invoke Codex plugins.
+- [Codex app](/codex/app) introduces app navigation and project threads.
+- [Review and ship changes](/codex/app/review) explains how to inspect source
+  changes before publishing them.
 
 ### Subagents
 
@@ -11049,6 +12435,155 @@ The best custom agents are narrow and opinionated. Give each one clear job, a
 tool surface that matches that job, and instructions that keep it from
 drifting into adjacent work.
 
+### Use Codex with Amazon Bedrock
+
+Source: [Use Codex with Amazon Bedrock](/codex/amazon-bedrock.md)
+
+Configure Codex to use OpenAI models available through Amazon Bedrock. In this
+setup, Codex runs locally and sends model requests to Bedrock using
+AWS-managed authentication and access controls.
+
+#### How it works
+
+When you configure Codex with Amazon Bedrock as the model provider, the
+OpenAI-hosted Responses API isn't in the request path. Codex sends model
+requests to Amazon Bedrock, and Bedrock provides an OpenAI-compatible Responses
+API implementation for supported OpenAI models.
+
+Authentication is AWS-native. Users authenticate with a Bedrock API key or AWS
+IAM credentials. They do not use ChatGPT sign-in or `OPENAI_API_KEY` for this
+provider.
+
+#### Before you start
+
+Make sure you have:
+
+- Access to supported OpenAI models in Amazon Bedrock.
+- An AWS Region where the selected model is available.
+- Authentication for the Amazon Bedrock Mantle path configured for the AWS
+  account.
+
+#### Configure Codex
+
+Add the `amazon-bedrock` model provider for the Amazon Bedrock Mantle path to
+`~/.codex/config.toml`. Supplying a model is optional. Select a supported model
+explicitly when needed.
+
+```toml
+model_provider = "amazon-bedrock"
+```
+
+This guide covers the Amazon Bedrock Mantle path in supported commercial AWS
+Regions. Codex doesn't support Bedrock Mantle endpoints in AWS GovCloud
+Regions.
+
+#### Authentication options
+
+Codex supports two Bedrock authentication paths. It checks them in this order:
+
+1. Bedrock API key.
+2. AWS SDK credential chain.
+
+#### Option 1: Bedrock API key
+
+Set the Bedrock API key in the environment Codex reads. You must specify a
+Region when using API-key authentication.
+
+```shell
+export AWS_BEARER_TOKEN_BEDROCK=
+export AWS_REGION=us-east-2
+```
+
+#### Option 2: AWS SDK credentials
+
+Use this path when your organization manages Bedrock access through the AWS SDK
+credential chain. Codex can use these standard AWS SDK credential sources:
+
+1. Shared AWS `config` and `credentials` files.
+
+   ```shell
+   aws configure
+   ```
+
+2. Environment variables.
+
+   ```shell
+   export AWS_ACCESS_KEY_ID=
+   export AWS_SECRET_ACCESS_KEY=
+   export AWS_SESSION_TOKEN=
+   ```
+
+3. AWS Management Console credentials.
+
+   ```shell
+   aws login
+   ```
+
+4. AWS SSO or a named profile.
+
+   ```shell
+   aws sso login --profile codex-bedrock
+   export AWS_PROFILE=codex-bedrock
+   ```
+
+5. Federated identity configured with `credential_process`. For corporate SSO or
+   OIDC federation, configure the AWS profile outside Codex and let the AWS SDK
+   resolve credentials. Put browser login, token exchange, caching, and refresh
+   in your AWS profile's `credential_process` helper.
+
+#### Desktop app and VS Code extension
+
+Desktop apps and IDE extensions may not inherit environment variables from the
+shell. Put required values in `~/.codex/.env`, then restart the app or
+extension.
+
+```shell
+export AWS_BEARER_TOKEN_BEDROCK=
+export AWS_REGION=us-east-2
+```
+
+#### Verify setup
+
+- In Codex CLI, open `/status` and confirm Codex is using the
+  `amazon-bedrock` model provider.
+- In the desktop app or VS Code extension, start a new session after restarting
+  the app.
+- Confirm the selected model is available in the configured AWS Region and that
+  the AWS identity has permission to access it.
+
+#### Supported models
+
+Use exact model IDs:
+
+```text
+openai.gpt-5.5
+openai.gpt-5.4
+```
+
+Model availability varies by AWS Region. Before selecting a model, see [model
+support by AWS
+Region](https://docs.aws.amazon.com/bedrock/latest/userguide/models-region-compatibility.html).
+
+#### Feature availability
+
+This configuration supports local Codex workflows. Some features that depend on
+OpenAI-hosted cloud services, hosted tools, or cloud-managed discovery aren't
+currently available.
+
+Fast Mode isn't available with Amazon Bedrock. Fast Mode uses priority
+processing, and the initial Amazon Bedrock offering supports on-demand
+inference only.
+
+#### Detailed feature availability
+
+- Feature is currently limited to only specific regions. Check
+  the individual feature documentation to learn more about geo restrictions.
+
+  † Local plugin bundles are supported when their capabilities do
+  not require ChatGPT authentication. OpenAI-curated plugin discovery and
+  features that depend on app connectors or cloud-hosted sharing aren't
+  available.
+
 ### Windows platform
 
 Source: [Windows](/codex/windows.md)
@@ -11095,6 +12630,20 @@ enterprise policy.
 If both modes are available, use `elevated`. If the default native sandbox
 doesn't work in your environment, use `unelevated` as a fallback while you
 troubleshoot the setup.
+
+Enterprise administrators can constrain which native sandbox implementations
+Codex can use through [`requirements.toml`](/codex/enterprise/managed-configuration#admin-enforced-requirements-requirementstoml):
+
+```toml
+[windows]
+allowed_sandbox_implementations = ["elevated"]
+```
+
+This example requires the `elevated` sandbox and prevents users from falling
+back to `unelevated`. To permit either implementation, include both values;
+Codex prefers `elevated` when no mode is selected. See the
+[`requirements.toml` reference](/codex/config-reference#requirementstoml) for
+the supported values.
 
 By default, both sandbox modes also use a private desktop for stronger UI
 isolation. Set `windows.sandbox_private_desktop = false` only if you need the

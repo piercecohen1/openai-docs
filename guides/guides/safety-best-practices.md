@@ -1,37 +1,12 @@
 # Safety best practices
 
-export const snippetExampleProvidingUserIdentifier = {
-  python: `
-from openai import OpenAI
-client = OpenAI()
-
-response = client.chat.completions.create(
-model="gpt-4o-mini",
-messages=[
-{"role": "user", "content": "This is a test"}
-],
-max_tokens=5,
-safety_identifier="user_123456"
-)
-`.trim(),
-  curl: `
-curl https://api.openai.com/v1/chat/completions \\
--H "Content-Type: application/json" \\
--H "Authorization: Bearer $OPENAI_API_KEY" \\
--d '{
-"model": "gpt-4o-mini",
-"messages": [
-{"role": "user", "content": "This is a test"}
-],
-"max_tokens": 5,
-"safety_identifier": "user123456"
-}'
-`.trim(),
-};
-
 ### Use our free Moderation API
 
 OpenAI's [Moderation API](https://developers.openai.com/api/docs/guides/moderation) is free-to-use and can help reduce the frequency of unsafe content in your completions. Alternatively, you may wish to develop your own content filtration system tailored to your use case.
+
+If your application generates text with the Responses API or Chat Completions,
+you can also [request moderation scores in the generation
+request](https://developers.openai.com/api/docs/guides/moderation#moderate-generated-content).
 
 ### Adversarial testing
 
@@ -82,6 +57,37 @@ A safety identifier should be a string that uniquely identifies each user. Hash 
 Safety identifiers are recommended for products where individual users interact
 with a model, but they are not required. Include safety identifiers in your API
 requests with the `safety_identifier` parameter:
+
+Example: Providing a safety identifier
+
+```python
+from openai import OpenAI
+client = OpenAI()
+
+response = client.chat.completions.create(
+model="gpt-5.5",
+messages=[
+{"role": "user", "content": "This is a test"}
+],
+max_completion_tokens=5,
+safety_identifier="user_123456"
+)
+```
+
+```bash
+curl https://api.openai.com/v1/chat/completions \
+-H "Content-Type: application/json" \
+-H "Authorization: Bearer $OPENAI_API_KEY" \
+-d '{
+"model": "gpt-5.5",
+"messages": [
+{"role": "user", "content": "This is a test"}
+],
+"max_completion_tokens": 5,
+"safety_identifier": "user123456"
+}'
+```
+
 
 For Realtime API requests, provide the same stable, privacy-preserving identifier
 with the `OpenAI-Safety-Identifier` header. When you create an ephemeral Realtime

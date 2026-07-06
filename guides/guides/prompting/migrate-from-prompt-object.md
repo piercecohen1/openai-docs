@@ -1,5 +1,11 @@
 # Migrate from prompt objects
 
+OpenAI is deprecating reusable prompt objects in the API. Prompt creation will
+  be de-emphasized beginning June 3, 2026, and `v1/prompts` is scheduled to shut
+  down on November 30, 2026. See the [deprecations
+  page](https://developers.openai.com/api/docs/deprecations#2026-06-03-reusable-prompts) for the current
+  timeline.
+
 To migrate away from **Prompts** in the OpenAI API platform, move the prompt content out of the managed `prompt` object and into your application code. This gives you more control over review, testing, deployment, and versioning.
 
 ## Before: using a Prompt Object
@@ -41,9 +47,9 @@ response = client.responses.create(
 ```
 
 ```bash
-curl https://api.openai.com/v1/responses \\
-  -H "Content-Type: application/json" \\
-  -H "Authorization: Bearer $OPENAI_API_KEY" \\
+curl https://api.openai.com/v1/responses \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $OPENAI_API_KEY" \
   -d '{
     "prompt": {
       "prompt_id": "pmpt_123",
@@ -67,7 +73,7 @@ import OpenAI from "openai";
 const client = new OpenAI();
 
 const response = await client.responses.create({
-  model: "gpt-5.1",
+  model: "gpt-5.5",
   input: [
     {
       role: "system",
@@ -76,12 +82,8 @@ const response = await client.responses.create({
     },
     {
       role: "user",
-      content: \`
-Customer name: Acme
-Issue: billing question
-
-Write a response to the customer.
-      \`.trim(),
+      content:
+        "Customer name: Acme. Issue: billing question. Write a response to the customer.",
     },
   ],
 });
@@ -95,7 +97,7 @@ from openai import OpenAI
 client = OpenAI()
 
 response = client.responses.create(
-    model="gpt-5.1",
+    model="gpt-5.5",
     input=[
         {
             "role": "system",
@@ -103,12 +105,7 @@ response = client.responses.create(
         },
         {
             "role": "user",
-            "content": """
-Customer name: Acme
-Issue: billing question
-
-Write a response to the customer.
-            """.strip(),
+            "content": "Customer name: Acme. Issue: billing question. Write a response to the customer.",
         },
     ],
 )
@@ -117,11 +114,11 @@ print(response.output_text)
 ```
 
 ```bash
-curl https://api.openai.com/v1/responses \\
-  -H "Content-Type: application/json" \\
-  -H "Authorization: Bearer $OPENAI_API_KEY" \\
+curl https://api.openai.com/v1/responses \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $OPENAI_API_KEY" \
   -d '{
-    "model": "gpt-5.1",
+    "model": "gpt-5.5",
     "input": [
       {
         "role": "system",
@@ -129,7 +126,7 @@ curl https://api.openai.com/v1/responses \\
       },
       {
         "role": "user",
-        "content": "Customer name: Acme\\nIssue: billing question\\n\\nWrite a response to the customer."
+        "content": "Customer name: Acme. Issue: billing question. Write a response to the customer."
       }
     ]
   }'
@@ -167,26 +164,18 @@ function buildSupportPrompt({ customerName, issue }) {
   return [
     {
       role: "system",
-      content: \`
-You are a helpful support assistant.
-Be concise, accurate, and friendly.
-Do not invent policy details.
-      \`.trim(),
+      content:
+        "You are a helpful support assistant. Be concise, accurate, and friendly. Do not invent policy details.",
     },
     {
       role: "user",
-      content: \`
-Customer name: \${customerName}
-Issue: \${issue}
-
-Write a response to the customer.
-      \`.trim(),
+      content: `Customer name: ${customerName}. Issue: ${issue}. Write a response to the customer.`,
     },
   ];
 }
 
 const response = await client.responses.create({
-  model: "gpt-5.1",
+  model: "gpt-5.5",
   input: buildSupportPrompt({
     customerName: "Acme",
     issue: "billing question",
@@ -203,25 +192,16 @@ def build_support_prompt(customer_name, issue):
     return [
         {
             "role": "system",
-            "content": """
-You are a helpful support assistant.
-Be concise, accurate, and friendly.
-Do not invent policy details.
-            """.strip(),
+            "content": "You are a helpful support assistant. Be concise, accurate, and friendly. Do not invent policy details.",
         },
         {
             "role": "user",
-            "content": f"""
-Customer name: {customer_name}
-Issue: {issue}
-
-Write a response to the customer.
-            """.strip(),
+            "content": f"Customer name: {customer_name}. Issue: {issue}. Write a response to the customer.",
         },
     ]
 
 response = client.responses.create(
-    model="gpt-5.1",
+    model="gpt-5.5",
     input=build_support_prompt(
         customer_name="Acme",
         issue="billing question",

@@ -1,100 +1,5 @@
 # Rate limits
 
-export const snippetTenacityLibrary = {
-  python: `
-from openai import OpenAI
-client = OpenAI()
-
-from tenacity import (
-retry,
-stop_after_attempt,
-wait_random_exponential,
-) # for exponential backoff
-
-@retry(wait=wait_random_exponential(min=1, max=60), stop=stop_after_attempt(6))
-def completion_with_backoff(**kwargs):
-return client.completions.create(**kwargs)
-
-completion_with_backoff(model="gpt-4o-mini", prompt="Once upon a time,")
-`.trim(),
-};
-
-export const snippetBackoffLibrary = {
-  python: `
-import backoff
-import openai
-from openai import OpenAI
-client = OpenAI()
-
-@backoff.on_exception(backoff.expo, openai.RateLimitError)
-def completions_with_backoff(**kwargs):
-return client.completions.create(**kwargs)
-
-completions_with_backoff(model="gpt-4o-mini", prompt="Once upon a time,")
-`.trim(),
-};
-
-export const snippetManualBackoffImplementation = {
-  python: `
-# imports
-import random
-import time
-
-import openai
-from openai import OpenAI
-client = OpenAI()
-
-# define a retry decorator
-
-def retry_with_exponential_backoff(
-func,
-initial_delay: float = 1,
-exponential_base: float = 2,
-jitter: bool = True,
-max_retries: int = 10,
-errors: tuple = (openai.RateLimitError,),
-):
-"""Retry a function with exponential backoff."""
-
-    def wrapper(*args, **kwargs):
-        # Initialize variables
-        num_retries = 0
-        delay = initial_delay
-
-        # Loop until a successful response or max_retries is hit or an exception is raised
-        while True:
-            try:
-                return func(*args, **kwargs)
-
-            # Retry on specific errors
-            except errors as e:
-                # Increment retries
-                num_retries += 1
-
-                # Check if max retries has been reached
-                if num_retries > max_retries:
-                    raise Exception(
-                        f"Maximum number of retries ({max_retries}) exceeded."
-                    )
-
-                # Increment the delay
-                delay *= exponential_base * (1 + jitter * random.random())
-
-                # Sleep for the delay
-                time.sleep(delay)
-
-            # Raise exceptions for any errors not specified
-            except Exception as e:
-                raise e
-
-    return wrapper
-
-@retry_with_exponential_backoff
-def completions_with_backoff(**kwargs):
-return client.completions.create(**kwargs)
-`.trim(),
-};
-
 Rate limits are restrictions that our API imposes on the number of times a user or client can
 access our services within a specified period of time.
 
@@ -121,7 +26,7 @@ Other important things worth noting:
 
 - Rate limits are defined at the [organization level](https://developers.openai.com/api/docs/guides/production-best-practices) and at the project level, not user level.
 - Rate limits vary by the [model](https://developers.openai.com/api/docs/models) being used.
-- For long context models like GPT-4.1, there is a separate rate limit for long context requests. You can view these rate limits in [developer console](https://platform.openai.com/settings/organization/limits).
+- For long context models like GPT-5.5, there is a separate rate limit for long context requests. You can view these rate limits in [developer console](https://platform.openai.com/settings/organization/limits).
 - Limits are also placed on the total amount an organization can spend on the API each month. These are also known as "usage limits".
 - Some model families have shared rate limits. Any models listed under a "shared limit" in your [organizations limit page](https://platform.openai.com/settings/organization/limits) share a rate limit between them. For example, if the listed shared TPM is 3.5M, all calls to any model in the given "shared limit" list will count towards that 3.5M.
 - Vector store ingestion is also rate limited per vector store ID. `/vector_stores/{vector_store_id}/files` and `/vector_stores/{vector_store_id}/file_batches` share a limit of 300 requests per minute for each vector store. For larger ingests, prefer `/vector_stores/{vector_store_id}/file_batches`.
@@ -147,23 +52,23 @@ In addition to seeing your rate limit on your [account page](https://platform.op
 
 You can expect to see the following header fields:
 
-| Field                          | Sample Value | Description                                                                           |
-| ------------------------------ | ------------ | ------------------------------------------------------------------------------------- |
-| x-ratelimit-limit-requests     | 60           | The maximum number of requests that are permitted before exhausting the rate limit.   |
-| x-ratelimit-limit-tokens       | 150000       | The maximum number of tokens that are permitted before exhausting the rate limit.     |
-| x-ratelimit-remaining-requests | 59           | The remaining number of requests that are permitted before exhausting the rate limit. |
-| x-ratelimit-remaining-tokens   | 149984       | The remaining number of tokens that are permitted before exhausting the rate limit.   |
-| x-ratelimit-reset-requests     | 1s           | The time until the rate limit (based on requests) resets to its initial state.        |
-| x-ratelimit-reset-tokens       | 6m0s         | The time until the rate limit (based on tokens) resets to its initial state.          |
+| Field                                | Sample Value | Description                                                                                     |
+| ------------------------------------ | ------------ | ----------------------------------------------------------------------------------------------- |
+| x-ratelimit-limit-requests           | 60           | The maximum number of requests that are permitted before exhausting the rate limit.             |
+| x-ratelimit-limit-tokens             | 150000       | The maximum number of tokens that are permitted before exhausting the rate limit.               |
+| x-ratelimit-remaining-requests       | 59           | The remaining number of requests that are permitted before exhausting the rate limit.           |
+| x-ratelimit-remaining-tokens         | 149984       | The remaining number of tokens that are permitted before exhausting the rate limit.             |
+| x-ratelimit-reset-requests           | 1s           | The time until the rate limit (based on requests) resets to its initial state.                  |
+| x-ratelimit-reset-tokens             | 6m0s         | The time until the rate limit (based on tokens) resets to its initial state.                    |
+| x-ratelimit-limit-project-tokens     | 60000        | The token limit for the project.                                                                |
+| x-ratelimit-remaining-project-tokens | 57000        | The remaining number of tokens permitted before exhausting the project-scoped token rate limit. |
+| x-ratelimit-reset-project-tokens     | 3s           | The time until the project-scoped token rate limit resets to its initial state.                 |
+
+Project-token headers may be present when a project-scoped token limit applies.
 
 ### Fine-tuning rate limits
 
 The fine-tuning rate limits for your organization can be [found in the dashboard as well](https://platform.openai.com/settings/organization/limits), and can also be retrieved via API:
-
-```bash
-curl https://api.openai.com/v1/fine_tuning/model_limits \
-  -H "Authorization: Bearer $OPENAI_API_KEY"
-```
 
 ## Error mitigation
 

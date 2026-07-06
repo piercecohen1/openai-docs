@@ -28,7 +28,7 @@ To create a realtime API session via the unified interface, you will need to bui
 Below is an example of a simple Node.js [express](https://expressjs.com/) server which creates a realtime API session:
 
 ```javascript
-
+import express from "express";
 
 const app = express();
 
@@ -37,7 +37,7 @@ app.use(express.text({ type: ["application/sdp", "text/plain"] }));
 
 const sessionConfig = JSON.stringify({
   type: "realtime",
-  model: "gpt-realtime-2",
+  model: "gpt-realtime-2.1",
   audio: { output: { voice: "marin" } },
 });
 
@@ -67,6 +67,7 @@ app.post("/session", async (req, res) => {
 
 app.listen(3000);
 ```
+
 
 If your application assigns a [safety identifier](https://developers.openai.com/api/docs/guides/safety-best-practices#implement-safety-identifiers)
 for each end user, include it as the `OpenAI-Safety-Identifier` header in this
@@ -115,6 +116,7 @@ const answer = {
 await pc.setRemoteDescription(answer);
 ```
 
+
 ### Connecting using an ephemeral token
 
 The process for initializing a WebRTC connection using an ephemeral API key is as follows (assuming a web browser client):
@@ -132,14 +134,14 @@ To create an ephemeral token to use on the client-side, you will need to build a
 Below is an example of a simple Node.js [express](https://expressjs.com/) server which mints an ephemeral API key using the REST API:
 
 ```javascript
-
+import express from "express";
 
 const app = express();
 
 const sessionConfig = JSON.stringify({
   session: {
     type: "realtime",
-    model: "gpt-realtime-2",
+    model: "gpt-realtime-2.1",
     audio: {
       output: {
         voice: "marin",
@@ -175,6 +177,7 @@ app.get("/token", async (req, res) => {
 
 app.listen(3000);
 ```
+
 
 You can create a server endpoint like this one on any platform that can send and receive HTTP requests. Just ensure that **you only use standard OpenAI API keys on the server, not in the browser.**
 
@@ -230,6 +233,7 @@ const answer = {
 await pc.setRemoteDescription(answer);
 ```
 
+
 ## Sending and receiving events
 
 Realtime API sessions are managed using a combination of [client-sent events](https://developers.openai.com/api/docs/api-reference/realtime_client_events/session) emitted by you as the developer, and [server-sent events](https://developers.openai.com/api/docs/api-reference/realtime_server_events/error) created by the Realtime API to indicate session lifecycle events.
@@ -264,6 +268,7 @@ const event = {
 };
 dc.send(JSON.stringify(event));
 ```
+
 
 To learn more about managing Realtime conversations, refer to the [Realtime conversations guide](https://developers.openai.com/api/docs/guides/realtime-conversations).
 

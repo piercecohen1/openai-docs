@@ -54,7 +54,7 @@ Because the content generated from a model is non-deterministic, prompting to ge
 Some prompt engineering techniques work with every model, like using message roles. But different model types (like reasoning versus GPT models) might need to be prompted differently to produce the best results. Even different snapshots of models within the same family could produce different results. So as you build more complex applications, we strongly recommend:
 
 - Pinning your production applications to specific [model snapshots](https://developers.openai.com/api/docs/models) (like `gpt-4.1-2025-04-14` for example) to ensure consistent behavior
-- Building [evals](https://developers.openai.com/api/docs/guides/evals) that measure the behavior of your prompts so you can monitor prompt performance as you iterate, or when you change and upgrade model versions
+- Building tests and evaluation suites that measure prompt behavior so you can monitor performance as you iterate, or when you change and upgrade model versions
 
 Now, let's examine some tools and techniques available to you to construct prompts.
 
@@ -73,7 +73,7 @@ import OpenAI from "openai";
 const client = new OpenAI();
 
 const response = await client.responses.create({
-    model: "gpt-5",
+    model: "gpt-5.5",
     reasoning: { effort: "low" },
     instructions: "${semicolonsDevMsg}",
     input: "${semicolonsPrompt}",
@@ -87,7 +87,7 @@ from openai import OpenAI
 client = OpenAI()
 
 response = client.responses.create(
-    model="gpt-5",
+    model="gpt-5.5",
     reasoning={"effort": "low"},
     instructions="${semicolonsDevMsg}",
     input="${semicolonsPrompt}",
@@ -97,11 +97,11 @@ print(response.output_text)
 ```
 
 ```bash
-curl "https://api.openai.com/v1/responses" \\
-    -H "Content-Type: application/json" \\
-    -H "Authorization: Bearer $OPENAI_API_KEY" \\
+curl "https://api.openai.com/v1/responses" \
+    -H "Content-Type: application/json" \
+    -H "Authorization: Bearer $OPENAI_API_KEY" \
     -d '{
-        "model": "gpt-5",
+        "model": "gpt-5.5",
         "reasoning": {"effort": "low"},
         "instructions": "${semicolonsDevMsg}",
         "input": "${semicolonsPrompt}"
@@ -118,7 +118,7 @@ import OpenAI from "openai";
 const client = new OpenAI();
 
 const response = await client.responses.create({
-    model: "gpt-5",
+    model: "gpt-5.5",
     reasoning: { effort: "low" },
     input: [
         {
@@ -140,7 +140,7 @@ from openai import OpenAI
 client = OpenAI()
 
 response = client.responses.create(
-    model="gpt-5",
+    model="gpt-5.5",
     reasoning={"effort": "low"},
     input=[
         {
@@ -158,11 +158,11 @@ print(response.output_text)
 ```
 
 ```bash
-curl "https://api.openai.com/v1/responses" \\
-    -H "Content-Type: application/json" \\
-    -H "Authorization: Bearer $OPENAI_API_KEY" \\
+curl "https://api.openai.com/v1/responses" \
+    -H "Content-Type: application/json" \
+    -H "Authorization: Bearer $OPENAI_API_KEY" \
     -d '{
-        "model": "gpt-5",
+        "model": "gpt-5.5",
         "reasoning": {"effort": "low"},
         "input": [
             {
@@ -197,169 +197,25 @@ You could think about `developer` and `user` messages like a function and its ar
 - `developer` messages provide the system's rules and business logic, like a function definition.
 - `user` messages provide inputs and configuration to which the `developer` message instructions are applied, like arguments to a function.
 
-## Reusable prompts
+## Version prompts in code
 
-In the OpenAI dashboard, you can develop reusable [prompts](https://platform.openai.com/chat/edit) that you can use in API requests, rather than specifying the content of prompts in code. This way, you can more easily build and evaluate your prompts, and deploy improved versions of your prompts without changing your integration code.
+Store production prompts in your application code instead of creating reusable prompt objects. Code-managed prompts let you use typed inputs, code review, tests, and your normal deployment process to change model behavior.
 
+OpenAI is deprecating reusable prompt objects in the API. Prompt creation will
+  be de-emphasized beginning June 3, 2026, and `v1/prompts` is scheduled to shut
+  down on November 30, 2026. See the [deprecations
+  page](https://developers.openai.com/api/docs/deprecations#2026-06-03-reusable-prompts) for the current
+  timeline.
 
+For new prompt-engineering work:
 
+- Keep prompt builders in a small module near the feature they support.
+- Use typed function arguments or schemas for dynamic values such as customer data, files, or task options.
+- Pass the generated `instructions` and `input` directly to the [Responses API](https://developers.openai.com/api/docs/api-reference/responses/create).
+- Add representative fixtures, tests, and evaluation checks before changing production prompts.
+- Roll out prompt changes through your deployment system, using feature flags or configuration when you need staged releases.
 
-
-Here's how it works:
-
-1. **Create a reusable prompt** in the [dashboard](https://platform.openai.com/chat/edit) with placeholders like `{{customer_name}}`.
-2. **Use the prompt** in your API request with the `prompt` parameter. The prompt parameter object has three properties you can configure:
-   - `id` — Unique identifier of your prompt, found in the dashboard
-   - `version` — A specific version of your prompt (defaults to the "current" version as specified in the dashboard)
-   - `variables` — A map of values to substitute in for variables in your prompt. The substitution values can either be strings, or other Response input message types like `input_image` or `input_file`. [See the full API reference](https://developers.openai.com/api/docs/api-reference/responses/create).
-
-
-
-<div data-content-switcher-pane data-value="simple">
-    <div class="hidden">String variables</div>
-    Generate text with a prompt template
-
-```javascript
-import OpenAI from "openai";
-const client = new OpenAI();
-
-const response = await client.responses.create({
-    model: "gpt-5",
-    prompt: {
-        id: "pmpt_abc123",
-        version: "2",
-        variables: {
-            customer_name: "Jane Doe",
-            product: "40oz juice box"
-        }
-    }
-});
-
-console.log(response.output_text);
-```
-
-```python
-from openai import OpenAI
-client = OpenAI()
-
-response = client.responses.create(
-    model="gpt-5",
-    prompt={
-        "id": "pmpt_abc123",
-        "version": "2",
-        "variables": {
-            "customer_name": "Jane Doe",
-            "product": "40oz juice box"
-        }
-    }
-)
-
-print(response.output_text)
-```
-
-```bash
-curl https://api.openai.com/v1/responses \\
-  -H "Authorization: Bearer $OPENAI_API_KEY" \\
-  -H "Content-Type: application/json" \\
-  -d '{
-    "model": "gpt-5",
-    "prompt": {
-      "id": "pmpt_abc123",
-      "version": "2",
-      "variables": {
-        "customer_name": "Jane Doe",
-        "product": "40oz juice box"
-      }
-    }
-  }'
-```
-
-  </div>
-  <div data-content-switcher-pane data-value="filevar" hidden>
-    <div class="hidden">Variables with file input</div>
-    Prompt template with file input variable
-
-```javascript
-import fs from "fs";
-import OpenAI from "openai";
-const client = new OpenAI();
-
-// Upload a PDF we will reference in the prompt variables
-const file = await client.files.create({
-    file: fs.createReadStream("draconomicon.pdf"),
-    purpose: "user_data",
-});
-
-const response = await client.responses.create({
-    model: "gpt-5",
-    prompt: {
-        id: "pmpt_abc123",
-        variables: {
-            topic: "Dragons",
-            reference_pdf: {
-                type: "input_file",
-                file_id: file.id,
-            },
-        },
-    },
-});
-
-console.log(response.output_text);
-```
-
-```python
-import openai, pathlib
-
-client = openai.OpenAI()
-
-# Upload a PDF we will reference in the variables
-file = client.files.create(
-    file=open("draconomicon.pdf", "rb"),
-    purpose="user_data",
-)
-
-response = client.responses.create(
-    model="gpt-5",
-    prompt={
-        "id": "pmpt_abc123",
-        "variables": {
-            "topic": "Dragons",
-            "reference_pdf": {
-                "type": "input_file",
-                "file_id": file.id,
-            },
-        },
-    },
-)
-
-print(response.output_text)
-```
-
-```bash
-# Assume you have already uploaded the PDF and obtained FILE_ID
-curl https://api.openai.com/v1/responses \
-  -H "Authorization: Bearer $OPENAI_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "model": "gpt-5",
-    "prompt": {
-      "id": "pmpt_abc123",
-      "variables": {
-        "topic": "Dragons",
-        "reference_pdf": {
-          "type": "input_file",
-          "file_id": "file-abc123"
-        }
-      }
-    }
-  }'
-```
-
-  </div>
-
-
-
-
+If your integration already calls a saved prompt with a prompt ID or version, use the [prompt object migration guide](https://developers.openai.com/api/docs/guides/prompting/migrate-from-prompt-object) to move that prompt into code.
 
 ## Message formatting with Markdown and XML
 
@@ -380,7 +236,36 @@ Below is an example of using Markdown and XML tags to construct a `developer` me
 
 <div data-content-switcher-pane data-value="prompt">
     <div class="hidden">Example prompt</div>
-    </div>
+    A developer message for code generation
+
+```text
+# Identity
+
+You are coding assistant that helps enforce the use of snake case
+variables in JavaScript code, and writing code that will run in
+Internet Explorer version 6.
+
+# Instructions
+
+* When defining variables, use snake case names (e.g. my_variable)
+  instead of camel case names (e.g. myVariable).
+* To support old browsers, declare variables using the older
+  "var" keyword.
+* Do not give responses with Markdown formatting, just return
+  the code as requested.
+
+# Examples
+
+<user_query>
+How do I declare a string variable for a first name?
+</user_query>
+
+<assistant_response>
+var first_name = "Anna";
+</assistant_response>
+```
+
+  </div>
   <div data-content-switcher-pane data-value="code" hidden>
     <div class="hidden">API request</div>
     Send a prompt to generate code through the API
@@ -393,7 +278,7 @@ const client = new OpenAI();
 const instructions = await fs.readFile("prompt.txt", "utf-8");
 
 const response = await client.responses.create({
-    model: "gpt-5",
+    model: "gpt-5.5",
     instructions,
     input: "How would I declare a variable for a last name?",
 });
@@ -409,7 +294,7 @@ with open("prompt.txt", "r", encoding="utf-8") as f:
     instructions = f.read()
 
 response = client.responses.create(
-    model="gpt-5",
+    model="gpt-5.5",
     instructions=instructions,
     input="How would I declare a variable for a last name?",
 )
@@ -418,11 +303,11 @@ print(response.output_text)
 ```
 
 ```bash
-curl https://api.openai.com/v1/responses \\
-  -H "Authorization: Bearer $OPENAI_API_KEY" \\
-  -H "Content-Type: application/json" \\
+curl https://api.openai.com/v1/responses \
+  -H "Authorization: Bearer $OPENAI_API_KEY" \
+  -H "Content-Type: application/json" \
   -d '{
-    "model": "gpt-5",
+    "model": "gpt-5.5",
     "instructions": "'"$(< prompt.txt)"'",
     "input": "How would I declare a variable for a last name?"
   }'
@@ -624,7 +509,7 @@ For more information on best practices when using reasoning models, [refer to th
 
 ## Next steps
 
-Now that you known the basics of text inputs and outputs, you might want to check out one of these resources next.
+Now that you know the basics of text inputs and outputs, you might want to check out one of these resources next.
 
 [
 

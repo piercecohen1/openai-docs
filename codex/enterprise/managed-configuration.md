@@ -7,21 +7,33 @@ Enterprise admins can control local Codex behavior in two ways:
 
 ## Admin-enforced requirements (requirements.toml)
 
-Requirements constrain security-sensitive settings (approval policy, approvals reviewer, automatic review policy, sandbox mode, web search mode, managed hooks, and optionally which MCP servers users can enable). When resolving configuration (for example from `config.toml`, [profile files](https://developers.openai.com/codex/config-advanced#profiles), or CLI config overrides), if a value conflicts with an enforced rule, Codex falls back to a compatible value and notifies the user. If you configure an `mcp_servers` allowlist, Codex enables an MCP server only when both its name and identity match an approved entry; otherwise, Codex disables it.
+Requirements constrain security-sensitive settings (approval policy, approvals reviewer, automatic review policy, sandbox mode, permission profiles, web search mode, managed hooks, which MCP servers users can enable, and which user-configured plugin marketplace sources they can add, install from, or refresh). When resolving configuration (for example from `config.toml`, [profile files](https://developers.openai.com/codex/config-advanced#profiles), or CLI config overrides), if a value conflicts with an enforced rule, Codex falls back to a compatible value and notifies the user. If you configure an `mcp_servers` allowlist, Codex enables an MCP server only when both its name and identity match an approved entry; otherwise, Codex disables it.
 
 Requirements can also constrain [feature flags](https://developers.openai.com/codex/config-basic/#feature-flags) via the `[features]` table in `requirements.toml`. Note that features aren't always security-sensitive, but enterprises can pin values if desired. Omitted keys remain unconstrained.
+
+For Codex 0.138.0 or later, prefer [permission profiles](https://developers.openai.com/codex/permissions)
+with `allowed_permission_profiles` and managed `default_permissions`. Use
+`allowed_sandbox_modes` only for legacy deployments that still configure
+`sandbox_mode`.
 
 For the exact key list, see the [`requirements.toml` section in Configuration Reference](https://developers.openai.com/codex/config-reference#requirementstoml).
 
 ### Locations and precedence
 
-Codex applies requirements layers in this order (earlier wins per field):
+Codex checks requirement sources in this order. If the same setting appears more
+than once, the first value wins:
 
 1. Cloud-managed requirements (ChatGPT Business or Enterprise)
 2. macOS managed preferences (MDM) via `com.openai.codex:requirements_toml_base64`
 3. System `requirements.toml` (`/etc/codex/requirements.toml` on Unix systems, including Linux/macOS, or `%ProgramData%\OpenAI\Codex\requirements.toml` on Windows)
 
-Across layers, Codex merges requirements per field: if an earlier layer sets a field (including an empty list), later layers don't override that field, but lower layers can still fill fields that remain unset.
+Codex checks these sources from top to bottom. For ordinary settings and lists,
+it uses the first value it finds. A later source can still provide a setting
+that earlier sources leave unset.
+
+Tables combine one entry at a time. For `allowed_permission_profiles`, a later
+source can add profile names that earlier sources don't mention. If two sources
+set the same profile name, the earlier source wins.
 
 For backwards compatibility, Codex also interprets legacy `managed_config.toml` fields `approval_policy` and `sandbox_mode` as requirements (allowing only that single value).
 
@@ -72,6 +84,145 @@ allowed_approval_policies = ["untrusted", "on-request"]
 allowed_sandbox_modes = ["read-only", "workspace-write"]
 ```
 
+### Disable Appshots
+
+To disable Appshots for managed users, set the top-level `allow_appshots` requirement:
+
+```toml
+allow_appshots = false
+```
+
+Codex treats only `allow_appshots = false` as disabling Appshots. If the key is omitted, Appshots remain unconstrained by requirements and use normal product availability checks. App-server clients that read effective requirements through `configRequirements/read` receive the same restriction as `allowAppshots`; an omitted or `null` `allowAppshots` value doesn't disable Appshots.
+
+### Disable device remote control
+
+To disable [device remote control](https://developers.openai.com/codex/remote-connections#pick-up-work-from-another-device)
+for managed users, set the top-level `allow_remote_control` requirement:
+
+```toml
+allow_remote_control = false
+```
+
+Codex treats only `allow_remote_control = false` as disabling device remote
+control. If the key is omitted, device remote control remains unconstrained by
+requirements and uses normal product availability checks. This requirement does
+not disable SSH remote connections.
+
+### Control available permission profiles
+
+Use `allowed_permission_profiles` to control which built-in and custom
+[permission profiles](https://developers.openai.com/codex/permissions) users can select. This is the
+permission-profile equivalent of `allowed_sandbox_modes`; use the allowlist that
+matches how your users select permissions.
+
+Permission-profile allowlists require Codex 0.138.0 or later. Codex 0.137.0 and
+earlier ignore `allowed_permission_profiles` and managed
+`default_permissions`.
+
+Use the permission-profile examples below only after every managed client runs a
+supporting release. Don't deploy managed custom profiles until the fleet upgrade
+is complete.
+
+When the table is present, it's the complete list of allowed profiles. Profiles
+set to `true` are allowed. Profiles that are omitted or set to `false` are
+denied, including built-ins added in future Codex versions.
+
+#### Allow the standard profiles
+
+This policy allows read-only and workspace access, but not full access:
+
+```toml
+default_permissions = ":workspace"
+
+[allowed_permission_profiles]
+":read-only" = true
+":workspace" = true
+# ":danger-full-access" is omitted, so it is denied.
+```
+
+#### Add a managed least-privilege default
+
+Admins can define a custom profile in the same requirements source. Use
+organization-specific profile names that won't collide with names in users'
+loaded config. Custom names can't start with `:` or use the reserved `filesystem`
+name.
+
+Don't deploy managed custom profiles to clients running Codex 0.137.0 or
+earlier. Those clients recognize the profile table but not the managed default
+that selects it.
+
+For example:
+
+```toml
+default_permissions = "acme_review_only"
+
+[allowed_permission_profiles]
+":read-only" = true
+":workspace" = true
+acme_review_only = true
+# ":danger-full-access" is intentionally omitted, so it is denied.
+
+[permissions.acme_review_only]
+description = "Review code without modifying the workspace."
+extends = ":read-only"
+```
+
+#### Allow only enterprise-defined profiles
+
+Omit all built-ins when users should select only admin-defined profiles:
+
+```toml
+default_permissions = "acme_workspace"
+
+[allowed_permission_profiles]
+acme_workspace = true
+
+[permissions.acme_workspace]
+description = "Workspace access with sensitive files denied."
+extends = ":workspace"
+
+[permissions.acme_workspace.filesystem]
+glob_scan_max_depth = 3
+
+[permissions.acme_workspace.filesystem.":workspace_roots"]
+"**/*.env" = "deny"
+```
+
+The custom profile can extend `:workspace` even though users can't select the
+built-in `:workspace` profile directly.
+
+#### Turn off a profile allowed by another source
+
+Permission allowlists combine by profile name. Because Codex checks cloud
+requirements before system requirements, cloud requirements can use `false` to
+turn off a profile allowed by the system file.
+
+Cloud requirements:
+
+```toml
+default_permissions = ":read-only"
+
+[allowed_permission_profiles]
+":read-only" = true
+":workspace" = false
+```
+
+System requirements:
+
+```toml
+[allowed_permission_profiles]
+":read-only" = true
+":workspace" = true  # Not honored because cloud requirements set this to false.
+```
+
+Set `default_permissions` explicitly to an allowed profile. If it's omitted,
+Codex defaults to `:workspace` only when both `:workspace` and `:read-only` are
+explicitly allowed. When `allowed_permission_profiles` is absent, managed
+requirements don't restrict which profile names users can select. Every entry
+must name a built-in profile or a custom profile defined in a loaded config or
+requirements source. Define custom profiles in managed requirements when their
+behavior should be controlled centrally.
+
 ### Override sandbox requirements by host
 
 Use `[[remote_sandbox_config]]` when one managed policy should apply different
@@ -108,16 +259,22 @@ For example, `allowed_web_search_modes = ["cached"]` prevents live web search ev
 
 ### Configure network access requirements
 
+<WarningTip>
+  `[experimental_network]` is experimental and may change. Do not enable these
+  requirements broadly across an enterprise deployment without validating them
+  on the Codex client versions and operating systems your users run. Windows
+  support is still limited; avoid applying this policy to Windows users unless
+  you have tested it in your environment.
+</WarningTip>
+
 Use `[experimental_network]` in `requirements.toml` when administrators should
 define network access requirements centrally. These requirements are separate
-from the user `features.network_proxy` toggle: they can configure sandboxed
-networking without that feature flag, but they do not grant command network
+from the user `features.network_proxy` toggle: they can configure sandbox
+networking without that feature flag, but they don't grant command network
 access when the active sandbox keeps networking off.
 
 ```toml
 experimental_network.enabled = true
-experimental_network.dangerously_allow_all_unix_sockets = true
-experimental_network.allow_local_binding = true
 experimental_network.allowed_domains = [
   "api.openai.com",
   "*.example.com",
@@ -130,11 +287,11 @@ experimental_network.denied_domains = [
 
 Use `experimental_network.managed_allowed_domains_only = true` only when you
 also define administrator-owned `allowed_domains` and want that allowlist to be
-exclusive. If it is `true` without managed allow rules, user-added domain allow
-rules do not remain effective.
+exclusive. If it's `true` without managed allow rules, user-added domain allow
+rules don't remain effective.
 
 The domain syntax, local/private destination rules, deny-over-allow behavior,
-and DNS rebinding limitations are the same as the sandboxed networking behavior
+and DNS rebinding limitations are the same as the sandbox networking behavior
 described in [Agent approvals & security](https://developers.openai.com/codex/agent-approvals-security#network-isolation).
 
 ### Pin feature flags
@@ -149,6 +306,7 @@ unified_exec = false
 
 # Disable specific Codex feature surfaces when needed.
 browser_use = false
+browser_use_full_cdp_access = false
 in_app_browser = false
 computer_use = false
 ```
@@ -159,11 +317,27 @@ Use the canonical feature keys from `config.toml`'s `[features]` table. Codex no
 
 - `in_app_browser = false` disables the in-app browser pane.
 - `browser_use = false` disables Browser Use and Browser Agent availability.
-- `computer_use = false` disables Computer Use availability and related
+- `browser_use_full_cdp_access = false` prevents users from enabling full CDP
+  access in Browser Developer mode.
+- `computer_use = false` disables Computer Use, Record & Replay, and related
   install or setup flows.
 
 If omitted, these features are allowed by policy, subject to normal client,
 platform, and rollout availability.
+
+### Restrict locked computer use
+
+To prevent [Computer Use](https://developers.openai.com/codex/app/computer-use#locked-use) from operating
+after a managed Mac locks, add this requirement:
+
+```toml
+[computer_use]
+allow_locked_computer_use = false
+```
+
+This requirement doesn't enable Computer Use. It only prevents locked use on
+macOS. If you omit it, locked use remains unconstrained by requirements and is
+still subject to normal product availability and the user's local setting.
 
 ### Configure automatic review policy
 
@@ -209,10 +383,10 @@ deny_read = [
 ]
 ```
 
-When deny-read requirements are present, Codex constrains local sandbox mode to
-`read-only` or `workspace-write` so Codex can enforce them. On native
-Windows, managed `deny_read` applies to direct file tools; shell subprocess
-reads don't use this sandbox rule.
+When deny-read requirements are present, Codex rejects full-access permissions
+and keeps local execution in a read-only or workspace sandbox so it can enforce
+them. On native Windows, managed `deny_read` applies to direct file tools; shell
+subprocess reads don't use this sandbox rule.
 
 ### Enforce managed hooks from requirements
 
@@ -285,7 +459,62 @@ identity = { command = "codex-mcp" }
 identity = { url = "https://example.com/mcp" }
 ```
 
+The string form of `identity.command` matches only the configured `command`. It
+doesn't inspect `args`, `cwd`, `env`, or `env_vars`.
+
+To constrain a complete stdio invocation, match the executable and each
+positional argument:
+
+```toml
+[mcp_servers.internal.identity]
+command = { executable = "/usr/local/bin/codex-mcp", args = [
+  { match = "exact", value = "serve" },
+  { match = "prefix", value = "--workspace=" },
+] }
+```
+
+The executable, argument count, and argument order must match. Argument and URL
+rules support `exact`, `prefix`, and full-value `regex` matching. Structured
+command rules still don't inspect `cwd`, `env`, or `env_vars`. Plugin-bundled
+MCP servers use the same identity shapes under
+`plugins.<plugin>.mcp_servers.<server>`.
+
 If `mcp_servers` is present but empty, Codex disables all MCP servers.
+
+### Restrict plugin marketplace sources
+
+To restrict operations on user-configured marketplace sources, set
+`restrict_to_allowed_sources = true` and define one or more source rules:
+
+```toml
+[marketplaces]
+restrict_to_allowed_sources = true
+
+[marketplaces.allowed_sources.company_plugins]
+source = "git"
+url = "https://github.com/example/company-plugins.git"
+ref = "main"
+
+[marketplaces.allowed_sources.internal_git]
+source = "host_pattern"
+host_pattern = '^git\.example\.com$'
+
+[marketplaces.allowed_sources.local_plugins]
+source = "local"
+path = "/opt/company/codex-plugins"
+```
+
+Git rules match the normalized repository URL and, when present, an exact
+`ref`. Host patterns are regular expressions matched against the lowercase Git
+host; use `^` and `$` for a whole-host match. Local rules require an absolute,
+normalized path. See the [`requirements.toml` reference](https://developers.openai.com/codex/config-reference#requirementstoml)
+for the full schema and merge behavior.
+
+These requirements reject unmatched marketplace add, plugin install, and
+configured Git marketplace refresh operations for user-configured sources.
+Codex-managed OpenAI marketplaces remain available when their source and
+reserved name match. The requirements don't filter already configured user
+marketplaces or their plugins at runtime.
 
 ## Managed defaults (`managed_config.toml`)
 

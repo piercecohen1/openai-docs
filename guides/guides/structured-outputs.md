@@ -1,216 +1,5 @@
 # Structured model outputs
 
-export const snippetRefusalsChatCompletionsApi = {
-  python: `
-class Step(BaseModel):
-    explanation: str
-    output: str
-
-class MathReasoning(BaseModel):
-steps: list[Step]
-final_answer: str
-
-completion = client.chat.completions.parse(
-model="gpt-4o-2024-08-06",
-messages=[
-{"role": "system", "content": "You are a helpful math tutor. Guide the user through the solution step by step."},
-{"role": "user", "content": "how can I solve 8x + 7 = -23"},
-],
-response_format=MathReasoning,
-)
-
-math_reasoning = completion.choices[0].message
-
-# If the model refuses to respond, you will get a refusal message
-
-if math_reasoning.refusal:
-print(math_reasoning.refusal)
-else:
-print(math_reasoning.parsed)
-`.trim(),
-  "javascript": `
-const Step = z.object({
-explanation: z.string(),
-output: z.string(),
-});
-
-const MathReasoning = z.object({
-steps: z.array(Step),
-final_answer: z.string(),
-});
-
-const completion = await openai.chat.completions.parse({
-model: "gpt-4o-2024-08-06",
-messages: [
-{ role: "system", content: "You are a helpful math tutor. Guide the user through the solution step by step." },
-{ role: "user", content: "how can I solve 8x + 7 = -23" },
-],
-response_format: zodResponseFormat(MathReasoning, "math_reasoning"),
-});
-
-const math_reasoning = completion.choices[0].message
-
-// If the model refuses to respond, you will get a refusal message
-if (math_reasoning.refusal) {
-console.log(math_reasoning.refusal);
-} else {
-console.log(math_reasoning.parsed);
-}
-`.trim(),
-};
-export const snippetRefusalsResponsesApi = {
-  python: `
-class Step(BaseModel):
-explanation: str
-output: str
-
-class MathReasoning(BaseModel):
-steps: list[Step]
-final_answer: str
-
-response = client.responses.parse(
-model="gpt-4o-2024-08-06",
-input=[
-{"role": "system", "content": "You are a helpful math tutor. Guide the user through the solution step by step."},
-{"role": "user", "content": "how can I solve 8x + 7 = -23"},
-],
-text_format=MathReasoning,
-)
-
-for output in response.output:
-if output.type != "message":
-raise Exception("Unexpected non message")
-
-    for item in output.content:
-        if item.type == "refusal":
-            # If the model refuses to respond, you will get a refusal message
-            print(item.refusal)
-            continue
-
-        if not item.parsed:
-            raise Exception("Could not parse response")
-
-        print(item.parsed)
-
-`.trim(),
-  "javascript": `
-const Step = z.object({
-explanation: z.string(),
-output: z.string(),
-});
-
-const MathReasoning = z.object({
-steps: z.array(Step),
-final_answer: z.string(),
-});
-
-const response = await openai.responses.parse({
-model: "gpt-4o-2024-08-06",
-input: [
-{ role: "system", content: "You are a helpful math tutor. Guide the user through the solution step by step." },
-{ role: "user", content: "how can I solve 8x + 7 = -23" }
-],
-text: {
-format: zodTextFormat(MathReasoning, "math_response"),
-},
-});
-
-for (const output of response.output) {
-if (output.type != "message") {
-throw new Error("Unexpected non message");
-}
-
-    for (const item of output.content) {
-        if (item.type == "refusal") {
-            // If the model refuses to respond, you will get a refusal message
-            console.log(item.refusal);
-            continue;
-        }
-
-        if (!item.parsed) {
-            throw new Error("Could not parse response");
-        }
-
-        console.log(item.parsed);
-    }
-
-}
-`.trim(),
-};
-
-export const snippetRefusalApiResponseChatCompletionsApi = {
-  json: `
-{
-  "id": "chatcmpl-9nYAG9LPNonX8DAyrkwYfemr3C8HC",
-  "object": "chat.completion",
-  "created": 1721596428,
-  "model": "gpt-4o-2024-08-06",
-  "choices": [
-    {
-      "index": 0,
-      "message": {
-        "role": "assistant",
-        // highlight-start
-        "refusal": "I'm sorry, I cannot assist with that request."
-        // highlight-end
-      },
-      "logprobs": null,
-      "finish_reason": "stop"
-    }
-  ],
-  "usage": {
-    "prompt_tokens": 81,
-    "completion_tokens": 11,
-    "total_tokens": 92,
-    "completion_tokens_details": {
-      "reasoning_tokens": 0,
-      "accepted_prediction_tokens": 0,
-      "rejected_prediction_tokens": 0
-    }
-  },
-  "system_fingerprint": "fp_3407719c7f"
-}
-  `.trim(),
-};
-export const snippetRefusalApiResponseResponsesApi = {
-  json: `
-{
-  "id": "resp_1234567890",
-  "object": "response",
-  "created_at": 1721596428,
-  "status": "completed",
-  "completed_at": 1721596429,
-  "error": null,
-  "incomplete_details": null,
-  "input": [],
-  "instructions": null,
-  "max_output_tokens": null,
-  "model": "gpt-4o-2024-08-06",
-  "output": [{
-    "id": "msg_1234567890",
-    "type": "message",
-    "role": "assistant",
-    "content": [
-      // highlight-start
-      {
-        "type": "refusal",
-        "refusal": "I'm sorry, I cannot assist with that request."
-      }
-      // highlight-end
-    ]
-  }],
-  "usage": {
-    "input_tokens": 81,
-    "output_tokens": 11,
-    "total_tokens": 92,
-    "output_tokens_details": {
-      "reasoning_tokens": 0,
-    }
-  },
-}
-  `.trim(),
-};
-
 JSON is one of the most widely used formats in the world for applications to exchange data.
 
 Structured Outputs is a feature that ensures the model will always generate responses that adhere to your supplied [JSON Schema](https://json-schema.org/overview/what-is-jsonschema), so you don't need to worry about the model omitting a required key, or hallucinating an invalid enum value.
@@ -225,7 +14,7 @@ In addition to supporting JSON Schema in the REST API, the OpenAI SDKs for [Pyth
 
 ### Supported models
 
-Structured Outputs is available in our [latest large language models](https://developers.openai.com/api/docs/models), starting with GPT-4o. Older models like `gpt-4-turbo` and earlier may use [JSON mode](#json-mode) instead.
+Structured Outputs is available in our [latest large language models](https://developers.openai.com/api/docs/models), starting with GPT-4o. For new projects, start with [`gpt-5.5`](https://developers.openai.com/api/docs/models/gpt-5.5). Older models like `gpt-4-turbo` and earlier may use [JSON mode](#json-mode) instead.
 
 
 
@@ -287,7 +76,7 @@ However, Structured Outputs with `response_format: {type: "json_schema", ...}` i
 |--------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------|
 | **Outputs valid JSON**                     | Yes                                                                                                                            | Yes                                        |
 | **Adheres to schema**                      | Yes (see [supported schemas](#supported-schemas))                                               | No                                         |
-| **Compatible models**                      | `gpt-4o-mini`, `gpt-4o-2024-08-06`, and later                                                                                  | `gpt-3.5-turbo`, `gpt-4-*` and `gpt-4o-*` models |
+| **Compatible models**                      | `gpt-4o-mini`, `gpt-4o-2024-08-06`, and later                                                                                  | `gpt-3.5-turbo`, `gpt-4-*`, `gpt-4o-*`, and compatible GPT-5 models |
 | **Enabling**                               | `text: { format: { type: "json_schema", "strict": true, "schema": ... } }`                                       | `text: { format: { type: "json_object" } }` |
 
 
@@ -326,7 +115,10 @@ When using Structured Outputs with user-generated input, OpenAI models may occas
 
 When the `refusal` property appears in your output object, you might present the refusal in your UI, or include conditional logic in code that consumes the response to handle the case of a refused request.
 
-The API response from a refusal will look something like this:
+
+
+
+  The API response from a refusal will look something like this:
 
 
 

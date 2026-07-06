@@ -1,6 +1,6 @@
 # Code generation
 
-Writing, reviewing, editing, and answering questions about code is one of the primary use cases for OpenAI models today. This guide walks through your options for code generation with GPT-5.4 and Codex.
+Writing, reviewing, editing, and answering questions about code is one of the primary use cases for OpenAI models today. This guide walks through your options for code generation with [`gpt-5.5`](https://developers.openai.com/api/docs/models/gpt-5.5) and Codex.
 
 ## Get started
 
@@ -28,7 +28,7 @@ import OpenAI from "openai";
 const openai = new OpenAI();
 
 const result = await openai.responses.create({
-  model: "${latestMainlineModelSlug}",
+  model: "gpt-5.5",
   input: "Find the null pointer exception: ...your code here...",
   reasoning: { effort: "high" },
 });
@@ -41,7 +41,7 @@ from openai import OpenAI
 client = OpenAI()
 
 result = client.responses.create(
-    model="${latestMainlineModelSlug}",
+    model="gpt-5.5",
     input="Find the null pointer exception: ...your code here...",
     reasoning={ "effort": "high" },
 )
@@ -50,11 +50,11 @@ print(result.output_text)
 ```
 
 ```bash
-curl https://api.openai.com/v1/responses \\
-  -H "Content-Type: application/json" \\
-  -H "Authorization: Bearer $OPENAI_API_KEY" \\
+curl https://api.openai.com/v1/responses \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $OPENAI_API_KEY" \
   -d '{
-    "model": "${latestMainlineModelSlug}",
+    "model": "gpt-5.5",
     "input": "Find the null pointer exception: ...your code here...",
     "reasoning": { "effort": "high" }
   }'

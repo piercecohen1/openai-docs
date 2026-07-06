@@ -6,20 +6,21 @@ Local mirror of OpenAI developer documentation from [developers.openai.com](http
 
 | | |
 |---|---|
-| **Last scraped** | May 29, 2026 |
-| **Total pages** | 512 |
-| **Ads** | 12 pages ([llms.txt](https://developers.openai.com/ads/llms.txt)) |
-| **OpenAI API docs** | 150 pages ([llms.txt](https://developers.openai.com/api/docs/llms.txt)) |
+| **Last scraped** | July 6, 2026 |
+| **Total pages** | 533 |
+| **Ads** | 15 pages ([llms.txt](https://developers.openai.com/ads/llms.txt)) |
+| **OpenAI API docs** | 154 pages ([llms.txt](https://developers.openai.com/api/docs/llms.txt)) |
 | **OpenAI API reference** | 226 pages ([llms.txt](https://developers.openai.com/api/reference/llms.txt)) |
 | **Apps SDK** | 26 pages ([llms.txt](https://developers.openai.com/apps-sdk/llms.txt)) |
-| **Codex** | 83 pages ([llms.txt](https://developers.openai.com/codex/llms.txt)) |
+| **Codex** | 95 pages ([llms.txt](https://developers.openai.com/codex/llms.txt)) |
 | **Agentic Commerce** | 15 pages ([llms.txt](https://developers.openai.com/commerce/llms.txt)) |
+| **Workspace Agents** | 2 pages ([llms.txt](https://developers.openai.com/workspace-agents/llms.txt)) |
 
 ## Ads (`ads/`)
 
 | Directory | Pages |
 |-----------|-------|
-| `(top-level)` | 5 |
+| `(top-level)` | 8 |
 | `api-reference/` | 7 |
 
 ## OpenAI API docs (`guides/`)
@@ -27,7 +28,7 @@ Local mirror of OpenAI developer documentation from [developers.openai.com](http
 | Directory | Pages |
 |-----------|-------|
 | `(top-level)` | 9 |
-| `guides/` | 125 |
+| `guides/` | 129 |
 | `actions/` | 7 |
 | `assistants/` | 6 |
 | `tutorials/` | 2 |
@@ -60,10 +61,10 @@ Local mirror of OpenAI developer documentation from [developers.openai.com](http
 
 | Directory | Pages |
 |-----------|-------|
-| `(top-level)` | 40 |
+| `(top-level)` | 46 |
 | `app/` | 12 |
+| `security/` | 11 |
 | `concepts/` | 5 |
-| `security/` | 4 |
 | `ide/` | 4 |
 | `enterprise/` | 4 |
 | `integrations/` | 3 |
@@ -82,6 +83,12 @@ Local mirror of OpenAI developer documentation from [developers.openai.com](http
 | `specs/` | 11 |
 | `guides/` | 4 |
 
+## Workspace Agents (`workspace-agents/`)
+
+| Directory | Pages |
+|-----------|-------|
+| `(top-level)` | 2 |
+
 ## Directory Structure
 
 ```
@@ -93,6 +100,7 @@ guides
 │   └── tools
 ├── gpts
 ├── guides
+│   ├── agent-builder
 │   ├── agents
 │   ├── prompting
 │   ├── safety-checks
@@ -148,11 +156,13 @@ codex
 ├── memories
 ├── plugins
 └── security
+    └── plugin
 commerce
 ├── guides
 └── specs
     ├── api
     └── file-upload
+workspace-agents
 ```
 
 ## Usage
@@ -170,6 +180,7 @@ rg "query" reference/
 rg "query" apps-sdk/
 rg "query" codex/
 rg "query" commerce/
+rg "query" workspace-agents/
 ```
 
 Full-text search (single file per section):
@@ -181,6 +192,7 @@ rg "query" reference/llms-full.txt
 rg "query" apps-sdk/llms-full.txt
 rg "query" codex/llms-full.txt
 rg "query" commerce/llms-full.txt
+rg "query" workspace-agents/llms-full.txt
 ```
 
 ## Updating

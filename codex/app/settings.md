@@ -6,9 +6,23 @@ press <kbd>Cmd</kbd>+<kbd>,</kbd>.
 
 ## General
 
-Choose where files open and how much command output appears in threads. You can also
-require <kbd>Cmd</kbd>+<kbd>Enter</kbd> for multiline prompts or prevent sleep while a
-thread runs.
+Choose where files open, how much command output appears in threads, and where
+terminal tabs open by default. You can also require <kbd>Cmd</kbd>+<kbd>Enter</kbd>
+for multiline prompts or prevent sleep while a thread runs.
+
+## Profile
+
+Use **Profile** to review activity insights, lifetime tokens, peak tokens,
+streaks, your longest task, and token activity. You can also update your profile
+details, such as your picture, display name, and username, and save a profile
+card with usage highlights. Sharing profile cards is available on consumer
+ChatGPT plans.
+
+Eligible users can also send Codex invitations from the profile menu. Choose
+**Invite a friend** on an eligible personal plan or **Invite a coworker** in an
+eligible Business workspace. See
+[Invite friends and coworkers](https://developers.openai.com/codex/pricing#invite-friends-and-coworkers) for
+current rewards, limits, and eligibility.
 
 ## Keyboard shortcuts
 
@@ -90,23 +104,29 @@ add your own. If a server requires OAuth, the app starts the auth flow. These se
 also apply to the Codex CLI and IDE extension because the MCP configuration lives in
 `config.toml`. See the [Model Context Protocol docs](https://developers.openai.com/codex/mcp) for details.
 
-## Browser use
+<a id="browser-use"></a>
+
+## Browser
 
 Use these settings to install or enable the bundled Browser plugin, set up the
-[Codex Chrome extension](https://developers.openai.com/codex/app/chrome-extension), and manage allowlisted
-and blocklisted websites. Codex asks before using a website unless you've
-allowlisted it. Removing a site from the blocklist lets Codex ask again before
-using it in the browser.
+[Codex Chrome extension](https://developers.openai.com/codex/app/chrome-extension), and manage allowed and
+blocked websites. Codex asks before using a website unless you've allowed it.
+Removing a blocked site lets Codex ask again before using it in the browser.
+
+Under **Developer mode**, turn on **Enable full CDP access** to let Codex use
+the Chrome DevTools Protocol for performance profiling and deeper browser
+debugging. If your organization has disabled full CDP access, you can't enable
+it locally. See [Developer mode](https://developers.openai.com/codex/app/browser#developer-mode) for setup,
+risk, approval details, and the administrator requirement.
 
 See [In-app browser](https://developers.openai.com/codex/app/browser) for browser preview, comment, and
 browser use workflows.
 
 ## Computer Use
 
-On macOS, check your Computer Use settings to review desktop-app access and related
-preferences after setup. To revoke system-level access, update Screen Recording
-or Accessibility permissions in macOS Privacy & Security settings. The feature
-isn't available in the EEA, the United Kingdom, or Switzerland at launch.
+Check your Computer Use settings to review desktop-app access and related
+preferences after setup. On macOS, revoke system-level access by updating Screen
+Recording or Accessibility permissions in macOS Privacy & Security settings.
 
 ## Personalization
 

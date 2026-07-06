@@ -65,7 +65,7 @@ model_provider = "openai"
 
 # background_terminal_max_timeout = 300000 # ms; max empty write_stdin poll window (default 5m)
 
-# log_dir = "/absolute/path/to/codex-logs" # directory for Codex logs; default: "$CODEX_HOME/log"
+# log_dir = "/absolute/path/to/codex-logs" # log directory; setting explicitly enables codex-tui.log; default: "$CODEX_HOME/log"
 
 # sqlite_home = "/absolute/path/to/codex-state" # optional SQLite-backed runtime state directory
 
@@ -234,6 +234,8 @@ mcp_oauth_credentials_store = "auto"
 # mcp_oauth_callback_port = 4321
 
 # Optional redirect URI override for MCP OAuth login (for example, remote devbox ingress).
+
+# Codex appends a server-specific callback ID before OAuth login, so register the full derived URI with your provider, not just the base host or unsuffixed path.
 
 # Custom callback paths are supported. `mcp_oauth_callback_port` still controls the listener port.
 
@@ -589,7 +591,7 @@ show_tooltips = true
 
 # theme = "catppuccin-mocha"
 
-# Custom key bindings. Context-specific bindings override [tui.keymap.global].
+# Custom key bindings. Selected composer actions fall back to matching [tui.keymap.global] bindings.
 
 # Use [] to unbind an action.
 
@@ -604,6 +606,10 @@ show_tooltips = true
 # [tui.keymap.composer]
 
 # submit = ["enter", "ctrl-m"]
+
+# [tui.keymap.chat]
+
+# interrupt_turn = "f12"
 
 # Internal tooltip state keyed by model slug. Usually managed by Codex.
 
@@ -672,6 +678,36 @@ enabled = true
 # skill_mcp_dependency_install = true
 
 # prevent_idle_sleep = false
+
+# Code mode namespaces. This feature is under development and off by default.
+
+# [features.code_mode]
+
+# enabled = true
+
+# excluded_tool_namespaces = ["mcp__codex_apps"]
+
+# direct_only_tool_namespaces = ["mcp__history"]
+
+# Rollout budget tracking. This feature is under development and off by default.
+
+# limit_tokens is required when enabled.
+
+# Optional reminder_interval_tokens defaults to 10% of limit_tokens.
+
+# Token weights default to 1.0.
+
+# [features.rollout_budget]
+
+# enabled = true
+
+# limit_tokens = 100000
+
+# reminder_interval_tokens = 10000
+
+# sampling_token_weight = 1.0
+
+# prefill_token_weight = 1.0
 
 ################################################################################
 
@@ -911,6 +947,10 @@ enabled = true
 
 # open_world_enabled = true
 
+# approvals_reviewer = "user" # user | auto_review
+
+# default_tools_approval_mode = "auto" # auto | prompt | approve
+
 #
 
 # [apps.google_drive]
@@ -920,6 +960,8 @@ enabled = true
 # destructive_enabled = false # block destructive-hint tools for this app
 
 # default_tools_enabled = true
+
+# approvals_reviewer = "auto_review"
 
 # default_tools_approval_mode = "prompt" # auto | prompt | approve
 

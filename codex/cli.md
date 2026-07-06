@@ -35,11 +35,11 @@ If you're new to Codex, read the [best practices guide](https://developers.opena
 Run `codex` to start an interactive terminal UI (TUI) session.
 
   </BentoContent>
-  <BentoContent href="/codex/cli/features#models-reasoning">
+  <BentoContent href="/codex/cli/features#models-and-reasoning">
 
 ### Control model and reasoning
 
-Use `/model` to switch between GPT-5.4, GPT-5.3-Codex, and other available models, or adjust reasoning levels.
+Use `/model` to switch between available models or adjust reasoning levels.
 
   </BentoContent>
   <BentoContent href="/codex/cli/features#image-inputs">

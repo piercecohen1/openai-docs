@@ -1,15 +1,5 @@
 # MCP and Connectors
 
-import {
-  CheckCircleFilled,
-  XCircle,
-} from "@components/react/oai/platform/ui/Icon.react";
-
-
-
-
-
-
 In addition to tools you make available to the model with [function calling](https://developers.openai.com/api/docs/guides/function-calling), you can give models new capabilities using **connectors** and **remote MCP servers**. These tools give the model the ability to connect to and control external services when needed to respond to a user's prompt. These tool calls can either be allowed automatically, or restricted with explicit approval required by you as the developer.
 
 - **Connectors** are OpenAI-maintained MCP wrappers for popular services like Google Workspace or Dropbox, like the connectors available in [ChatGPT](https://chatgpt.com).
@@ -38,9 +28,9 @@ Check out the examples below to see how remote MCP servers and connectors work t
     Using a remote MCP server in the Responses API
 
 ```bash
-curl https://api.openai.com/v1/responses \\ 
--H "Content-Type: application/json" \\ 
--H "Authorization: Bearer $OPENAI_API_KEY" \\ 
+curl https://api.openai.com/v1/responses \ 
+-H "Content-Type: application/json" \ 
+-H "Authorization: Bearer $OPENAI_API_KEY" \ 
 -d '{
   "model": "gpt-5.5",
     "tools": [
@@ -138,11 +128,11 @@ Console.WriteLine(response.GetOutputText());
     Using connectors in the Responses API
 
 ```bash
-curl https://api.openai.com/v1/responses \\
--H "Content-Type: application/json" \\
--H "Authorization: Bearer $OPENAI_API_KEY" \\
+curl https://api.openai.com/v1/responses \
+-H "Content-Type: application/json" \
+-H "Authorization: Bearer $OPENAI_API_KEY" \
 -d '{
-    "model": "gpt-5",
+    "model": "gpt-5.5",
     "tools": [
       {
         "type": "mcp",
@@ -161,7 +151,7 @@ import OpenAI from "openai";
 const client = new OpenAI();
 
 const resp = await client.responses.create({
-  model: "gpt-5",
+  model: "gpt-5.5",
   tools: [
     {
       type: "mcp",
@@ -183,7 +173,7 @@ from openai import OpenAI
 client = OpenAI()
 
 resp = client.responses.create(
-    model="gpt-5",
+    model="gpt-5.5",
     tools=[
         {
             "type": "mcp",
@@ -204,7 +194,7 @@ using OpenAI.Responses;
 
 string dropboxToken = Environment.GetEnvironmentVariable("DROPBOX_OAUTH_ACCESS_TOKEN")!;
 string key = Environment.GetEnvironmentVariable("OPENAI_API_KEY")!;
-OpenAIResponseClient client = new(model: "gpt-5", apiKey: key);
+OpenAIResponseClient client = new(model: "gpt-5.5", apiKey: key);
 
 ResponseCreationOptions options = new();
 options.Tools.Add(ResponseTool.CreateMcpTool(
@@ -324,11 +314,11 @@ Some MCP servers can have dozens of tools, and exposing many tools to the model 
 Constrain allowed tools
 
 ```bash
-curl https://api.openai.com/v1/responses \\
--H "Content-Type: application/json" \\
--H "Authorization: Bearer $OPENAI_API_KEY" \\
+curl https://api.openai.com/v1/responses \
+-H "Content-Type: application/json" \
+-H "Authorization: Bearer $OPENAI_API_KEY" \
 -d '{
-    "model": "gpt-5",
+    "model": "gpt-5.5",
     "tools": [
       {
         "type": "mcp",
@@ -348,7 +338,7 @@ import OpenAI from "openai";
 const client = new OpenAI();
 
 const resp = await client.responses.create({
-  model: "gpt-5",
+  model: "gpt-5.5",
   tools: [{
     type: "mcp",
     server_label: "dmcp",
@@ -369,7 +359,7 @@ from openai import OpenAI
 client = OpenAI()
 
 resp = client.responses.create(
-    model="gpt-5",
+    model="gpt-5.5",
     tools=[{
         "type": "mcp",
         "server_label": "dmcp",
@@ -388,7 +378,7 @@ print(resp.output_text)
 using OpenAI.Responses;
 
 string key = Environment.GetEnvironmentVariable("OPENAI_API_KEY")!;
-OpenAIResponseClient client = new(model: "gpt-5", apiKey: key);
+OpenAIResponseClient client = new(model: "gpt-5.5", apiKey: key);
 
 ResponseCreationOptions options = new();
 options.Tools.Add(ResponseTool.CreateMcpTool(
@@ -448,11 +438,11 @@ You can then respond to this by creating a new Response object and appending an 
 Approving the use of tools in an API request
 
 ```bash
-curl https://api.openai.com/v1/responses \\
--H "Content-Type: application/json" \\
--H "Authorization: Bearer $OPENAI_API_KEY" \\
+curl https://api.openai.com/v1/responses \
+-H "Content-Type: application/json" \
+-H "Authorization: Bearer $OPENAI_API_KEY" \
 -d '{
-    "model": "gpt-5",
+    "model": "gpt-5.5",
     "tools": [
       {
         "type": "mcp",
@@ -476,7 +466,7 @@ import OpenAI from "openai";
 const client = new OpenAI();
 
 const resp = await client.responses.create({
-  model: "gpt-5",
+  model: "gpt-5.5",
   tools: [{
     type: "mcp",
     server_label: "dmcp",
@@ -501,7 +491,7 @@ from openai import OpenAI
 client = OpenAI()
 
 resp = client.responses.create(
-    model="gpt-5",
+    model="gpt-5.5",
     tools=[{
         "type": "mcp",
         "server_label": "dmcp",
@@ -524,7 +514,7 @@ print(resp.output_text)
 using OpenAI.Responses;
 
 string key = Environment.GetEnvironmentVariable("OPENAI_API_KEY")!;
-OpenAIResponseClient client = new(model: "gpt-5", apiKey: key);
+OpenAIResponseClient client = new(model: "gpt-5.5", apiKey: key);
 
 ResponseCreationOptions options = new();
 options.Tools.Add(ResponseTool.CreateMcpTool(
@@ -559,11 +549,11 @@ If and when you feel comfortable trusting a remote MCP server, you can choose to
 Never require approval for some tools
 
 ```bash
-curl https://api.openai.com/v1/responses \\
--H "Content-Type: application/json" \\
--H "Authorization: Bearer $OPENAI_API_KEY" \\
+curl https://api.openai.com/v1/responses \
+-H "Content-Type: application/json" \
+-H "Authorization: Bearer $OPENAI_API_KEY" \
 -d '{
-    "model": "gpt-5",
+    "model": "gpt-5.5",
     "tools": [
       {
         "type": "mcp",
@@ -585,7 +575,7 @@ import OpenAI from "openai";
 const client = new OpenAI();
 
 const resp = await client.responses.create({
-  model: "gpt-5",
+  model: "gpt-5.5",
   tools: [
     {
       type: "mcp",
@@ -610,7 +600,7 @@ from openai import OpenAI
 client = OpenAI()
 
 resp = client.responses.create(
-    model="gpt-5",
+    model="gpt-5.5",
     tools=[
         {
             "type": "mcp",
@@ -633,7 +623,7 @@ print(resp.output_text)
 using OpenAI.Responses;
 
 string key = Environment.GetEnvironmentVariable("OPENAI_API_KEY")!;
-OpenAIResponseClient client = new(model: "gpt-5", apiKey: key);
+OpenAIResponseClient client = new(model: "gpt-5.5", apiKey: key);
 
 ResponseCreationOptions options = new();
 options.Tools.Add(ResponseTool.CreateMcpTool(
@@ -660,11 +650,11 @@ Unlike the [example MCP server we used above](https://dash.deno.com/playground/d
 Use Stripe MCP tool
 
 ```bash
-curl https://api.openai.com/v1/responses \\
--H "Content-Type: application/json" \\
--H "Authorization: Bearer $OPENAI_API_KEY" \\
+curl https://api.openai.com/v1/responses \
+-H "Content-Type: application/json" \
+-H "Authorization: Bearer $OPENAI_API_KEY" \
 -d '{
-    "model": "gpt-5",
+    "model": "gpt-5.5",
     "input": "Create a payment link for $20",
     "tools": [
       {
@@ -682,7 +672,7 @@ import OpenAI from "openai";
 const client = new OpenAI();
 
 const resp = await client.responses.create({
-  model: "gpt-5",
+  model: "gpt-5.5",
   input: "Create a payment link for $20",
   tools: [
     {
@@ -703,7 +693,7 @@ from openai import OpenAI
 client = OpenAI()
 
 resp = client.responses.create(
-    model="gpt-5",
+    model="gpt-5.5",
     input="Create a payment link for $20",
     tools=[
         {
@@ -723,7 +713,7 @@ using OpenAI.Responses;
 
 string authToken = Environment.GetEnvironmentVariable("STRIPE_OAUTH_ACCESS_TOKEN")!;
 string key = Environment.GetEnvironmentVariable("OPENAI_API_KEY")!;
-OpenAIResponseClient client = new(model: "gpt-5", apiKey: key);
+OpenAIResponseClient client = new(model: "gpt-5.5", apiKey: key);
 
 ResponseCreationOptions options = new();
 options.Tools.Add(ResponseTool.CreateMcpTool(
@@ -782,11 +772,11 @@ After authorizing the application with your Google account, you will come to "St
 Use the Google Calendar connector
 
 ```bash
-curl https://api.openai.com/v1/responses \\
-  -H "Content-Type: application/json" \\
-  -H "Authorization: Bearer $OPENAI_API_KEY" \\
+curl https://api.openai.com/v1/responses \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $OPENAI_API_KEY" \
   -d '{
-    "model": "gpt-5",
+    "model": "gpt-5.5",
     "tools": [
       {
         "type": "mcp",
@@ -805,7 +795,7 @@ import OpenAI from "openai";
 const client = new OpenAI();
 
 const resp = await client.responses.create({
-  model: "gpt-5",
+  model: "gpt-5.5",
   tools: [
     {
       type: "mcp",
@@ -827,7 +817,7 @@ from openai import OpenAI
 client = OpenAI()
 
 resp = client.responses.create(
-    model="gpt-5",
+    model="gpt-5.5",
     tools=[
         {
             "type": "mcp",
@@ -848,7 +838,7 @@ using OpenAI.Responses;
 
 string authToken = Environment.GetEnvironmentVariable("GOOGLE_CALENDAR_OAUTH_ACCESS_TOKEN")!;
 string key = Environment.GetEnvironmentVariable("OPENAI_API_KEY")!;
-OpenAIResponseClient client = new(model: "gpt-5", apiKey: key);
+OpenAIResponseClient client = new(model: "gpt-5.5", apiKey: key);
 
 ResponseCreationOptions options = new();
 options.Tools.Add(ResponseTool.CreateMcpTool(

@@ -75,7 +75,7 @@ exceptions are noted in the relevant docs.
 
    Once you downloaded and installed the Codex app, open it and sign in with your ChatGPT account or an OpenAI API key.
 
-   If you sign in with an OpenAI API key, some functionality such as [cloud threads](https://developers.openai.com/codex/prompting#threads) might not be available.
+   If you sign in with an OpenAI API key, [some functionality might not be available](https://developers.openai.com/codex/pricing#feature-availability).
 
 3. Select a project
 
@@ -263,6 +263,19 @@ The Codex CLI is supported on macOS, Windows, and Linux.
 
     ```powershell
     powershell -ExecutionPolicy ByPass -c "irm https://chatgpt.com/codex/install.ps1 | iex"
+    ```
+
+    For unattended installs, set `CODEX_NON_INTERACTIVE=1` on the shell that
+    runs the downloaded installer. See
+    [Environment variables](https://developers.openai.com/codex/environment-variables#installer-variables)
+    for details.
+
+    ```bash
+    curl -fsSL https://chatgpt.com/codex/install.sh | CODEX_NON_INTERACTIVE=1 sh
+    ```
+
+    ```powershell
+    $env:CODEX_NON_INTERACTIVE=1; irm https://chatgpt.com/codex/install.ps1 | iex
     ```
 
     You can also install Codex CLI with npm or Homebrew:

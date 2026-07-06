@@ -202,7 +202,7 @@ For sandbox and approval keys (`approval_policy`, `sandbox_mode`, and `sandbox_w
       key: "log_dir",
       type: "string (path)",
       description:
-        "Directory where Codex writes log files (for example `codex-tui.log`); defaults to `$CODEX_HOME/log`.",
+        "Directory where Codex writes log files; defaults to `$CODEX_HOME/log`. Setting this explicitly also enables the opt-in plaintext TUI log, `codex-tui.log`, in that directory.",
     },
     {
       key: "sqlite_home",
@@ -285,6 +285,18 @@ For sandbox and approval keys (`approval_policy`, `sandbox_mode`, and `sandbox_w
         "Default allow/deny for app tools with `open_world_hint = true`.",
     },
     {
+      key: "apps._default.approvals_reviewer",
+      type: "user | auto_review",
+      description:
+        "Default reviewer for app tool approval prompts unless overridden per app. When omitted, apps inherit the top-level `approvals_reviewer` value.",
+    },
+    {
+      key: "apps._default.default_tools_approval_mode",
+      type: "auto | prompt | approve",
+      description:
+        "Default approval behavior for app tools without per-app or per-tool overrides.",
+    },
+    {
       key: "apps.<id>.destructive_enabled",
       type: "boolean",
       description:
@@ -301,6 +313,12 @@ For sandbox and approval keys (`approval_policy`, `sandbox_mode`, and `sandbox_w
       type: "boolean",
       description:
         "Default enabled state for tools in this app unless a per-tool override exists.",
+    },
+    {
+      key: "apps.<id>.approvals_reviewer",
+      type: "user | auto_review",
+      description:
+        "Reviewer for this app's tool approval prompts. Overrides `apps._default.approvals_reviewer`.",
     },
     {
       key: "apps.<id>.default_tools_approval_mode",
@@ -347,6 +365,54 @@ For sandbox and approval keys (`approval_policy`, `sandbox_mode`, and `sandbox_w
       type: "boolean",
       description:
         "Enable Codex-generated git commits. When enabled, Codex uses `commit_attribution` to append a `Co-authored-by:` trailer to generated commit messages.",
+    },
+    {
+      key: "features.code_mode.enabled",
+      type: "boolean",
+      description:
+        "Enable code mode feature configuration. This feature is under development and off by default.",
+    },
+    {
+      key: "features.code_mode.excluded_tool_namespaces",
+      type: "array<string>",
+      description:
+        "Tool namespaces code mode excludes from nested code-mode tool guidance and executor exposure.",
+    },
+    {
+      key: "features.code_mode.direct_only_tool_namespaces",
+      type: "array<string>",
+      description:
+        "Tool namespaces code mode can use only through direct tool calls.",
+    },
+    {
+      key: "features.rollout_budget.enabled",
+      type: "boolean",
+      description:
+        "Enable rollout budget tracking. This feature is under development and off by default. When enabled, `features.rollout_budget.limit_tokens` is required.",
+    },
+    {
+      key: "features.rollout_budget.limit_tokens",
+      type: "integer",
+      description:
+        "Positive token limit for rollout budget tracking. Required when rollout budget is enabled.",
+    },
+    {
+      key: "features.rollout_budget.reminder_interval_tokens",
+      type: "integer",
+      description:
+        "Positive token interval between rollout budget reminders. Defaults to 10% of `limit_tokens`, with a minimum of 1 token.",
+    },
+    {
+      key: "features.rollout_budget.sampling_token_weight",
+      type: "number",
+      description:
+        "Finite non-negative multiplier for sampled tokens in rollout budget accounting. Defaults to `1.0`.",
+    },
+    {
+      key: "features.rollout_budget.prefill_token_weight",
+      type: "number",
+      description:
+        "Finite non-negative multiplier for prefill tokens in rollout budget accounting. Defaults to `1.0`.",
     },
     {
       key: "hooks",
@@ -1151,7 +1217,7 @@ For sandbox and approval keys (`approval_policy`, `sandbox_mode`, and `sandbox_w
       key: "tui.keymap.<context>.<action>",
       type: "string | array<string>",
       description:
-        "Keyboard shortcut binding for a TUI action. Supported contexts include `global`, `chat`, `composer`, `editor`, `pager`, `list`, and `approval`; context-specific bindings override `tui.keymap.global`.",
+        "Keyboard shortcut binding for a TUI action. Supported contexts include `global`, `chat`, `composer`, `editor`, `vim_normal`, `vim_operator`, `vim_text_object`, `pager`, `list`, and `approval`. Selected composer actions fall back to matching `tui.keymap.global` bindings; context-specific bindings take precedence when supported.",
     },
     {
       key: "tui.keymap.<context>.<action> = []",
@@ -1242,7 +1308,7 @@ For sandbox and approval keys (`approval_policy`, `sandbox_mode`, and `sandbox_w
       key: "mcp_oauth_callback_url",
       type: "string",
       description:
-        "Optional redirect URI override for MCP OAuth login (for example, a devbox ingress URL). `mcp_oauth_callback_port` still controls the callback listener port.",
+        "Optional base callback URL override for MCP OAuth login (for example, a devbox ingress URL). Codex appends a server-specific callback ID before sending the final OAuth `redirect_uri`, so register the full derived URI with your provider. `mcp_oauth_callback_port` still controls the callback listener port.",
     },
     {
       key: "experimental_use_unified_exec_tool",
@@ -1474,6 +1540,14 @@ requirements. See the security page for precedence details.
 Use `[features]` in `requirements.toml` to pin feature flags by the same
 canonical keys that `config.toml` uses. Omitted keys remain unconstrained.
 
+Managed permission-profile allowlists require Codex 0.138.0 or later. Codex
+0.137.0 and earlier ignore `allowed_permission_profiles` and managed
+`default_permissions`.
+
+Use `allowed_sandbox_modes` with `sandbox_mode`. For permission-profile
+deployments, use `allowed_permission_profiles` with managed
+`default_permissions`.
+
 <ConfigTable
   options={[
     {
@@ -1495,9 +1569,56 @@ canonical keys that `config.toml` uses. Omitted keys remain unconstrained.
         "Managed Markdown policy instructions for automatic review. This takes precedence over local `[auto_review].policy`. Blank values are ignored.",
     },
     {
+      key: "allowed_permission_profiles",
+      type: "table<boolean>",
+      description:
+        "Complete list of allowed permission profiles. Profiles set to `true` are allowed. Profiles that are omitted or set to `false` are denied, including profiles added in future versions. When requirements sources are combined, entries are matched by profile name.",
+    },
+    {
+      key: "allowed_permission_profiles.<name>",
+      type: "boolean",
+      description:
+        "Allow or deny a built-in or custom permission profile defined in a loaded config or requirements source. An earlier requirements source can use `false` to turn off a profile allowed by a later source.",
+    },
+    {
+      key: "default_permissions",
+      type: "string",
+      description:
+        "Managed default permission profile. The profile must be allowed by `allowed_permission_profiles`. Set this explicitly for predictable behavior; if omitted, Codex defaults to `:workspace` only when both `:workspace` and `:read-only` are explicitly allowed.",
+    },
+    {
+      key: "enforce_residency",
+      type: "string",
+      description:
+        "Require Codex service traffic to use a supported data residency. Currently accepts `us`.",
+    },
+    {
+      key: "permissions",
+      type: "table",
+      description:
+        "Admin-defined permission profiles keyed by profile name. Uses the same profile fields as `config.toml`.",
+    },
+    {
+      key: "permissions.<name>",
+      type: "table",
+      description:
+        "Admin-defined permission profile. The name can't start with `:`, use the reserved name `filesystem`, or duplicate a profile from a loaded config. Uses the same profile fields as `config.toml`; see the Permissions guide for the complete profile schema.",
+    },
+    {
       key: "allowed_sandbox_modes",
       type: "array<string>",
       description: "Allowed values for `sandbox_mode`.",
+    },
+    {
+      key: "windows",
+      type: "table",
+      description: "Native Windows sandbox requirements.",
+    },
+    {
+      key: "windows.allowed_sandbox_implementations",
+      type: "array<string>",
+      description:
+        "Allowed native Windows sandbox implementations for `windows.sandbox` (`elevated` and `unelevated`). The list must not be empty. When both are allowed and no mode is selected, Codex prefers `elevated`.",
     },
     {
       key: "remote_sandbox_config",
@@ -1530,7 +1651,19 @@ canonical keys that `config.toml` uses. Omitted keys remain unconstrained.
         "When `true`, Codex skips user, project, session, and plugin hooks while still allowing managed hooks from `requirements.toml` and other managed config layers.",
     },
     {
-      key: "plugin_sharing",
+      key: "allow_appshots",
+      type: "boolean",
+      description:
+        "Set to `false` to disable Appshots for managed users. If omitted, Appshots remain unconstrained by requirements and follow normal product availability.",
+    },
+    {
+      key: "allow_remote_control",
+      type: "boolean",
+      description:
+        "Set to `false` to disable device remote control for managed users. If omitted, device remote control remains unconstrained by requirements and follows normal product availability.",
+    },
+    {
+      key: "features.plugin_sharing",
       type: "boolean",
       description:
         "Set to `false` in cloud-managed `requirements.toml` to disable workspace sharing for locally built plugins.",
@@ -1548,6 +1681,12 @@ canonical keys that `config.toml` uses. Omitted keys remain unconstrained.
         "Require a specific canonical feature key to stay enabled or disabled.",
     },
     {
+      key: "features.apps",
+      type: "boolean",
+      description:
+        "Pin Apps integration availability on or off for managed users.",
+    },
+    {
       key: "features.in_app_browser",
       type: "boolean",
       description:
@@ -1560,10 +1699,67 @@ canonical keys that `config.toml` uses. Omitted keys remain unconstrained.
         "Set to `false` in `requirements.toml` to disable Browser Use and Browser Agent availability.",
     },
     {
+      key: "features.browser_use_external",
+      type: "boolean",
+      description:
+        "Set to `false` in `requirements.toml` to disable external-browser Browser Use availability.",
+    },
+    {
+      key: "features.browser_use_full_cdp_access",
+      type: "boolean",
+      description:
+        "Set to `false` in `requirements.toml` to prevent users from enabling full Chrome DevTools Protocol access in Browser Developer mode. If omitted, normal product availability applies.",
+    },
+    {
+      key: "features.fast_mode",
+      type: "boolean",
+      description:
+        "Pin the canonical `fast_mode` feature on or off for managed users.",
+    },
+    {
+      key: "features.guardian_approval",
+      type: "boolean",
+      description:
+        "Pin Guardian approval availability on or off for managed users.",
+    },
+    {
+      key: "features.memories",
+      type: "boolean",
+      description: "Pin Memories availability on or off for managed users.",
+    },
+    {
+      key: "features.multi_agent",
+      type: "boolean",
+      description: "Pin multi-agent availability on or off for managed users.",
+    },
+    {
+      key: "features.plugins",
+      type: "boolean",
+      description: "Pin plugin availability on or off for managed users.",
+    },
+    {
       key: "features.computer_use",
       type: "boolean",
       description:
-        "Set to `false` in `requirements.toml` to disable Computer Use availability and related install or enablement flows.",
+        "Set to `false` in `requirements.toml` to disable Computer Use, Record & Replay, and related install or enablement flows.",
+    },
+    {
+      key: "features.workspace_dependencies",
+      type: "boolean",
+      description:
+        "Pin bundled workspace-dependency runtime availability on or off for managed users.",
+    },
+    {
+      key: "computer_use",
+      type: "table",
+      description:
+        "Computer Use requirements enforced from `requirements.toml`.",
+    },
+    {
+      key: "computer_use.allow_locked_computer_use",
+      type: "boolean",
+      description:
+        "Set to `false` to prevent Computer Use from operating after a managed macOS device locks. If omitted, locked use remains unconstrained by requirements.",
     },
     {
       key: "experimental_network",
@@ -1699,15 +1895,204 @@ canonical keys that `config.toml` uses. Omitted keys remain unconstrained.
     },
     {
       key: "mcp_servers.<id>.identity.command",
+      type: "string | table",
+      description:
+        "Allow an MCP stdio server by exact command string, or use a matcher table to require an exact executable and ordered argument matchers. The string form doesn't inspect arguments, `cwd`, `env`, or `env_vars`.",
+    },
+    {
+      key: "mcp_servers.<id>.identity.command.executable",
       type: "string",
       description:
-        "Allow an MCP stdio server when its `mcp_servers.<id>.command` matches this command.",
+        "Executable that the stdio server's configured `command` must match exactly.",
+    },
+    {
+      key: "mcp_servers.<id>.identity.command.args",
+      type: "array<table>",
+      description:
+        "Ordered argument matchers for a stdio server. The configured argument list must have the same length, and every position must match. Command matchers don't inspect `cwd`, `env`, or `env_vars`.",
+    },
+    {
+      key: "mcp_servers.<id>.identity.command.args[].match",
+      type: "exact | prefix | regex",
+      description: "Match operation for this argument position.",
+    },
+    {
+      key: "mcp_servers.<id>.identity.command.args[].value",
+      type: "string",
+      description: "Value used by an `exact` or `prefix` argument matcher.",
+    },
+    {
+      key: "mcp_servers.<id>.identity.command.args[].expression",
+      type: "string",
+      description:
+        "Regular expression used by a `regex` argument matcher. The expression must be valid and match the complete argument value.",
     },
     {
       key: "mcp_servers.<id>.identity.url",
+      type: "string | table",
+      description:
+        "Allow an MCP streamable HTTP server by exact URL string, or use an `exact`, `prefix`, or `regex` value matcher table.",
+    },
+    {
+      key: "mcp_servers.<id>.identity.url.match",
+      type: "exact | prefix | regex",
+      description: "Match operation for the configured MCP server URL.",
+    },
+    {
+      key: "mcp_servers.<id>.identity.url.value",
+      type: "string",
+      description: "Value used by an `exact` or `prefix` URL matcher.",
+    },
+    {
+      key: "mcp_servers.<id>.identity.url.expression",
       type: "string",
       description:
-        "Allow an MCP streamable HTTP server when its `mcp_servers.<id>.url` matches this URL.",
+        "Regular expression used by a `regex` URL matcher. The expression must be valid and match the complete URL value.",
+    },
+    {
+      key: "plugins",
+      type: "table",
+      description:
+        "Plugin-specific MCP server allowlists keyed by plugin identifier. When this table is present, plugin-bundled servers without a matching plugin and server entry are disabled.",
+    },
+    {
+      key: "plugins.<plugin>.mcp_servers",
+      type: "table",
+      description:
+        "Allowlist for MCP servers bundled with one plugin. Plugin server requirements use the same exact identity and matcher forms as top-level `mcp_servers` requirements.",
+    },
+    {
+      key: "plugins.<plugin>.mcp_servers.<server>.identity",
+      type: "table",
+      description:
+        "Identity rule for one plugin-bundled MCP server. Set either `command` (stdio) or `url` (streamable HTTP).",
+    },
+    {
+      key: "plugins.<plugin>.mcp_servers.<server>.identity.command",
+      type: "string | table",
+      description:
+        "Allow a plugin's stdio MCP server by exact command string, or use a matcher table to require an exact executable and ordered argument matchers.",
+    },
+    {
+      key: "plugins.<plugin>.mcp_servers.<server>.identity.command.executable",
+      type: "string",
+      description:
+        "Executable that the plugin-bundled stdio server's configured command must match exactly.",
+    },
+    {
+      key: "plugins.<plugin>.mcp_servers.<server>.identity.command.args",
+      type: "array<table>",
+      description:
+        "Ordered argument matchers for a plugin-bundled stdio server. The configured argument list must have the same length, and every position must match.",
+    },
+    {
+      key: "plugins.<plugin>.mcp_servers.<server>.identity.command.args[].match",
+      type: "exact | prefix | regex",
+      description: "Match operation for this argument position.",
+    },
+    {
+      key: "plugins.<plugin>.mcp_servers.<server>.identity.command.args[].value",
+      type: "string",
+      description: "Value used by an `exact` or `prefix` argument matcher.",
+    },
+    {
+      key: "plugins.<plugin>.mcp_servers.<server>.identity.command.args[].expression",
+      type: "string",
+      description:
+        "Regular expression used by a `regex` argument matcher. The expression must match the complete argument value.",
+    },
+    {
+      key: "plugins.<plugin>.mcp_servers.<server>.identity.url",
+      type: "string | table",
+      description:
+        "Allow a plugin's streamable HTTP MCP server by exact URL string, or use an `exact`, `prefix`, or `regex` value matcher table.",
+    },
+    {
+      key: "plugins.<plugin>.mcp_servers.<server>.identity.url.match",
+      type: "exact | prefix | regex",
+      description: "Match operation for the plugin-bundled MCP server URL.",
+    },
+    {
+      key: "plugins.<plugin>.mcp_servers.<server>.identity.url.value",
+      type: "string",
+      description: "Value used by an `exact` or `prefix` URL matcher.",
+    },
+    {
+      key: "plugins.<plugin>.mcp_servers.<server>.identity.url.expression",
+      type: "string",
+      description:
+        "Regular expression used by a `regex` URL matcher. The expression must match the complete URL value.",
+    },
+    {
+      key: "marketplaces",
+      type: "table",
+      description:
+        "Admin requirements for plugin marketplace sources. Rules take effect when `restrict_to_allowed_sources` is `true`.",
+    },
+    {
+      key: "marketplaces.restrict_to_allowed_sources",
+      type: "boolean",
+      description:
+        "When `true`, require user-configured marketplace sources to match `allowed_sources` for marketplace add, plugin install, and configured Git marketplace refresh operations. Codex-managed OpenAI marketplaces remain allowed when their reserved source and name match. This doesn't filter already configured user marketplaces at runtime.",
+    },
+    {
+      key: "marketplaces.allowed_sources",
+      type: "table",
+      description:
+        "Allowed marketplace sources keyed by administrator-chosen rule name. Distinct names accumulate across requirements layers; fields under the same name use normal layer precedence.",
+    },
+    {
+      key: "marketplaces.allowed_sources.<name>",
+      type: "table",
+      description:
+        "One allowed source rule. The final `source` value after requirements merge determines which sibling fields Codex interprets.",
+    },
+    {
+      key: "marketplaces.allowed_sources.<name>.source",
+      type: "git | host_pattern | local",
+      description:
+        "Marketplace source matcher type. Use `git` for one repository, `host_pattern` for Git hosts matched by regular expression, or `local` for one directory.",
+    },
+    {
+      key: "marketplaces.allowed_sources.<name>.url",
+      type: "string",
+      description:
+        'Git repository URL required when `source = "git"`. Codex normalizes the configured and allowed URLs before requiring an exact repository match.',
+    },
+    {
+      key: "marketplaces.allowed_sources.<name>.ref",
+      type: "string",
+      description:
+        "Optional exact Git ref for a `git` rule. When omitted, the rule allows any ref for the matching repository.",
+    },
+    {
+      key: "marketplaces.allowed_sources.<name>.host_pattern",
+      type: "string",
+      description:
+        'Regular expression required when `source = "host_pattern"`. Codex matches it against the lowercase hostname parsed from an HTTPS, SSH, or SCP-style Git source. Use `^` and `$` to require a whole-host match.',
+    },
+    {
+      key: "marketplaces.allowed_sources.<name>.path",
+      type: "string (absolute path)",
+      description:
+        'Local marketplace directory required when `source = "local"`. Codex requires an absolute path and compares paths after normalization.',
+    },
+    {
+      key: "apps",
+      type: "table",
+      description:
+        "Managed app requirements keyed by app identifier. Requirements can disable an app or constrain approval behavior for individual tools.",
+    },
+    {
+      key: "apps.<id>.enabled",
+      type: "boolean",
+      description:
+        "Set to `false` to disable an app. A disabled requirement remains restrictive when multiple requirements sources are merged.",
+    },
+    {
+      key: "apps.<id>.tools.<tool>.approval_mode",
+      type: "auto | prompt | approve",
+      description: "Set the managed approval mode for one app tool.",
     },
     {
       key: "rules",

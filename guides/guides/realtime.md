@@ -1,11 +1,5 @@
 # Realtime and audio
 
-import {
-  Cube,
-  Desktop,
-  Phone,
-} from "@components/react/oai/platform/ui/Icon.react";
-
 Start with the outcome you want to build. Realtime sessions are best for live audio that needs low latency. Request-based audio APIs are best for files, bounded requests, or generated speech that doesn't need a live session.
 
 ## Common use cases
@@ -27,7 +21,7 @@ Start with the outcome you want to build. Realtime sessions are best for live au
     <tr>
       <td>Build a low-latency voice agent</td>
       <td className="whitespace-nowrap">
-        [`gpt-realtime-2`](https://developers.openai.com/api/docs/models/gpt-realtime-2)
+        [`gpt-realtime-2.1`](https://developers.openai.com/api/docs/models/gpt-realtime-2.1)
       </td>
       <td>
         <a href="/api/docs/guides/voice-agents">Voice agents</a>

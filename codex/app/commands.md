@@ -21,6 +21,7 @@ Use these commands and keyboard shortcuts to navigate the Codex app.
 |             | Clear the terminal | <kbd>Ctrl</kbd> + <kbd>L</kbd>                                                    |
 | **Thread**  |                    |                                                                                   |
 |             | New thread         | <kbd>Cmd</kbd> + <kbd>N</kbd> or <kbd>Cmd</kbd> + <kbd>Shift</kbd> + <kbd>O</kbd> |
+|             | Search threads     | <kbd>Cmd</kbd> + <kbd>G</kbd>                                                     |
 |             | Find in thread     | <kbd>Cmd</kbd> + <kbd>F</kbd>                                                     |
 |             | Previous thread    | <kbd>Cmd</kbd> + <kbd>Shift</kbd> + <kbd>[</kbd>                                  |
 |             | Next thread        | <kbd>Cmd</kbd> + <kbd>Shift</kbd> + <kbd>]</kbd>                                  |
@@ -29,6 +30,17 @@ Use these commands and keyboard shortcuts to navigate the Codex app.
 To find, customize, or reset shortcuts, open **Settings > Keyboard Shortcuts**.
 You can search by command name or switch the search field into keystroke mode
 and press the shortcut you want to find.
+
+## Search past threads and find in a thread
+
+Use thread search (<kbd>Cmd</kbd>/<kbd>Ctrl</kbd> + <kbd>G</kbd>) to reopen a
+past conversation. When expanded matching is available in your Codex desktop
+app, it can also match conversation content and Git branch names, so you can
+search for a phrase from the thread or a branch such as `fix/login-redirect`.
+
+Use **Find in thread** (<kbd>Cmd</kbd> + <kbd>F</kbd>) after opening a thread
+to find text within that current conversation. It doesn't search across other
+threads.
 
 ## Slash commands
 
@@ -49,6 +61,7 @@ Enabled skills also appear in the slash command list.
 | ------------- | -------------------------------------------------------------------------------------- |
 | `/feedback`   | Open the feedback dialog to submit feedback and optionally include logs.               |
 | `/goal`       | Set a persistent goal for Codex to work toward; use `/plan` first to shape it.         |
+| `/init`       | Generate an `AGENTS.md` scaffold for the current project.                              |
 | `/mcp`        | Open MCP status to view connected servers.                                             |
 | `/plan`       | Toggle plan mode for multi-step planning.                                              |
 | `/review`     | Start code review mode to review uncommitted changes or compare against a base branch. |
@@ -87,30 +100,39 @@ For guidance on writing effective goals, see [Goal mode](https://developers.open
 
 ## Deep links
 
-The Codex app registers the `codex://` URL scheme so links can open specific parts of the app directly.
+The Codex app registers the `codex://` URL scheme so links can open specific parts of the app directly. Encode query string values before adding them to a URL.
 
-### Common links
+### Supported links
 
-Use these links when you just need to open a common app destination. The sections below list the full reference by link type.
+Use these canonical forms when you create links. The sections below list the full reference by link type.
 
-| Deep link                     | Opens                                                            |
-| ----------------------------- | ---------------------------------------------------------------- |
-| `codex://threads/new`         | A new local thread.                                              |
-| `codex://threads/<thread-id>` | A local thread. `<thread-id>` must be the thread's session UUID. |
-| `codex://settings`            | Settings.                                                        |
-| `codex://skills`              | Skills.                                                          |
-| `codex://automations`         | Automations with the create flow open.                           |
+| Deep link                                                                   | Opens                                                            |
+| --------------------------------------------------------------------------- | ---------------------------------------------------------------- |
+| `codex://threads/new`                                                       | A new local thread.                                              |
+| `codex://new?<query>`                                                       | A new local thread with at least one new-thread query parameter. |
+| `codex://threads/<thread-id>`                                               | A local thread. `<thread-id>` must be the thread's session UUID. |
+| `codex://settings`                                                          | Settings.                                                        |
+| `codex://settings/connections/<connection-type>`                            | Computer, device, or SSH connection settings.                    |
+| `codex://settings/connections/ssh/add?name=<ssh-config-host>`               | Adds a host from your SSH config to Codex.                       |
+| `codex://skills`                                                            | Skills.                                                          |
+| `codex://automations`                                                       | Automations with the create flow open.                           |
+| `codex://plugins/install/<plugin-name>?marketplace=<marketplace-name>`      | The install flow for a plugin from a known marketplace.          |
+| `codex://plugins/<plugin-id>`                                               | A plugin detail page.                                            |
+| `codex://plugins/<plugin-name>?marketplacePath=<absolute-marketplace-path>` | A local plugin detail page from a local marketplace.             |
+| `codex://pets/install?name=<pet-name>&imageUrl=<https-image-url>`           | The pet install flow.                                            |
 
 ### Threads
 
 Use these links when you need to open an existing local thread or start a new one.
 
-| Deep link                     | Opens                                                            |
-| ----------------------------- | ---------------------------------------------------------------- |
-| `codex://threads/<thread-id>` | A local thread. `<thread-id>` must be the thread's session UUID. |
-| `codex://threads/new`         | A new local thread.                                              |
+| Deep link                     | Opens                                                                                                          |
+| ----------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| `codex://threads/<thread-id>` | A local thread. `<thread-id>` must be the thread's session UUID.                                               |
+| `codex://threads/new`         | A new local thread.                                                                                            |
+| `codex://threads/new?<query>` | A new local thread with optional query parameters.                                                             |
+| `codex://new?<query>`         | A new local thread. Include at least one of `prompt`, `path`, or `originUrl`; otherwise the link does nothing. |
 
-For `codex://threads/new`, add any of these query parameters as needed; you can combine them in the same URL.
+For `codex://threads/new` or `codex://new`, add any of these query parameters as needed; you can combine them in the same URL.
 
 | Query parameter              | Required | What it does                                                                                                                                                    |
 | ---------------------------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -124,12 +146,22 @@ Example: [Show me some fun stats about how I've been using Codex](codex://thread
 
 Use these links when you need to open Settings or a specific settings page.
 
-| Deep link                                     | Opens                                    |
-| --------------------------------------------- | ---------------------------------------- |
-| `codex://settings`                            | Settings.                                |
-| `codex://settings/browser-use`                | Browser use settings.                    |
-| `codex://settings/computer-use/google-chrome` | Google Chrome settings for computer use. |
-| `codex://settings/connections`                | Remote connections settings.             |
+| Deep link                                                     | Opens                                                                                        |
+| ------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| `codex://settings`                                            | Settings.                                                                                    |
+| `codex://settings/browser-use`                                | Browser settings.                                                                            |
+| `codex://settings/computer-use/google-chrome`                 | Google Chrome settings for computer use.                                                     |
+| `codex://settings/connections`                                | Remote connections settings.                                                                 |
+| `codex://settings/connections/computer`                       | Settings for controlling this Mac or PC from another device.                                 |
+| `codex://settings/connections/devices`                        | Settings for controlling other devices.                                                      |
+| `codex://settings/connections/ssh`                            | SSH connection settings.                                                                     |
+| `codex://settings/connections/ssh/add?name=<ssh-config-host>` | Adds the named host alias as a Codex-managed connection, then opens SSH connection settings. |
+
+The `name` value must match a host alias in `~/.ssh/config`. The link disables
+automatic connection for the added host. If Codex can't find the named host, it
+opens SSH connection settings and shows an error.
+
+Unsupported `codex://settings/...` paths open the main Settings page.
 
 ### Skills
 
@@ -149,7 +181,21 @@ Use these links when you need to open Automations.
 
 ### Plugins
 
-Plugin links use different forms depending on whether you are opening a plugin, installing from a marketplace, or working from a local `marketplace.json`. For plugin basics, see [Plugins](https://developers.openai.com/codex/plugins). For local or repo marketplace setup, see [Build plugins](https://developers.openai.com/codex/plugins/build#build-your-own-curated-plugin-list).
+Plugin links use different forms depending on whether you are installing from a marketplace, opening a plugin, or working from a local `marketplace.json`. For plugin basics, see [Plugins](https://developers.openai.com/codex/plugins). For local or repo marketplace setup, see [Build plugins](https://developers.openai.com/codex/plugins/build#build-your-own-curated-plugin-list).
+
+#### Plugin install
+
+Use this form to open the install flow for a plugin from a marketplace that Codex already knows about.
+
+| Deep link                                                              | Opens                                           |
+| ---------------------------------------------------------------------- | ----------------------------------------------- |
+| `codex://plugins/install/<plugin-name>?marketplace=<marketplace-name>` | The plugin detail or install flow for a plugin. |
+
+| Query parameter                  | Required | What it does                                                                    |
+| -------------------------------- | -------- | ------------------------------------------------------------------------------- |
+| `marketplace=<marketplace-name>` | Yes      | Identifies the marketplace. For an OpenAI-curated plugin, use `openai-curated`. |
+
+The install link accepts only the `marketplace` query parameter. If Codex can't find the requested marketplace or plugin, it opens the Plugins page instead.
 
 #### Plugin detail
 
@@ -159,12 +205,12 @@ Plugin links use different forms depending on whether you are opening a plugin, 
 
 `<plugin-id>` must identify the plugin. For an OpenAI-curated plugin, use the form `<plugin-name>@openai-curated`.
 
-Codex-generated plugin links can also include these query parameters. Omit both when you handwrite a link.
+Codex-generated plugin links can also include these query parameters. Omit both when you write a link manually.
 
 | Query parameter    | Required | What it does                                                                                                                                    |
 | ------------------ | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
 | `hostId=<host-id>` | No       | Identifies the Codex host that owns the plugin context, such as `local` or one of your configured remote connections. Codex provides these IDs. |
-| `source=manage`    | No       | Preserves the app's plugin-management entry point. It is not admin-only.                                                                        |
+| `source=manage`    | No       | Preserves the app's plugin-management entry point. It's not admin-only.                                                                         |
 
 Example: [Open the OpenAI Developers plugin](codex://plugins/openai-developers@openai-curated)
 

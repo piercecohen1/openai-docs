@@ -28,7 +28,7 @@ const event = {
   type: "session.update",
   session: {
     type: "realtime",
-    model: "gpt-realtime-2",
+    model: "gpt-realtime-2.1",
     tools: [
       {
         type: "function",
@@ -58,7 +58,7 @@ event = {
     "type": "session.update",
     "session": {
         "type": "realtime",
-        "model": "gpt-realtime-2",
+        "model": "gpt-realtime-2.1",
         "tools": [
             {
                 "type": "function",
@@ -150,7 +150,7 @@ const event = {
   type: "session.update",
   session: {
     type: "realtime",
-    model: "gpt-realtime-2",
+    model: "gpt-realtime-2.1",
     output_modalities: ["text"],
     tools: [
       {
@@ -172,7 +172,7 @@ event = {
     "type": "session.update",
     "session": {
         "type": "realtime",
-        "model": "gpt-realtime-2",
+        "model": "gpt-realtime-2.1",
         "output_modalities": ["text"],
         "tools": [
             {
@@ -204,7 +204,7 @@ const event = {
   type: "session.update",
   session: {
     type: "realtime",
-    model: "gpt-realtime-2",
+    model: "gpt-realtime-2.1",
     output_modalities: ["text"],
     tools: [
       {
@@ -227,7 +227,7 @@ event = {
     "type": "session.update",
     "session": {
         "type": "realtime",
-        "model": "gpt-realtime-2",
+        "model": "gpt-realtime-2.1",
         "output_modalities": ["text"],
         "tools": [
             {
@@ -311,7 +311,7 @@ ws.on("message", (rawMessage) => {
     case "conversation.item.done":
       if (event.item.type === "mcp_list_tools") {
         const names = event.item.tools.map((tool) => tool.name).join(", ");
-        console.log(\`MCP tools ready on \${event.item.server_label}: \${names}\`);
+        console.log(`MCP tools ready on ${event.item.server_label}: ${names}`);
       }
 
       if (event.item.type === "mcp_approval_request") {
@@ -334,7 +334,7 @@ ws.on("message", (rawMessage) => {
     case "response.output_item.done":
       if (event.item.type === "mcp_call") {
         console.log(
-          \`MCP output from \${event.item.server_label}.\${event.item.name}:\`,
+          `MCP output from ${event.item.server_label}.${event.item.name}:`,
           event.item.output
         );
       }
@@ -436,7 +436,7 @@ function approveMcpRequest(approvalRequestId) {
   const event = {
     type: "conversation.item.create",
     item: {
-      id: \`mcp_approval_\${approvalRequestId}\`,
+      id: `mcp_approval_${approvalRequestId}`,
       type: "mcp_approval_response",
       approval_request_id: approvalRequestId,
       approve: true,

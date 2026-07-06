@@ -2,9 +2,10 @@
 
 When you need full control—custom authentication, data residency, on‑prem deployment, or bespoke agent orchestration—you can run ChatKit on your own infrastructure. Use OpenAI's advanced self‑hosted option to use your own server and customized ChatKit.
 
-Our recommended ChatKit integration helps you get started quickly: embed a
-  chat widget, customize its look and feel, let OpenAI host and scale the
-  backend. [Use simpler integration →](https://developers.openai.com/api/docs/guides/chatkit)
+Agent Builder-hosted ChatKit workflows are in a transition window. For new
+  ChatKit apps, build on your own server-side agent implementation with the
+  ChatKit SDKs and the Agents SDK. See [ChatKit transition guidance
+  →](https://developers.openai.com/api/docs/guides/chatkit)
 
 ## Run ChatKit on your own infrastructure
 
@@ -35,7 +36,7 @@ class MyChatKitServer(ChatKitServer):
         super().__init__(data_store, file_store)
 
     assistant_agent = Agent[AgentContext](
-        model="gpt-4.1",
+        model="gpt-5.5",
         name="Assistant",
         instructions="You are a helpful assistant",
     )
@@ -65,6 +66,7 @@ class MyChatKitServer(ChatKitServer):
         raise NotImplementedError()
 ```
 
+
 ### 3. Expose the endpoint
 
 Use your framework of choice to forward HTTP requests to the server instance. For
@@ -83,6 +85,7 @@ async def chatkit_endpoint(request: Request):
         return StreamingResponse(result, media_type="text/event-stream")
     return Response(content=result.json, media_type="application/json")
 ```
+
 
 ### 4. Establish data store contract
 
@@ -112,13 +115,14 @@ async def add_to_todo_list(ctx: RunContextWrapper[AgentContext], item: str) -> N
     )
 
 assistant_agent = Agent[AgentContext](
-    model="gpt-4.1",
+    model="gpt-5.5",
     name="Assistant",
     instructions="You are a helpful assistant",
     tools=[add_to_todo_list],
     tool_use_behavior=StopAtTools(stop_at_tool_names=[add_to_todo_list.name]),
 )
 ```
+
 
 ### 7. Use thread metadata and state
 
@@ -162,6 +166,7 @@ async def respond(
     ):
         yield event
 ```
+
 
 ChatKit ships with a wide set of widget nodes (cards, lists, forms, text, buttons, and
 more). See [widgets guide on GitHub](https://github.com/openai/chatkit-python/blob/main/docs/widgets.md) for all components, props, and

@@ -60,24 +60,24 @@ with client.audio.speech.with_streaming_response.create(
 ```
 
 ```bash
-curl https://api.openai.com/v1/audio/speech \\
-  -H "Authorization: Bearer $OPENAI_API_KEY" \\
-  -H "Content-Type: application/json" \\
+curl https://api.openai.com/v1/audio/speech \
+  -H "Authorization: Bearer $OPENAI_API_KEY" \
+  -H "Content-Type: application/json" \
   -d '{
     "model": "gpt-4o-mini-tts",
     "input": "Today is a wonderful day to build something people love!",
     "voice": "coral",
     "instructions": "Speak in a cheerful and positive tone."
-  }' \\
+  }' \
   --output speech.mp3
 ```
 
 ```cli
-openai audio:speech create \\
-  --model gpt-4o-mini-tts \\
-  --voice coral \\
-  --instructions "Speak in a cheerful and positive tone." \\
-  --input "Today is a wonderful day to build something people love!" \\
+openai audio:speech create \
+  --model gpt-4o-mini-tts \
+  --voice coral \
+  --instructions "Speak in a cheerful and positive tone." \
+  --input "Today is a wonderful day to build something people love!" \
   --output speech.mp3
 ```
 
@@ -168,9 +168,9 @@ if __name__ == "__main__":
 ```
 
 ```bash
-curl https://api.openai.com/v1/audio/speech \\
-  -H "Authorization: Bearer $OPENAI_API_KEY" \\
-  -H "Content-Type: application/json" \\
+curl https://api.openai.com/v1/audio/speech \
+  -H "Authorization: Bearer $OPENAI_API_KEY" \
+  -H "Content-Type: application/json" \
   -d '{
     "model": "gpt-4o-mini-tts",
     "input": "Today is a wonderful day to build something people love!",
@@ -274,6 +274,7 @@ curl https://api.openai.com/v1/audio/voice_consents \
   -F "recording=@$HOME/tmp/voice_consent/consent_recording.wav;type=audio/x-wav"
 ```
 
+
 **Creating a voice**
 
 Next, you’ll create the actual voice by referencing the consent recording ID, and providing the voice sample.
@@ -286,6 +287,7 @@ curl https://api.openai.com/v1/audio/voices \
   -F "audio_sample=@$HOME/tmp/voice_consent/audio_sample_recording.wav;type=audio/x-wav" \
   -F "consent=cons_123abc"
 ```
+
 
 If successful, the created voice will be listed under the [Audio tab](https://platform.openai.com/audio/voices).
 
@@ -311,6 +313,7 @@ curl https://api.openai.com/v1/audio/speech \
   }' \
   --output sample.wav
 ```
+
 
 **Realtime API example**
 

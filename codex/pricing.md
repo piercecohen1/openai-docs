@@ -45,8 +45,8 @@
         - Codex on the web, in the CLI, in the IDE extension, and on iOS
         - Cloud-based integrations like automatic code review and Slack
           integration
-        - The latest models, including GPT-5.5, GPT-5.4, and GPT-5.3-Codex
-        - GPT-5.4-mini for higher usage limits on routine local messages
+        - The latest models, including GPT-5.5, GPT-5.4, and GPT-5.4 mini
+        - GPT-5.4 mini for higher usage limits on routine local messages
         - Flexibly extend usage with [ChatGPT credits](#credits-overview)
         - Other [ChatGPT features](https://chatgpt.com/pricing) as part of the
           Plus plan
@@ -60,14 +60,12 @@
         ctaLabel="Get Pro"
         ctaHref="https://chatgpt.com/explore/pro?utm_internal_source=openai_developers_codex"
         highlight="Everything in Plus and:"
-        footnoteLabel="*Learn more about limits and promos on both tiers."
+        footnoteLabel="*Learn more about limits on both tiers."
         footnoteHref="https://help.openai.com/en/articles/9793128-about-chatgpt-pro-plans"
       >
-        **Double your normal Codex usage on the $100/month tier until May 31, 2026.**
-
         - Access to GPT-5.3-Codex-Spark (research preview), a fast Codex model
           for day-to-day coding tasks
-        - ~~5x~~ 10x or 20x more Codex usage than Plus*
+        - 5x or 20x more Codex usage than Plus*
         - Other [ChatGPT features](https://chatgpt.com/pricing) as part of the
           Pro plan
       </PricingCard>
@@ -82,8 +80,7 @@
       >
         - Codex in the CLI, SDK, or IDE extension
         - No cloud-based features (GitHub code review, Slack, etc.)
-        - Delayed access to new models like GPT-5.3-Codex and
-          GPT-5.3-Codex-Spark
+        - Model availability follows the API models available to your key
         - Pay only for the tokens Codex uses, based on [API
           pricing](https://platform.openai.com/docs/pricing)
       </PricingCard>
@@ -96,15 +93,13 @@
       <PricingCard
         name="Business"
         subtitle="Bring Codex into your startup or growing business."
-        price="Pay as you go"
-        interval=""
+        price="$20"
+        interval="/ user / month*"
         ctaLabel="Get Business"
-        ctaHref="https://chatgpt.com/codex/team/start"
-        highlight="Everything in Plus and:"
+        ctaHref="https://chatgpt.com/team-sign-up"
+        footnoteLabel="*2+ users, billed annually. $25 per user per month when billed monthly."
       >
-        - Assign standard or usage-based Codex seats based on your team's needs.
-          [Learn
-          more](https://help.openai.com/en/articles/8792828-what-is-chatgpt-business)
+        - Access ChatGPT and Codex across desktop and mobile apps
         - Larger virtual machines to run cloud tasks faster
         - Flexibly extend usage with [ChatGPT credits](#credits-overview)
         - A secure, dedicated workspace with essential admin controls, SAML SSO,
@@ -147,8 +142,7 @@
       >
         - Codex in the CLI, SDK, or IDE extension
         - No cloud-based features (GitHub code review, Slack, etc.)
-        - Delayed access to new models like GPT-5.3-Codex and
-          GPT-5.3-Codex-Spark
+        - Model availability follows the API models available to your key
         - Pay only for the tokens Codex uses, based on [API
           pricing](https://platform.openai.com/docs/pricing)
       </PricingCard>
@@ -157,7 +151,32 @@
   </div>
 </ContentSwitcher>
 
+## Invite friends and coworkers
+
+Eligible users can send Codex invitations from the profile menu in the
+lower-left corner of the app. Choose **Invite a friend** on an eligible personal
+plan or **Invite a coworker** in an eligible Business workspace, enter the
+recipient's email address, and send the invitation.
+
+The invitation dialog shows the current reward, recipient requirements, invite
+limits, and when rewards expire for your plan or promotion. Personal and
+Business referral programs have separate rewards and eligibility rules.
+Referrals aren't currently available for ChatGPT Enterprise.
+
+From June 11 through June 24, 2026, eligible Plus and Pro users can invite up to
+three friends. When an eligible recipient sends their first Codex message, both
+people receive a banked rate-limit reset. Banked rate-limit resets are usable for
+30 days after they're granted. Business referrals use separate shared-workspace
+credit rewards; review the
+[current terms](https://help.openai.com/en/articles/20001271) before you send an
+invitation.
+
 ## Frequently asked questions
+
+### How much does Sites cost?
+
+[Sites](https://developers.openai.com/codex/sites) is free while in preview. Pricing information will be
+available soon.
 
 ### What are the usage limits for my plan?
 
@@ -232,16 +251,10 @@ GPT-5.5 being a significantly more capable model.
             <td style="text-align:center">Not available</td>
           </tr>
           <tr>
-            <td>GPT-5.4-mini</td>
+            <td>GPT-5.4 mini</td>
             <td style="text-align:center">60-350</td>
             <td style="text-align:center">Not available</td>
             <td style="text-align:center">Not available</td>
-          </tr>
-          <tr>
-            <td>GPT-5.3-Codex</td>
-            <td style="text-align:center">30-150</td>
-            <td style="text-align:center">10-60</td>
-            <td style="text-align:center">20-50</td>
           </tr>
         </tbody>
         <tfoot>
@@ -255,8 +268,9 @@ GPT-5.5 being a significantly more capable model.
           </tr>
           <tr>
             <td colspan="4" style="text-align:center">
-              For Enterprise/Edu users, there are no fixed rate limits - usage
-              scales with [credits](#credits-overview)
+              For Enterprise/Edu users with flexible pricing, there are no
+              fixed rate limits - usage scales with
+              [credits](#credits-overview)
             </td>
           </tr>
           <tr>
@@ -289,7 +303,7 @@ GPT-5.5 being a significantly more capable model.
         <tbody>
           <tr>
             <td>GPT-5.5</td>
-            <td style="text-align:center">80-400</td>
+            <td style="text-align:center">75-400</td>
             <td style="text-align:center">Not available</td>
             <td style="text-align:center">Not available</td>
           </tr>
@@ -300,16 +314,10 @@ GPT-5.5 being a significantly more capable model.
             <td style="text-align:center">Not available</td>
           </tr>
           <tr>
-            <td>GPT-5.4-mini</td>
+            <td>GPT-5.4 mini</td>
             <td style="text-align:center">300-1750</td>
             <td style="text-align:center">Not available</td>
             <td style="text-align:center">Not available</td>
-          </tr>
-          <tr>
-            <td>GPT-5.3-Codex</td>
-            <td style="text-align:center">150-750</td>
-            <td style="text-align:center">50-300</td>
-            <td style="text-align:center">100-250</td>
           </tr>
         </tbody>
         <tfoot>
@@ -323,13 +331,9 @@ GPT-5.5 being a significantly more capable model.
           </tr>
           <tr>
             <td colspan="4" style="text-align:center">
-              Pro $100 gets 2x the usage shown above until May 31, 2026.
-            </td>
-          </tr>
-          <tr>
-            <td colspan="4" style="text-align:center">
-              For Enterprise/Edu users, there are no fixed rate limits - usage
-              scales with [credits](#credits-overview)
+              For Enterprise/Edu users with flexible pricing, there are no
+              fixed rate limits - usage scales with
+              [credits](#credits-overview)
             </td>
           </tr>
           <tr>
@@ -373,16 +377,10 @@ GPT-5.5 being a significantly more capable model.
             <td style="text-align:center">Not available</td>
           </tr>
           <tr>
-            <td>GPT-5.4-mini</td>
+            <td>GPT-5.4 mini</td>
             <td style="text-align:center">1200-7000</td>
             <td style="text-align:center">Not available</td>
             <td style="text-align:center">Not available</td>
-          </tr>
-          <tr>
-            <td>GPT-5.3-Codex</td>
-            <td style="text-align:center">600-3000</td>
-            <td style="text-align:center">200-1200</td>
-            <td style="text-align:center">400-1000</td>
           </tr>
         </tbody>
         <tfoot>
@@ -396,15 +394,9 @@ GPT-5.5 being a significantly more capable model.
           </tr>
           <tr>
             <td colspan="4" style="text-align:center">
-              Pro $200 gets a boost on the usage shown above until May 31,
-              2026. [Learn
-              more](https://help.openai.com/en/articles/9793128-about-chatgpt-pro-plans).
-            </td>
-          </tr>
-          <tr>
-            <td colspan="4" style="text-align:center">
-              For Enterprise/Edu users, there are no fixed rate limits - usage
-              scales with [credits](#credits-overview)
+              For Enterprise/Edu users with flexible pricing, there are no
+              fixed rate limits - usage scales with
+              [credits](#credits-overview)
             </td>
           </tr>
           <tr>
@@ -448,16 +440,10 @@ GPT-5.5 being a significantly more capable model.
             <td style="text-align:center">Not available</td>
           </tr>
           <tr>
-            <td>GPT-5.4-mini</td>
+            <td>GPT-5.4 mini</td>
             <td style="text-align:center">60-350</td>
             <td style="text-align:center">Not available</td>
             <td style="text-align:center">Not available</td>
-          </tr>
-          <tr>
-            <td>GPT-5.3-Codex</td>
-            <td style="text-align:center">30-150</td>
-            <td style="text-align:center">10-60</td>
-            <td style="text-align:center">20-50</td>
           </tr>
         </tbody>
         <tfoot>
@@ -471,8 +457,9 @@ GPT-5.5 being a significantly more capable model.
           </tr>
           <tr>
             <td colspan="4" style="text-align:center">
-              For Enterprise/Edu users, there are no fixed rate limits - usage
-              scales with [credits](#credits-overview)
+              For Enterprise/Edu users with flexible pricing, there are no
+              fixed rate limits - usage scales with
+              [credits](#credits-overview)
             </td>
           </tr>
           <tr>
@@ -505,7 +492,9 @@ GPT-5.5 being a significantly more capable model.
         <tbody>
           <tr>
             <td>GPT-5.5</td>
-            <td style="text-align:center">Not available</td>
+            <td style="text-align:center">
+              [Usage-based](https://platform.openai.com/docs/pricing)
+            </td>
             <td style="text-align:center">Not available</td>
             <td style="text-align:center">Not available</td>
           </tr>
@@ -518,15 +507,7 @@ GPT-5.5 being a significantly more capable model.
             <td style="text-align:center">Not available</td>
           </tr>
           <tr>
-            <td>GPT-5.4-mini</td>
-            <td style="text-align:center">
-              [Usage-based](https://platform.openai.com/docs/pricing)
-            </td>
-            <td style="text-align:center">Not available</td>
-            <td style="text-align:center">Not available</td>
-          </tr>
-          <tr>
-            <td>GPT-5.3-Codex</td>
+            <td>GPT-5.4 mini</td>
             <td style="text-align:center">
               [Usage-based](https://platform.openai.com/docs/pricing)
             </td>
@@ -545,8 +526,9 @@ GPT-5.5 being a significantly more capable model.
           </tr>
           <tr>
             <td colspan="4" style="text-align:center">
-              For Enterprise/Edu users, there are no fixed rate limits - usage
-              scales with [credits](#credits-overview)
+              For Enterprise/Edu users with flexible pricing, there are no
+              fixed rate limits - usage scales with
+              [credits](#credits-overview)
             </td>
           </tr>
           <tr>
@@ -577,6 +559,10 @@ limit that may adjust based on demand.
 
 ### What happens when you hit usage limits?
 
+We want you to be able to complete work already in progress. If you reach your
+usage limits during an active turn, the agent will be able to continue working
+on that turn, subject to fair use limits.
+
 ChatGPT Plus and Pro users who reach their usage limit can purchase additional
 credits to continue working without needing to upgrade their existing plan.
 
@@ -604,14 +590,6 @@ Image generation isn't available on the Free plan. When you use Codex with an
 API key, API pricing applies to image generation instead of included ChatGPT
 usage limits.
 
-### What's the current Codex usage promo on Pro?
-
-We’re currently offering extra Codex usage on both Pro tiers.
-
-For **Pro $100**, to celebrate the launch, you’ll get **2x Codex usage through May 31, 2026**. That means 10x usage instead of the standard 5x.
-
-**For Pro $200**, as a thank you to our most loyal customers, we’re carrying forward the benefits of our earlier 2x promo, which means Pro $200 now includes 20x Plus on an ongoing basis. In addition, we’re continuing to honor the higher 5-hour Codex limits for a limited time, so those remain at 25x Plus through May 31, 2026 instead of the standard 20x Plus.
-
 ### Where can I see my current usage limits?
 
 You can find your current limits in the [Codex usage
@@ -624,208 +602,88 @@ Credits let you continue using Codex after you reach your included usage
 limits. Usage draws down from your available credits based on the models and
 features you use, allowing you to extend work without interruption.
 
-As of April 2nd, we're moving pricing to API token-based rates. Credits remain
-the core pricing unit that customers purchase and consume, but usage is based
-on tokens consumed, calculated as credits per million input tokens, cached
-input tokens and output tokens your workspace consumes. Read about tokens
+Codex credit usage is based on API token-based rates. Credits remain the core
+pricing unit that customers purchase and consume, but usage is calculated as
+credits per million input tokens, cached input tokens, and output tokens your
+workspace consumes. Read about tokens
 [here](https://help.openai.com/en/articles/4936856-what-are-tokens-and-how-to-count-them).
 
-This format replaces average per-message estimates for your plan with a direct
-mapping between token usage and credits. It's most useful when you want a
-clearer view of how input, cached input, and output affect credit consumption.
+The rate card below shows the credit cost per million tokens for Codex models
+and features.
 
-Under this model, actual credit usage depends on the mix of input, cached input,
-and output tokens in each task. The new rate card is displayed in the table
-below, and is currently applicable to **new and existing Business customers,
-and new Enterprise customers**.
-
-**New and existing customers on all other plan types** should continue to use
-the previous message based rate card, until we migrate you to the new rates in
-the upcoming weeks.
-
-Select your appropriate plan type in the table below to see rates.
+A small subset of Enterprise customers should continue using the legacy rate
+card until we migrate you to the new token-based pricing for Codex. For more
+information, [contact OpenAI
+sales](https://chatgpt.com/contact-sales?utm_internal_source=openai_developers_codex).
 
 <div id="credits-overview">
-  <ContentSwitcher
-    id="codex-credit-costs"
-    initialValue="business-enterprise-new"
-    align="right"
-    options={[
-      {
-        label: "Business & New Enterprise Customers",
-        value: "business-enterprise-new",
-      },
-      {
-        label: "Plus, Pro, Existing Enterprise/Edu and New Edu",
-        value: "plus-pro-enterprise-edu-legacy",
-      },
-    ]}
-  >
-    <div data-content-switcher-pane data-value="business-enterprise-new">
-      <div class="hidden">Business & New Enterprise Customers</div>
-      <table>
-        <thead>
-          <tr>
-            <th scope="col">Credits per 1M tokens</th>
-            <th scope="col" style="text-align:center">
-              Input Tokens
-            </th>
-            <th scope="col" style="text-align:center">
-              Cached input tokens
-            </th>
-            <th scope="col" style="text-align:center">
-              Output Tokens
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>GPT-5.5</td>
-            <td style="text-align:center">125 credits</td>
-            <td style="text-align:center">12.50 credits</td>
-            <td style="text-align:center">750 credits</td>
-          </tr>
-          <tr>
-            <td>GPT-5.4</td>
-            <td style="text-align:center">62.50 credits</td>
-            <td style="text-align:center">6.250 credits</td>
-            <td style="text-align:center">375 credits</td>
-          </tr>
-          <tr>
-            <td>GPT-5.4-mini</td>
-            <td style="text-align:center">18.75 credits</td>
-            <td style="text-align:center">1.875 credits</td>
-            <td style="text-align:center">113 credits</td>
-          </tr>
-          <tr>
-            <td>GPT-5.3-Codex</td>
-            <td style="text-align:center">43.75 credits</td>
-            <td style="text-align:center">4.375 credits</td>
-            <td style="text-align:center">350 credits</td>
-          </tr>
-          <tr>
-            <td>GPT-5.2</td>
-            <td style="text-align:center">43.75 credits</td>
-            <td style="text-align:center">4.375 credits</td>
-            <td style="text-align:center">350 credits</td>
-          </tr>
-          <tr>
-            <td>GPT-5.3-Codex-Spark</td>
-            <td colspan="3" style="text-align:center">
-              research preview
-            </td>
-          </tr>
-          <tr>
-            <td>GPT-Image-2 (image)</td>
-            <td style="text-align:center">200 credits</td>
-            <td style="text-align:center">50 credits</td>
-            <td style="text-align:center">750 credits</td>
-          </tr>
-          <tr>
-            <td>GPT-Image-2 (text)</td>
-            <td style="text-align:center">125 credits</td>
-            <td style="text-align:center">31.25 credits</td>
-            <td style="text-align:center">250 credits</td>
-          </tr>
-        </tbody>
-        <tfoot>
-          <tr>
-            <td colspan="4" style="text-align:center">
-              Fast mode consumes credits at a higher rate for supported models.
-              See <a href="/codex/speed">Speed</a> for rates.
-            </td>
-          </tr>
-          <tr>
-            <td colspan="4" style="text-align:center">
-              Cloud tasks and code review run on GPT-5.3-Codex.
-            </td>
-          </tr>
-        </tfoot>
-      </table>
-    </div>
-    <div
-      data-content-switcher-pane
-      data-value="plus-pro-enterprise-edu-legacy"
-      hidden
-    >
-      <div class="hidden">Plus, Pro, Existing Enterprise/Edu and New Edu</div>
-      <table>
-        <thead>
-          <tr>
-            <th scope="col"></th>
-            <th scope="col" style="text-align:center">
-              Unit
-            </th>
-            <th scope="col" style="text-align:center">
-              GPT-5.5
-            </th>
-            <th scope="col" style="text-align:center">
-              GPT-5.4
-            </th>
-            <th scope="col" style="text-align:center">
-              GPT-5.3-Codex
-            </th>
-            <th scope="col" style="text-align:center">
-              GPT-5.4-mini
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Local Tasks</td>
-            <td style="text-align:center">1 message</td>
-            <td style="text-align:center">\~14 credits</td>
-            <td style="text-align:center">\~7 credits</td>
-            <td style="text-align:center">\~5 credits</td>
-            <td style="text-align:center">\~2 credits</td>
-          </tr>
-          <tr>
-            <td>Cloud Tasks</td>
-            <td style="text-align:center">1 message</td>
-            <td style="text-align:center">Not available</td>
-            <td style="text-align:center">Not available</td>
-            <td style="text-align:center">\~25 credits</td>
-            <td style="text-align:center">Not available</td>
-          </tr>
-          <tr>
-            <td>Code Review</td>
-            <td style="text-align:center">1 pull request</td>
-            <td style="text-align:center">Not available</td>
-            <td style="text-align:center">Not available</td>
-            <td style="text-align:center">\~25 credits</td>
-            <td style="text-align:center">Not available</td>
-          </tr>
-          <tr>
-            <td>Image generation</td>
-            <td style="text-align:center">1 image (1024px &times; 1024px)</td>
-            <td colspan="4" style="text-align:center">
-              \~5-6 credits
-            </td>
-          </tr>
-          <tr>
-            <td>Image generation</td>
-            <td style="text-align:center">1 image (1024px &times; 1536px)</td>
-            <td colspan="4" style="text-align:center">
-              \~7-8 credits
-            </td>
-          </tr>
-        </tbody>
-        <tfoot>
-          <tr>
-            <td colspan="6" style="text-align:center">
-              Fast mode consumes credits at a higher rate for supported models.
-              See <a href="/codex/speed">Speed</a> for rates.
-            </td>
-          </tr>
-          <tr>
-            <td colspan="6" style="text-align:center">
-              These averages also apply to GPT-5.2.
-            </td>
-          </tr>
-        </tfoot>
-      </table>
-    </div>
-  </ContentSwitcher>
+  <table>
+    <thead>
+      <tr>
+        <th scope="col">Credits per 1M tokens</th>
+        <th scope="col" style="text-align:center">
+          Input Tokens
+        </th>
+        <th scope="col" style="text-align:center">
+          Cached input tokens
+        </th>
+        <th scope="col" style="text-align:center">
+          Output Tokens
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>GPT-5.5</td>
+        <td style="text-align:center">125 credits</td>
+        <td style="text-align:center">12.50 credits</td>
+        <td style="text-align:center">750 credits</td>
+      </tr>
+      <tr>
+        <td>GPT-5.4</td>
+        <td style="text-align:center">62.50 credits</td>
+        <td style="text-align:center">6.250 credits</td>
+        <td style="text-align:center">375 credits</td>
+      </tr>
+      <tr>
+        <td>GPT-5.4 mini</td>
+        <td style="text-align:center">18.75 credits</td>
+        <td style="text-align:center">1.875 credits</td>
+        <td style="text-align:center">113 credits</td>
+      </tr>
+      <tr>
+        <td>GPT-5.3-Codex-Spark</td>
+        <td colspan="3" style="text-align:center">
+          research preview
+        </td>
+      </tr>
+      <tr>
+        <td>GPT-Image-2 (image)</td>
+        <td style="text-align:center">200 credits</td>
+        <td style="text-align:center">50 credits</td>
+        <td style="text-align:center">750 credits</td>
+      </tr>
+      <tr>
+        <td>GPT-Image-2 (text)</td>
+        <td style="text-align:center">125 credits</td>
+        <td style="text-align:center">31.25 credits</td>
+        <td style="text-align:center">250 credits</td>
+      </tr>
+    </tbody>
+    <tfoot>
+      <tr>
+        <td colspan="4" style="text-align:center">
+          GPT-5.5 usage averages 5-45 credits per message.
+        </td>
+      </tr>
+      <tr>
+        <td colspan="4" style="text-align:center">
+          Fast mode consumes credits at a higher rate for supported models. See
+          <a href="/codex/speed">Speed</a> for rates.
+        </td>
+      </tr>
+    </tfoot>
+  </table>
 </div>
 
 Speed configurations will increase credit consumption for all models that apply.
@@ -859,5 +717,704 @@ tips to maximize your limits:
   to Codex adds more context to your messages and uses more of your limit.
   Disable MCP servers when you don’t need them.
 - **Switch to a smaller model for routine tasks.** Using GPT-5.4 or
-  GPT-5.4-mini can extend your local-message usage limits, depending on the
+  GPT-5.4 mini can extend your local-message usage limits, depending on the
   model you switch from.
+
+## Feature availability
+
+<CodexPlanFeatureMatrix
+  client:load
+  data={{
+    plans: [
+      { id: "plus", shortLabel: "Plus", label: "ChatGPT Plus" },
+      { id: "pro", shortLabel: "Pro", label: "ChatGPT Pro" },
+      {
+        id: "business",
+        shortLabel: "Business",
+        label: "ChatGPT Business",
+      },
+      {
+        id: "enterprise",
+        shortLabel: "Enterprise",
+        label: "Enterprise / Education",
+      },
+      { id: "api", shortLabel: "API Key", label: "API Key" },
+    ],
+    sections: [
+      {
+        title: "Access and surfaces",
+        features: [
+          {
+            name: "Codex web",
+            href: "/codex/cloud",
+            availability: {
+              plus: "available",
+              pro: "available",
+              business: "available",
+              enterprise: "available",
+              api: "unavailable",
+            },
+          },
+          {
+            name: "Codex app for local tasks",
+            href: "/codex/app",
+            availability: {
+              plus: "available",
+              pro: "available",
+              business: "available",
+              enterprise: "available",
+              api: "available",
+            },
+          },
+          {
+            name: "Codex CLI",
+            href: "/codex/cli",
+            availability: {
+              plus: "available",
+              pro: "available",
+              business: "available",
+              enterprise: "available",
+              api: "available",
+            },
+          },
+          {
+            name: "IDE extension",
+            href: "/codex/ide",
+            availability: {
+              plus: "available",
+              pro: "available",
+              business: "available",
+              enterprise: "available",
+              api: "available",
+            },
+          },
+          {
+            name: "Codex SDK, `codex exec`, and scriptable workflows",
+            shortName: "Codex SDK and scripting",
+            href: "/codex/sdk",
+            availability: {
+              plus: "available",
+              pro: "available",
+              business: "available",
+              enterprise: "available",
+              api: "available",
+            },
+          },
+          {
+            name: "Codex access tokens for trusted automation",
+            shortName: "Automation access tokens",
+            href: "/codex/enterprise/access-tokens",
+            availability: {
+              plus: "unavailable",
+              pro: "unavailable",
+              business: "available",
+              enterprise: "available",
+              api: "unavailable",
+            },
+          },
+        ],
+      },
+      {
+        title: "Models and multimodal",
+        features: [
+          {
+            name: "Fast mode",
+            href: "/codex/speed",
+            availability: {
+              plus: "available",
+              pro: "available",
+              business: "available",
+              enterprise: "available",
+              api: "available",
+            },
+          },
+          {
+            name: "Codex-Spark research preview",
+            href: "/codex/models",
+            availability: {
+              plus: "unavailable",
+              pro: "available",
+              business: "unavailable",
+              enterprise: "unavailable",
+              api: "unavailable",
+            },
+          },
+          {
+            name: "Image generation and editing",
+            href: "/codex/app/features#image-generation",
+            availability: {
+              plus: "available",
+              pro: "available",
+              business: "available",
+              enterprise: "available",
+              api: "available",
+            },
+          },
+          {
+            name: "Voice dictation",
+            href: "/codex/app/features#voice-dictation",
+            availability: {
+              plus: "available",
+              pro: "available",
+              business: "available",
+              enterprise: "available",
+              api: "unavailable",
+            },
+          },
+          {
+            name: "Web search",
+            href: "/codex/app/features#web-search",
+            availability: {
+              plus: "available",
+              pro: "available",
+              business: "available",
+              enterprise: "available",
+              api: "available",
+            },
+          },
+        ],
+      },
+      {
+        title: "Local features",
+        features: [
+          {
+            name: "Local code review with `/review`",
+            shortName: "Local code review",
+            href: "/codex/workflows#do-a-local-code-review",
+            availability: {
+              plus: "available",
+              pro: "available",
+              business: "available",
+              enterprise: "available",
+              api: "available",
+            },
+          },
+          {
+            name: "Auto-review for approval requests",
+            href: "/codex/concepts/sandboxing/auto-review",
+            availability: {
+              plus: "available",
+              pro: "available",
+              business: "available",
+              enterprise: "available",
+              api: "available",
+            },
+          },
+          {
+            name: "Sandboxing and permission controls",
+            href: "/codex/permissions",
+            availability: {
+              plus: "available",
+              pro: "available",
+              business: "available",
+              enterprise: "available",
+              api: "available",
+            },
+          },
+          {
+            name: "Project and standalone app automations",
+            shortName: "App automations",
+            href: "/codex/app/automations",
+            availability: {
+              plus: "available",
+              pro: "available",
+              business: "available",
+              enterprise: "available",
+              api: "available",
+            },
+          },
+          {
+            name: "Automations",
+            href: "/codex/app/automations",
+            availability: {
+              plus: "available",
+              pro: "available",
+              business: "available",
+              enterprise: "available",
+              api: "available",
+            },
+          },
+          {
+            name: "Worktrees and built-in Git tools",
+            shortName: "Built-in Git tools",
+            href: "/codex/app/worktrees",
+            availability: {
+              plus: "available",
+              pro: "available",
+              business: "available",
+              enterprise: "available",
+              api: "available",
+            },
+          },
+          {
+            name: "Local environments and repeatable actions",
+            shortName: "Repeatable actions",
+            href: "/codex/app/local-environments",
+            availability: {
+              plus: "available",
+              pro: "available",
+              business: "available",
+              enterprise: "available",
+              api: "available",
+            },
+          },
+          {
+            name: "Appshots",
+            href: "/codex/appshots",
+            availability: {
+              plus: "available",
+              pro: "available",
+              business: "available",
+              enterprise: "unavailable",
+              api: "available",
+            },
+          },
+        ],
+      },
+      {
+        title: "Browser and remote control",
+        features: [
+          {
+            name: "In-app browser previews and comments",
+            shortName: "In-app browser",
+            href: "/codex/app/browser",
+            availability: {
+              plus: "available",
+              pro: "available",
+              business: "available",
+              enterprise: "available",
+              api: "available",
+            },
+          },
+          {
+            name: "Browser Use automation",
+            href: "/codex/app/browser#browser-use",
+            availability: {
+              plus: "limited",
+              pro: "limited",
+              business: "limited",
+              enterprise: "limited",
+              api: "limited",
+            },
+          },
+          {
+            name: "Chrome extension browser control",
+            shortName: "Chrome browser control",
+            href: "/codex/app/chrome-extension",
+            availability: {
+              plus: "limited",
+              pro: "limited",
+              business: "limited",
+              enterprise: "limited",
+              api: "limited",
+            },
+          },
+          {
+            name: "Computer Use",
+            href: "/codex/app/computer-use",
+            limitedFootnote: "region",
+            availability: {
+              plus: "limited",
+              pro: "limited",
+              business: "limited",
+              enterprise: "limited",
+              api: "limited",
+            },
+          },
+          {
+            name: "Record & Replay (macOS)",
+            shortName: "Record & Replay",
+            href: "/codex/record-and-replay",
+            limitedFootnote: "region",
+            availability: {
+              plus: "limited",
+              pro: "limited",
+              business: "limited",
+              enterprise: "limited",
+              api: "limited",
+            },
+          },
+          {
+            name: "SSH remote connections",
+            shortName: "SSH remote",
+            href: "/codex/remote-connections#connect-to-an-ssh-host",
+            availability: {
+              plus: "available",
+              pro: "available",
+              business: "available",
+              enterprise: "available",
+              api: "available",
+            },
+          },
+          {
+            name: "Mobile remote control",
+            href: "/codex/remote-connections",
+            availability: {
+              plus: "available",
+              pro: "available",
+              business: "available",
+              enterprise: "available",
+              api: "unavailable",
+            },
+          },
+        ],
+      },
+      {
+        title: "Customization and extensions",
+        features: [
+          {
+            name: "Custom instructions with `AGENTS.md`",
+            shortName: "Custom instructions",
+            href: "/codex/guides/agents-md",
+            availability: {
+              plus: "available",
+              pro: "available",
+              business: "available",
+              enterprise: "available",
+              api: "available",
+            },
+          },
+          {
+            name: "Skills",
+            href: "/codex/skills",
+            availability: {
+              plus: "available",
+              pro: "available",
+              business: "available",
+              enterprise: "available",
+              api: "available",
+            },
+          },
+          {
+            name: "Plugins",
+            href: "/codex/plugins",
+            availability: {
+              plus: "available",
+              pro: "available",
+              business: "available",
+              enterprise: "available",
+              api: "limited",
+            },
+            limitedFootnote: "plugins",
+          },
+          {
+            name: "Plugin sharing",
+            href: "/codex/plugins/build#share-a-local-plugin-with-your-workspace",
+            availability: {
+              plus: "available",
+              pro: "available",
+              business: "available",
+              enterprise: "available",
+              api: "unavailable",
+            },
+          },
+          {
+            name: "App connectors",
+            href: "/codex/plugins",
+            availability: {
+              plus: "available",
+              pro: "available",
+              business: "available",
+              enterprise: "available",
+              api: "unavailable",
+            },
+          },
+          {
+            name: "MCP",
+            href: "/codex/mcp",
+            availability: {
+              plus: "available",
+              pro: "available",
+              business: "available",
+              enterprise: "available",
+              api: "available",
+            },
+          },
+          {
+            name: "Subagents and custom agents",
+            shortName: "Subagents",
+            href: "/codex/subagents",
+            availability: {
+              plus: "available",
+              pro: "available",
+              business: "available",
+              enterprise: "available",
+              api: "available",
+            },
+          },
+          {
+            name: "Memories",
+            href: "/codex/memories",
+            availability: {
+              plus: "limited",
+              pro: "limited",
+              business: "limited",
+              enterprise: "limited",
+              api: "limited",
+            },
+          },
+          {
+            name: "Chronicle",
+            href: "/codex/memories/chronicle",
+            availability: {
+              plus: "unavailable",
+              pro: "limited",
+              business: "unavailable",
+              enterprise: "unavailable",
+              api: "unavailable",
+            },
+          },
+        ],
+      },
+      {
+        title: "Cloud and integrations",
+        features: [
+          {
+            name: "Codex cloud tasks",
+            shortName: "Cloud tasks",
+            href: "/codex/cloud",
+            availability: {
+              plus: "available",
+              pro: "available",
+              business: "available",
+              enterprise: "available",
+              api: "unavailable",
+            },
+          },
+          {
+            name: "Cloud environments and setup scripts",
+            shortName: "Cloud environments",
+            href: "/codex/cloud/environments",
+            availability: {
+              plus: "available",
+              pro: "available",
+              business: "available",
+              enterprise: "available",
+              api: "unavailable",
+            },
+          },
+          {
+            name: "Cloud agent internet access controls",
+            shortName: "Internet controls",
+            href: "/codex/cloud/internet-access",
+            availability: {
+              plus: "available",
+              pro: "available",
+              business: "available",
+              enterprise: "available",
+              api: "unavailable",
+            },
+          },
+          {
+            name: "Sites",
+            href: "/codex/sites",
+            availability: {
+              plus: "unavailable",
+              pro: "unavailable",
+              business: "available",
+              enterprise: "available",
+              api: "unavailable",
+            },
+          },
+          {
+            name: "GitHub issue and PR delegation with `@codex`",
+            shortName: "GitHub delegation",
+            href: "/codex/integrations/github#give-codex-other-tasks",
+            availability: {
+              plus: "available",
+              pro: "available",
+              business: "available",
+              enterprise: "available",
+              api: "unavailable",
+            },
+          },
+          {
+            name: "GitHub code review and automatic PR reviews",
+            shortName: "GitHub PR reviews",
+            href: "/codex/integrations/github",
+            availability: {
+              plus: "available",
+              pro: "available",
+              business: "available",
+              enterprise: "available",
+              api: "unavailable",
+            },
+          },
+          {
+            name: "Slack cloud integration",
+            shortName: "Slack integration",
+            href: "/codex/integrations/slack",
+            availability: {
+              plus: "available",
+              pro: "available",
+              business: "available",
+              enterprise: "available",
+              api: "unavailable",
+            },
+          },
+          {
+            name: "Linear cloud integration",
+            shortName: "Linear integration",
+            href: "/codex/integrations/linear",
+            availability: {
+              plus: "available",
+              pro: "available",
+              business: "available",
+              enterprise: "available",
+              api: "unavailable",
+            },
+          },
+        ],
+      },
+      {
+        title: "Admin, security, and analytics",
+        features: [
+          {
+            name: "SAML SSO, MFA, and workspace user management",
+            shortName: "Workspace management",
+            href: "/codex/enterprise/admin-setup",
+            availability: {
+              plus: "unavailable",
+              pro: "unavailable",
+              business: "available",
+              enterprise: "available",
+              api: "unavailable",
+            },
+          },
+          {
+            name: "`requirements.toml` managed config",
+            shortName: "`requirements.toml` config",
+            href: "/codex/enterprise/managed-configuration",
+            availability: {
+              plus: "available",
+              pro: "available",
+              business: "available",
+              enterprise: "available",
+              api: "available",
+            },
+          },
+          {
+            name: "Cloud-managed config policies",
+            shortName: "Cloud-managed policies",
+            href: "/codex/enterprise/managed-configuration#cloud-managed-requirements",
+            availability: {
+              plus: "unavailable",
+              pro: "unavailable",
+              business: "available",
+              enterprise: "available",
+              api: "unavailable",
+            },
+          },
+          {
+            name: "Codex RBAC and custom roles",
+            shortName: "RBAC and roles",
+            href: "/codex/enterprise/admin-setup#step-2-set-up-custom-roles-rbac",
+            availability: {
+              plus: "unavailable",
+              pro: "unavailable",
+              business: "unavailable",
+              enterprise: "available",
+              api: "unavailable",
+            },
+          },
+          {
+            name: "SCIM, EKM, and domain verification",
+            shortName: "SCIM, EKM, and domains",
+            href: "/codex/enterprise/admin-setup#enterprise-grade-security-and-privacy",
+            availability: {
+              plus: "unavailable",
+              pro: "unavailable",
+              business: "unavailable",
+              enterprise: "available",
+              api: "unavailable",
+            },
+          },
+          {
+            name: "Enterprise retention and residency controls",
+            shortName: "Retention and residency",
+            href: "/codex/enterprise/admin-setup#enterprise-grade-security-and-privacy",
+            availability: {
+              plus: "unavailable",
+              pro: "unavailable",
+              business: "unavailable",
+              enterprise: "available",
+              api: "unavailable",
+            },
+          },
+          {
+            name: "No training on API or business data by default",
+            shortName: "No default training",
+            href: "https://openai.com/business-data/",
+            availability: {
+              plus: "unavailable",
+              pro: "unavailable",
+              business: "available",
+              enterprise: "available",
+              api: "available",
+            },
+          },
+          {
+            name: "Analytics dashboard",
+            href: "/codex/enterprise/governance#analytics-dashboard",
+            availability: {
+              plus: "unavailable",
+              pro: "unavailable",
+              business: "unavailable",
+              enterprise: "available",
+              api: "unavailable",
+            },
+          },
+          {
+            name: "Analytics API",
+            href: "/codex/enterprise/governance#analytics-api",
+            availability: {
+              plus: "unavailable",
+              pro: "unavailable",
+              business: "unavailable",
+              enterprise: "available",
+              api: "unavailable",
+            },
+          },
+          {
+            name: "Compliance API and audit logs",
+            shortName: "Compliance and audit logs",
+            href: "/codex/enterprise/governance#compliance-api",
+            availability: {
+              plus: "unavailable",
+              pro: "unavailable",
+              business: "unavailable",
+              enterprise: "available",
+              api: "unavailable",
+            },
+          },
+          {
+            name: "Codex Security for connected GitHub repositories",
+            shortName: "Codex Security",
+            href: "/codex/security",
+            availability: {
+              plus: "unavailable",
+              pro: "unavailable",
+              business: "unavailable",
+              enterprise: "available",
+              api: "unavailable",
+            },
+          },
+        ],
+      },
+    ],
+  }}
+/>
+
+<div
+  id="codex-plan-region-limits"
+  className="not-prose mt-3 text-sm text-secondary"
+>
+  <sup>*</sup> Feature is currently limited to only specific regions. Check the
+  individual feature documentation to learn more about geo restrictions.
+</div>
+<div
+  id="codex-plan-plugin-limits"
+  className="not-prose mt-1 text-sm text-secondary"
+>
+  <sup>†</sup> Some first party plugins are not available.
+</div>

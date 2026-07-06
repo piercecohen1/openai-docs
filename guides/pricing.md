@@ -1,15 +1,5 @@
 # Pricing
 
-import {
-  GroupedPricingTable,
-  PricingTable,
-  pricingHtml,
-  pricingTooltipHeading,
-  TextTokenPricingTables,
-  withDataSharing,
-  withLegacy,
-} from "./pricing.jsx";
-
 <style
   is:global
   set:html={`
@@ -52,6 +42,15 @@ import {
       .pricing-switcher-layout .content-switcher-panes {
         grid-column: 1 / -1;
         grid-row: 2;
+      }
+
+      .pricing-switcher-layout-with-notice .pricing-switcher-notice {
+        grid-column: 1 / -1;
+        grid-row: 2;
+      }
+
+      .pricing-switcher-layout-with-notice .content-switcher-panes {
+        grid-row: 3;
       }
     }
 
@@ -117,8 +116,7 @@ import {
     }
   `}
 />
-
-<div className="pricing-switcher-layout">
+<div id="latest-models" className="pricing-switcher-layout">
   <div className="pricing-switcher-header pricing-section-heading">
     
 
@@ -139,7 +137,7 @@ Flagship models
         tier="standard"
         latestSectionLabel={null}
         allModelsFootnote={pricingHtml(
-          'Regional processing (data residency) endpoints are charged a 10% uplift for models released on or after March 5, 2026, that are eligible for data residency. See our <a href="/api/docs/guides/your-data">Your data</a> guide for supported regions and processing details.'
+          'Regional processing (data residency) endpoints are charged a 10% uplift for models released on or after March 5, 2026, that are eligible for data residency. See our <a href="/api/docs/guides/your-data">Your data</a> guide for supported regions and processing details. <a href="/api/docs/guides/amazon-bedrock">OpenAI models in Amazon Bedrock</a> are billed through AWS and may differ from direct OpenAI pricing.'
         )}
         rows={[
           ["gpt-5.5 (<272K context length)", 5, 0.5, 30],
@@ -300,7 +298,6 @@ Flagship models
 
 
 </div>
-
 <div className="pricing-switcher-layout">
   <div className="pricing-switcher-header pricing-section-heading">
     
@@ -310,7 +307,6 @@ Multimodal models
 
   </div>
 </div>
-
 <div className="pricing-subsection pricing-section-heading pricing-multimodal-subsection">
   
 
@@ -352,7 +348,6 @@ Image generation models
 
 
 </div>
-
 <div className="pricing-subsection pricing-switcher-layout pricing-multimodal-subsection">
   <div className="pricing-switcher-header pricing-section-heading">
     
@@ -376,7 +371,6 @@ Video generation models
 
 
 </div>
-
 <div className="pricing-subsection pricing-section-heading pricing-multimodal-subsection">
   
 
@@ -393,6 +387,12 @@ Tools
 
 </div>
 <small>+ Search content tokens billed at model rates.</small>"
+          ),
+        ],
+        [
+          "Image Web search (all models)",
+          pricingHtml(
+            "$10.00 / 1k calls<br /><small>+ Search content tokens billed at model rates.</small>"
           ),
         ],
         [
@@ -418,7 +418,7 @@ Tools
           pricingHtml(
             '<span id="container-usage-pricing"></span>Hosted Shell and Code Interpreter'
           ),
-          "1 GB $0.03, 4 GB $0.12, 16 GB $0.48, 64 GB $1.92 per 20-minute session per container",
+          "1 GB $0.03, 4 GB $0.12, 16 GB $0.48, 64 GB $1.92 per 20-minute session per container.",
         ],
       ],
     },
@@ -443,9 +443,8 @@ Tools
 <div
   className="pricing-section-meta"
   style={{ marginTop: "16px" }}
-  set:html={`Tokens used for built-in tools are billed at the chosen model's per-token rates. GB refers to binary gigabytes (also known as gibibytes), where 1 GB is 2^30 bytes. Web search content tokens are tokens retrieved from the search index and fed to the model alongside your prompt to generate an answer. For <code>gpt-4o-mini</code> and <code>gpt-4.1-mini</code> with the non-preview web search tool, search content tokens are billed as a fixed block of 8,000 input tokens per call. File search tool call pricing applies to the Responses API only. Container pricing includes <a href="/api/docs/guides/tools-shell#hosted-shell-quickstart">Hosted Shell</a> and <a href="/api/docs/guides/tools-code-interpreter">Code Interpreter</a>. Eligible container sessions are billed at the full 20-minute session rate. Responses API, Chat Completions API, Realtime API, Batch API, and Assistants API are not priced separately. Tokens are billed at the chosen model's input and output rates.`}
+  set:html={`Tokens used for built-in tools are billed at the chosen model's per-token rates. GB refers to binary gigabytes (also known as gibibytes), where 1 GB is 2^30 bytes. Web search content tokens are tokens retrieved from the search index and fed to the model alongside your prompt to generate an answer. For <code>gpt-4o-mini</code> and <code>gpt-4.1-mini</code> with the non-preview web search tool, search content tokens are billed as a fixed block of 8,000 input tokens per call. File search tool call pricing applies to the Responses API only. Container pricing includes <a href="/api/docs/guides/tools-shell#hosted-shell-quickstart">Hosted Shell</a> and <a href="/api/docs/guides/tools-code-interpreter">Code Interpreter</a>. Eligible container sessions will be billed by the minute, with a 5-minute minimum per session. Responses API, Chat Completions API, Realtime API, Batch API, and Assistants API are not priced separately. Tokens are billed at the chosen model's input and output rates.`}
 />
-
 <div className="pricing-subsection pricing-switcher-layout">
   <div className="pricing-switcher-header pricing-section-heading">
     
@@ -487,10 +486,7 @@ Specialized models
           },
           {
             model: "Moderation",
-            rows: [
-              ["omni-moderation-latest", "Free", "-", "-"],
-              ["text-moderation-latest", "Free", "-", "-"],
-            ],
+            rows: [["omni-moderation-latest", "Free", "-", "-"]],
           },
         ]}
       />
@@ -506,8 +502,7 @@ Specialized models
 
 
 </div>
-
-<div className="pricing-subsection pricing-switcher-layout">
+<div className="pricing-subsection pricing-switcher-layout pricing-switcher-layout-with-notice">
   <div className="pricing-switcher-header pricing-section-heading">
     
 
@@ -515,6 +510,8 @@ Finetuning
 
 
     <small className="pricing-switcher-meta">Prices per 1M tokens.</small>
+  </div>
+  <div className="pricing-switcher-notice">
     OpenAI is winding down the fine-tuning platform. The platform is no longer
       accessible to new users, but existing users of the fine-tuning platform
       will be able to create training jobs for the coming months.

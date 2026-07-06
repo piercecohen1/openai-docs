@@ -156,7 +156,7 @@ Responses are designed to be used alone, but you can also use them with prompt a
   "incomplete_details": null,
   "instructions": null,
   "metadata": {},
-  "model": "gpt-4.1-2025-04-14",
+  "model": "gpt-5.5",
   "object": "response",
   "output": [
     {
@@ -230,6 +230,11 @@ Follow the migration steps below to move from the Assistants API to the Response
 
 This will create a prompt object out of each existing assistant object.
 
+Reusable prompt objects are also being deprecated. If you use this migration
+  path, review the [prompts deprecation
+  timeline](https://developers.openai.com/api/docs/deprecations#2026-06-03-reusable-prompts) before adopting
+  prompt objects in a long-lived integration.
+
 ### 2. Move new user chats over to conversations and responses
 
 We will not provide an automated tool for migrating Threads to Conversations. Instead, we recommend migrating new user threads onto conversations and backfilling old ones as necessary.
@@ -268,6 +273,7 @@ for m in messages:
 conversation = openai.conversations.create(items=items)
 ```
 
+
 ## Comparing full examples
 
 Here’s a few simple examples of integrations using both the Assistants API and the Responses API so you can see how they compare.
@@ -283,24 +289,24 @@ thread = openai.threads.create()
 
     @app.post("/messages")
     async def message(message: Message):
-    	openai.beta.threads.messages.create(
-    		role="user",
-    		content=message.content
-    	)
+        openai.beta.threads.messages.create(
+            role="user",
+            content=message.content
+        )
 
-    	run = openai.beta.threads.runs.create(
-    		assistant_id=os.getenv("ASSISTANT_ID"),
-    		thread_id=thread.id
-    	)
-    	while run.status in ("queued", "in_progress"):
-        await asyncio.sleep(1)
-        run = openai.beta.threads.runs.retrieve(thread_id=thread_id, run_id=run.id)
+        run = openai.beta.threads.runs.create(
+            assistant_id=os.getenv("ASSISTANT_ID"),
+            thread_id=thread.id
+        )
+        while run.status in ("queued", "in_progress"):
+            await asyncio.sleep(1)
+            run = openai.beta.threads.runs.retrieve(thread_id=thread_id, run_id=run.id)
 
-    	messages = openai.beta.threads.messages.list(
-    		order="desc", limit=1, thread_id=thread.id
-    	)
+        messages = openai.beta.threads.messages.list(
+            order="desc", limit=1, thread_id=thread.id
+        )
 
-    	return { "content": messages[-1].content }
+        return { "content": messages[-1].content }
 ```
 
 
@@ -312,12 +318,12 @@ conversation = openai.conversations.create()
 
     @app.post("/messages")
     async def message(message: Message):
-    	response = openai.responses.create(
-    		prompt={ "id": os.getenv("PROMPT_ID") },
-    		input=[{ "role": "user", "content": message.content }]
-    	)
+        response = openai.responses.create(
+            prompt={ "id": os.getenv("PROMPT_ID") },
+            input=[{ "role": "user", "content": message.content }]
+        )
 
-    	return { "content": response.output_text }'
+        return { "content": response.output_text }
 ```
 
 

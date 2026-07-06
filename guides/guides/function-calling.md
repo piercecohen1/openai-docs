@@ -61,6 +61,8 @@ Tool calling is a multi-step conversation between your application and a model v
 
 ![Function Calling Diagram Steps](https://cdn.openai.com/API/docs/images/function-calling-diagram-steps.png)
 
+With Responses, your application can continue this flow for as many tool calls as the task requires. If you want a framework that packages recurring orchestration around that loop, see [how the Responses API compares with the Agents SDK](https://developers.openai.com/api/docs/guides/agents#agents-sdk-vs-responses-api).
+
 ## Function tool example
 
 Let's look at an end-to-end tool calling flow for a `get_horoscope` function that gets a daily horoscope for an astrological sign.
@@ -275,13 +277,14 @@ Under the hood, strict mode works by leveraging our [structured outputs](https:/
 You can denote optional fields by adding `null` as a `type` option (see example below).
 
 If you send `strict: true` and your schema does not meet the requirements above,
-the request will be rejected with details about the missing constraints. If you
-omit `strict`, the default depends on the API: Responses requests will
-normalize your schema into strict mode (for example, by setting
-`additionalProperties: false` and marking all fields as required), which can
-make previously optional fields mandatory, while Chat Completions requests
-remain non-strict by default. To opt out of strict mode in Responses and keep
-non-strict, best-effort function calling, explicitly set `strict: false`.
+the request will be rejected with details about the missing constraints. If
+you omit `strict`, the default depends on the API: Responses requests will
+attempt to normalize your schema into strict mode when possible, and will fall
+back to non-strict, best-effort function calling if the schema cannot be made
+compatible with strict mode. When fallback happens, the response tool will show
+`strict: false`. Chat Completions requests remain non-strict by default. To opt
+out of strict mode in Responses and keep non-strict, best-effort function
+calling, explicitly set `strict: false`.
 
 
 

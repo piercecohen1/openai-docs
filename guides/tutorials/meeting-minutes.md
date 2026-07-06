@@ -1,6 +1,6 @@
 # Meeting minutes
 
-In this tutorial, we'll harness the power of OpenAI's Whisper and GPT-4 models to develop an automated meeting minutes generator. The application transcribes audio from a meeting, provides a summary of the discussion, extracts key points and action items, and performs a sentiment analysis.
+In this tutorial, we'll harness the power of OpenAI's Whisper and GPT models to develop an automated meeting minutes generator. The application transcribes audio from a meeting, provides a summary of the discussion, extracts key points and action items, and performs a sentiment analysis.
 
 ## Getting started
 
@@ -69,13 +69,14 @@ def transcribe_audio(audio_file_path):
     return transcription['text']
 ```
 
+
 In this function, `audio_file_path` is the path to the audio file you want to transcribe. The function opens this file and passes it to the Whisper ASR model (`whisper-1`) for transcription. The result is returned as raw text. It’s important to note that the `openai.Audio.transcribe` function requires the actual audio file to be passed in, not just the path to the file locally or on a remote server. This means that if you are running this code on a server where you might not also be storing your audio files, you will need to have a preprocessing step that first downloads the audio files onto that device.
 
-## Summarizing and analyzing the transcript with GPT-4
+## Summarizing and analyzing the transcript with a GPT model
 
-Having obtained the transcript, we now pass it to GPT-4 via the [Chat Completions API](https://developers.openai.com/api/docs/api-reference/chat/create). GPT-4 is OpenAI's state-of-the-art large language model which we'll use to generate a summary, extract key points, action items, and perform sentiment analysis.
+Having obtained the transcript, we now pass it to a GPT model via the [Chat Completions API](https://developers.openai.com/api/docs/api-reference/chat/create). The snippets below use a tested model to generate a summary, extract key points, action items, and perform sentiment analysis. For new projects, start with [`gpt-5.5`](https://developers.openai.com/api/docs/models/gpt-5.5).
 
-This tutorial uses distinct functions for each task we want GPT-4 to perform. This is not the most efficient way to do this task - you can put these instructions into one function, however, splitting them up can lead to higher quality summarization.
+This tutorial uses distinct functions for each task we want the model to perform. This is not the most efficient way to do this task - you can put these instructions into one function, however, splitting them up can lead to higher quality summarization.
 
 To split the tasks up, we define the `meeting_minutes` function which will serve as the main function of this application:
 
@@ -93,6 +94,7 @@ def meeting_minutes(transcription):
     }
 ```
 
+
 In this function, `transcription` is the text we obtained from Whisper. The transcription can be passed to the four other functions, each designed to perform a specific task: `abstract_summary_extraction` generates a summary of the meeting, `key_points_extraction` extracts the main points, `action_item_extraction` identifies the action items, and `sentiment_analysis performs` a sentiment analysis. If there are other capabilities you want, you can add those in as well using the same framework shown above.
 
 Here is how each of these functions works:
@@ -104,8 +106,7 @@ The `abstract_summary_extraction` function takes the transcription and summarize
 ```python
 def abstract_summary_extraction(transcription):
     response = client.chat.completions.create(
-        model="gpt-4",
-        temperature=0,
+        model="gpt-5.5",
         messages=[
             {
                 "role": "system",
@@ -120,16 +121,15 @@ def abstract_summary_extraction(transcription):
     return completion.choices[0].message.content
 ```
 
+
 ### Key points extraction
 
 The `key_points_extraction` function identifies and lists the main points discussed in the meeting. These points should represent the most important ideas, findings, or topics crucial to the essence of the discussion. Again, the main mechanism for controlling the way these points are identified is the system message. You might want to give some additional context here around the way your project or company runs such as “We are a company that sells race cars to consumers. We do XYZ with the goal of XYZ”. This additional context could dramatically improve the models ability to extract information that is relevant.
 
 ```python
-
 def key_points_extraction(transcription):
     response = client.chat.completions.create(
-        model="gpt-4",
-        temperature=0,
+        model="gpt-5.5",
         messages=[
             {
                 "role": "system",
@@ -144,16 +144,15 @@ def key_points_extraction(transcription):
     return completion.choices[0].message.content
 ```
 
+
 ### Action item extraction
 
 The `action_item_extraction` function identifies tasks, assignments, or actions agreed upon or mentioned during the meeting. These could be tasks assigned to specific individuals or general actions the group decided to take. While not covered in this tutorial, the Chat Completions API provides a [function calling capability](https://developers.openai.com/api/docs/guides/function-calling) which would allow you to build in the ability to automatically create tasks in your task management software and assign it to the relevant person.
 
 ```python
-
 def action_item_extraction(transcription):
     response = client.chat.completions.create(
-        model="gpt-4",
-        temperature=0,
+        model="gpt-5.5",
         messages=[
             {
                 "role": "system",
@@ -168,15 +167,15 @@ def action_item_extraction(transcription):
     return completion.choices[0].message.content
 ```
 
+
 ### Sentiment analysis
 
-The `sentiment_analysis` function analyzes the overall sentiment of the discussion. It considers the tone, the emotions conveyed by the language used, and the context in which words and phrases are used. For tasks which are less complicated, it may also be worthwhile to try out `gpt-3.5-turbo` in addition to `gpt-4` to see if you can get a similar level of performance. It might also be useful to experiment with taking the results of the `sentiment_analysis` function and passing it to the other functions to see how having the sentiment of the conversation impacts the other attributes.
+The `sentiment_analysis` function analyzes the overall sentiment of the discussion. It considers the tone, the emotions conveyed by the language used, and the context in which words and phrases are used. For less complicated tasks, it may also be worthwhile to try [`gpt-5.4-mini`](https://developers.openai.com/api/docs/models/gpt-5.4-mini) to see if you can get a similar level of performance at lower cost and latency. It might also be useful to experiment with taking the results of the `sentiment_analysis` function and passing it to the other functions to see how having the sentiment of the conversation impacts the other attributes.
 
 ```python
 def sentiment_analysis(transcription):
     response = client.chat.completions.create(
-        model="gpt-4",
-        temperature=0,
+        model="gpt-5.5",
         messages=[
             {
                 "role": "system",
@@ -190,6 +189,7 @@ def sentiment_analysis(transcription):
     )
     return completion.choices[0].message.content
 ```
+
 
 ## Exporting meeting minutes
 
@@ -225,6 +225,7 @@ def save_as_docx(minutes, filename):
     doc.save(filename)
 ```
 
+
 In this function, minutes is a dictionary containing the abstract summary, key points, action items, and sentiment analysis from the meeting. Filename is the name of the Word document file to be created. The function creates a new Word document, adds headings and content for each part of the minutes, and then saves the document to the current working directory.
 
 Finally, you can put it all together and generate the meeting minutes from an audio file:
@@ -237,6 +238,7 @@ print(minutes)
 
 save_as_docx(minutes, 'meeting_minutes.docx')
 ```
+
 
 This code will transcribe the audio file `Earningscall.wav`, generates the meeting minutes, prints them, and then saves them into a Word document called `meeting_minutes.docx`.
 
