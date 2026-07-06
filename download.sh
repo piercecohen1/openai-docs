@@ -156,8 +156,12 @@ for url_path in $LEAF_PATHS; do
   local_dir=$(dir_for_path "$url_path")
   base_url="$ROOT_URL/$url_path"
 
-  # Extract label from section's llms.txt header (first "# Title" line)
-  label=$(curl -sL "$base_url/llms.txt" | head -1 | sed 's/^# //')
+  # Extract label from section's llms.txt header (first "# Title" line).
+  # Capture the full response before taking the first line: piping curl
+  # straight into head can kill curl with a broken pipe (exit 23), which
+  # aborts the script under pipefail.
+  section_index=$(curl -sL "$base_url/llms.txt" || true)
+  label=$(printf '%s\n' "$section_index" | head -1 | sed 's/^# //')
   [[ -z "$label" ]] && label="$local_dir"
 
   # Build regex for .md URLs under this path
