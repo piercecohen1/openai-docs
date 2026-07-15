@@ -4,7 +4,12 @@
 
 Curated index: https://developers.openai.com/apps-sdk/llms.txt
 
-# App submission guidelines
+# App guidelines
+
+Apps are now submitted and published as plugins. These guidelines cover the
+  app and MCP server portion of a plugin. For the plugin submission flow,
+  including skills, portal steps, review, approval, and publishing, see
+  <a href="/codex/submit-plugins">Submit plugins</a>.
 
 ## Overview
 
@@ -17,7 +22,7 @@ Before getting into specifics, we recommend first familiarizing yourself with tw
 
 You should also read our blog post on [what makes a great ChatGPT app](https://developers.openai.com/blog/what-makes-a-great-chatgpt-app/) to get a sense of the overall approach to building with the Apps SDK.
 
-The guidelines below outline the minimum standard developers must meet for their app to be considered for publication in ChatGPT, and for their app to remain published and available to ChatGPT users. Apps that demonstrate strong real-world utility and high user satisfaction may be eligible for enhanced distribution opportunities—such as directory placement or proactive suggestions.
+The guidelines below outline the minimum standard an app must meet to be included in a published plugin and remain available to ChatGPT users. Apps that demonstrate strong real-world utility and high user satisfaction may make their plugins eligible for enhanced distribution opportunities—such as directory placement or proactive suggestions.
 
 ## App fundamentals
 
@@ -31,11 +36,11 @@ Only use intellectual property that you own or have permission to use. Do not en
 
 Apps must behave predictably and reliably. Results should be accurate and relevant to user input. Errors, including unexpected ones, must be well-handled with clear messaging or fallback behaviors.
 
-Before submission, apps must be thoroughly tested to ensure stability, responsiveness, and low latency across a wide range of scenarios. Apps should not crash, hang, or show inconsistent behavior. Apps should be complete and any app submitted as a trial or demo will not be accepted.
+Before submitting a plugin, thoroughly test every app it contains to ensure stability, responsiveness, and low latency across a wide range of scenarios. Apps should not crash, hang, or show inconsistent behavior. Apps should be complete; trial or demo apps will not be accepted.
 
-### App name, description, and screenshots
+### App name, description, and optional screenshots
 
-App names and descriptions must be clear, accurate, and easy to understand. Avoid overly generic names—especially single-word dictionary terms that aren’t clearly tied to your brand—as they may be rejected. Screenshots must accurately represent your app's functionality and comply with the required dimensions.
+App names and descriptions must be clear, accurate, and easy to understand. Avoid overly generic names—especially single-word dictionary terms that aren’t clearly tied to your brand—as they may be rejected. Screenshots are optional for apps with a UI. Don't submit screenshots for apps without a UI. If you include screenshots, they must accurately represent your app's functionality and comply with the required dimensions.
 
 ### Tools
 
@@ -65,7 +70,7 @@ Each tool must include a description that explains its purpose clearly and accur
 - You should label a tool with the `readOnlyHint` annotation if it only retrieves or lists data, but does not change anything outside of ChatGPT.
 - Write or destructive tools (e.g., creating, updating, deleting, posting, sending) must be clearly marked using the `readOnlyHint` and `destructiveHint`.
 - Tools that interact with external systems, accounts, public platforms, or create publicly-visible content must be explicitly labeled using the `openWorldHint` annotation.
-- Incorrect or missing action labels are a common cause of rejection. Double-check to ensure that the `readOnlyHint`, `openWorldHint`, and `destructiveHint` annotations are correctly set and provide a detailed justification for each at submission time.
+- Incorrect or missing action labels are a common cause of rejection. Double-check that the `readOnlyHint`, `openWorldHint`, and `destructiveHint` annotations are correctly set, and provide a detailed justification for each when submitting the plugin.
 
 #### Minimal and purpose-driven inputs
 
@@ -91,7 +96,7 @@ If your app requires authentication, the flow must be transparent and explicit. 
 
 #### Test credentials
 
-When submitting an authenticated app for review, you must provide a login and password for a fully-featured demo account that includes sample data. Apps requiring any additional steps for login—such as requiring new account sign-up or 2FA through an inaccessible account—will be rejected.
+When submitting a plugin that contains an authenticated app, you must provide a login and password for a fully featured demo account that includes sample data. Apps requiring any additional steps for login—such as requiring new account sign-up or 2FA through an inaccessible account—will be rejected.
 
 ## Commerce and monetization
 
@@ -151,7 +156,7 @@ In addition, apps may not be used to sell, promote, facilitate, or meaningfully 
 
 Apps should use external checkout, directing users to complete purchases on your own domain.
 
-[Instant Checkout](https://developers.openai.com/commerce/guides/get-started#instant-checkout), which is currently in beta, is currently available only to select marketplace partners and may expand to additional marketplaces and retailers over time.
+Instant Checkout, which is currently in beta, is currently available only to select marketplace partners and may expand to additional marketplaces and retailers over time.
 
 Until then, standard external checkout is the required approach. No other third-party checkout solutions may be embedded or hosted within the app experience. To learn more, see our [docs on Agentic Commerce](https://developers.openai.com/commerce/).
 
@@ -199,7 +204,7 @@ without this pattern. If you choose to use `frameDomains`, be aware that:
 
 ### Privacy policy
 
-Submissions must include a clear, published privacy policy explaining - at minimum - the categories of personal data collected, the purposes of use, the categories of recipients, data retention timelines, and any controls offered to your users. Follow this policy at all times. Users can review your privacy policy before installing your app.
+Plugin submissions must include a clear, published privacy policy explaining, at minimum, the categories of personal data collected, the purposes of use, the categories of recipients, data retention timelines, and any controls offered to your users. Follow this policy at all times. Users can review your privacy policy before installing the plugin.
 
 ### Data collection
 
@@ -225,19 +230,11 @@ Submissions must include a clear, published privacy policy explaining - at minim
 
 ### Verification
 
-All submissions must come from verified individuals or organizations. Inside the [OpenAI Platform Dashboard general settings](https://platform.openai.com/settings/organization/general), we provide a way to confirm your identity and affiliation with any business you wish to publish on behalf of. Misrepresentation, hidden behavior, or attempts to game the system may result in removal from the program.
+All plugin submissions must come from verified individuals or organizations. Inside the [OpenAI Platform Dashboard general settings](https://platform.openai.com/settings/organization/general), we provide a way to confirm your identity and affiliation with any business you wish to publish on behalf of. Misrepresentation, hidden behavior, or attempts to game the system may result in removal from the program.
 
 ### Support contact details
 
 You must provide customer support contact details where end users can reach you for help. Keep this information accurate and up to date.
-
-## Submitting your app
-
-Users with the Owner role or the `api.apps.write` permission can create app drafts and submit them from the [OpenAI Platform Dashboard](http://platform.openai.com/apps-manage). Users with `api.apps.read` can view app drafts and review status in the Dashboard.
-
-While you can publish multiple, unique apps within a single Platform organization, each may only have one version in review at a time. You can review the status of the review within the Dashboard and will receive an email notification informing you of any status changes.
-
-To learn more about the app submission process, refer to our [dedicated guide](https://developers.openai.com/apps-sdk/deploy/submission).
 
 ---
 
@@ -321,7 +318,7 @@ That single header lets ChatGPT discover the metadata URL even if it has not see
 
 - Fields that must be correct:
   - `authorization_endpoint`, `token_endpoint`: the URLs ChatGPT needs to run the OAuth authorization-code + PKCE flow end to end.
-  - `client_id_metadata_document_supported`: set to `true` when you want ChatGPT to use CIMD for client registration. ChatGPT prioritizes CIMD when it is available, but the connector creator can choose DCR when both CIMD and DCR are available.
+  - `client_id_metadata_document_supported`: set to `true` when you want ChatGPT to use CIMD for client registration. ChatGPT prioritizes CIMD when it is available, but the app creator can choose DCR when both CIMD and DCR are available.
   - `token_endpoint_auth_methods_supported`: include the token endpoint authentication methods your authorization server accepts. This applies to CIMD, DCR, and predefined OAuth clients. For CIMD, ChatGPT supports `none` for public-client token exchange and `private_key_jwt` for signed client assertion token exchange. Other OAuth clients commonly use `none`, `client_secret_post`, or `client_secret_basic`.
   - `registration_endpoint`: include this when you support dynamic client registration (DCR), which lets ChatGPT create and reuse a dedicated `client_id` for the connector instance.
   - `code_challenge_methods_supported`: include `S256` if your authorization server advertises PKCE support.
@@ -381,16 +378,26 @@ When using CIMD, there is no client registration step. The following screen show
 
 ### Client registration
 
-Use [Client ID Metadata Documents (CIMD)](https://modelcontextprotocol.io/specification/2025-11-25/basic/authorization#client-id-metadata-documents) as the preferred client registration method when your authorization server supports it and the connector creator chooses it. With CIMD, ChatGPT uses an HTTPS metadata document URL as its `client_id`. Your authorization server fetches that document, validates the published client metadata and redirect URIs, and treats the URL as ChatGPT's stable client identity.
+Use [Client ID Metadata Documents (CIMD)](https://modelcontextprotocol.io/specification/2025-11-25/basic/authorization#client-id-metadata-documents) as the preferred client registration method when your authorization server supports it and the app creator chooses it. With CIMD, ChatGPT uses an HTTPS metadata document URL as its `client_id`. Your authorization server fetches that document, validates the published client metadata and redirect URIs, and treats the URL as ChatGPT's stable client identity.
 
 If you support CIMD, set `client_id_metadata_document_supported: true` in your authorization server metadata. This lets ChatGPT use one stable client identity for connectors that choose CIMD, which your authorization server can use for redirect URI allowlists, rate limits, and other policies.
 
-ChatGPT supports two token endpoint authentication methods for CIMD-backed clients:
+ChatGPT's production CIMD document advertises both supported client authentication methods using the [OpenID Connect RP Metadata Choices](https://openid.net/specs/openid-connect-rp-metadata-choices-1_0-final.html) client metadata field:
+
+```json
+{
+  "token_endpoint_auth_methods_supported": ["none", "private_key_jwt"]
+}
+```
+
+The same field name has different perspectives in the two documents: in authorization server metadata, it lists the methods your token endpoint accepts; in ChatGPT's CIMD document, it lists the methods ChatGPT can use. The `client_id` URL is stable and does not use query parameters to select a method-specific document. At runtime, ChatGPT compares both lists and prefers the stronger `private_key_jwt` method when your authorization server supports it; otherwise, it uses `none`.
+
+The supported methods are:
 
 - `none`: use this public-client flow when your token endpoint supports PKCE-based authorization-code exchange without client authentication. ChatGPT does not store a per-client secret.
-- `private_key_jwt`: use this signed client assertion flow when your token endpoint requires client authentication. ChatGPT publishes CIMD metadata with `token_endpoint_auth_method: "private_key_jwt"` and a public JWKS URL. The JWKS is served from `/oauth/jwks.json` on the metadata origin. ChatGPT signs token requests server-side with a managed private key and `kid`; your authorization server verifies the assertion against the public JWKS.
+- `private_key_jwt`: use this signed client assertion flow when your token endpoint requires client authentication. ChatGPT publishes a public JWKS URL in its CIMD metadata. The JWKS is served from `/oauth/jwks.json` on the metadata origin. ChatGPT signs token requests server-side with a managed private key and `kid`; your authorization server verifies the assertion against the public JWKS.
 
-DCR is still supported. If you include `registration_endpoint`, ChatGPT can register dynamically when the connector creator chooses DCR or CIMD is not available. ChatGPT runs DCR once per connector instance, then keeps and reuses the registered OAuth client for that instance. DCR can still create many registered clients across many separate connector instances, so CIMD is usually easier to administer at scale.
+DCR is still supported. If you include `registration_endpoint`, ChatGPT can register dynamically when the app creator chooses DCR or CIMD is not available. ChatGPT runs DCR once per app instance, then keeps and reuses the registered OAuth client for that instance. DCR can still create many registered clients across many separate app instances, so CIMD is usually easier to administer at scale.
 
 ### Client identification
 
@@ -1555,7 +1562,7 @@ ngrok http <port>
 # Forwarding: https://<subdomain>.ngrok.app -> http://127.0.0.1:<port>
 ```
 
-Use the ngrok URL when creating a connector in ChatGPT developer mode. For production, deploy to a low-latency HTTPS host (Cloudflare Workers, Fly.io, Vercel, AWS, etc.).
+Use the ngrok URL when creating a developer-mode app in ChatGPT. For production, deploy to a low-latency HTTPS host (Cloudflare Workers, Fly.io, Vercel, AWS, etc.).
 
 ## Example
 
@@ -1836,9 +1843,10 @@ Caution: Using `frameDomains` is discouraged and should only be done when embedd
 ### Widget domains
 
 Set `_meta.ui.domain` on the widget resource template (the `registerAppResource`
-template). This is required for app submission and must be unique per app.
-ChatGPT renders the widget under `<domain>.web-sandbox.oaiusercontent.com`, which
-also enables the fullscreen punch-out button.
+template). This is required when submitting a plugin that contains the app and
+must be unique per app. ChatGPT renders the widget under
+`<domain>.web-sandbox.oaiusercontent.com`, which also enables the fullscreen
+punch-out button.
 
 ```json
 "_meta": {
@@ -3265,7 +3273,11 @@ Accessibility should be a core consideration when you are building apps for Chat
 
 Discovery refers to the different ways a user or the model can find out about your app and the tools it provides: natural-language prompts, directory browsing, and proactive [entry points](#entry-points). Apps SDK leans on your tool metadata and past usage to make intelligent choices. Good discovery hygiene means your app appears when it should and stays quiet when it should not.
 
-For public distribution today, OpenAI turns approved apps into plugins for Codex. For now, Codex is the only product surface with plugins. The user-facing experience still starts from the app you build with Apps SDK, and the resulting plugin is what users install in Codex.
+For public distribution, apps are now submitted and published as plugins. The
+user-facing experience still starts from the app you build with Apps SDK, and
+the plugin is the package users discover and install. See
+[Submit plugins](https://developers.openai.com/codex/submit-plugins) for the source-of-truth submission and
+publishing flow.
 
 ### Named mention
 
@@ -3291,8 +3303,9 @@ If the assistant selects your tool, it handles arguments, displays confirmation 
 ### Directory
 
 The directory is a shared catalog of publicly available plugins that users can
-browse in Codex. It gives users a place to find plugins produced from approved
-apps. Your listing in this directory will include:
+browse in ChatGPT and Codex. It gives users a place to find plugins that
+contain apps, skills-only plugins, and plugins that combine apps with skills.
+Your listing in this directory will include:
 
 - App name and icon
 - Short and long descriptions
@@ -3383,12 +3396,12 @@ Highlight what is unique about your app inside ChatGPT:
 
 ## Checklist before publishing
 
-Answer these yes/no questions before you submit your app through the current review flow. A “no” signals an opportunity to improve your app before broader distribution.
+Answer these yes/no questions before you submit a plugin that contains your app through the current review flow. A “no” signals an opportunity to improve your app before broader distribution.
 
 However, please note that we will evaluate each app on a case-by-case basis, and that answering "yes" to all of these questions does not guarantee that your app will be selected for distribution: it's only a baseline to help your app be a great fit for ChatGPT.
 
-To learn about strict requirements for publishing your app, see the [App
-  Submission Guidelines](https://developers.openai.com/apps-sdk/app-submission-guidelines).
+To learn about strict requirements for publishing a plugin that contains your
+  app, see the [app guidelines](https://developers.openai.com/apps-sdk/app-guidelines).
 
 - **Conversational value** – Does at least one primary capability rely on ChatGPT’s strengths (natural language, conversation context, multi-turn dialog)?
 - **Beyond base ChatGPT** – Does the app provide new knowledge, actions, or presentation that users cannot achieve without it (e.g., proprietary data, specialized UI, or a guided flow)?
@@ -3424,11 +3437,11 @@ ngrok http 2091
 # https://<subdomain>.ngrok.app/mcp → http://127.0.0.1:2091/mcp
 ```
 
-Keep the tunnel running while you iterate on your connector. When you change code:
+Keep the tunnel running while you iterate on your app. When you change code:
 
 1. Rebuild the component bundle (`npm run build`).
 2. Restart your MCP server.
-3. Refresh the connector in ChatGPT settings to pull the latest metadata.
+3. Refresh the developer-mode app under **Settings → Plugins** or at [chatgpt.com/plugins](https://chatgpt.com/plugins) to pull the latest metadata.
 
 ## Deployment options
 
@@ -3445,7 +3458,7 @@ See the [`mcp-use` MCP Apps docs](https://manufact.com/docs/typescript/server/mc
 ### Vercel
 
 Vercel is another strong fit when you want quick deploys, preview environments for review, and automatic HTTPS.
-[They have announced support for ChatGPT Apps hosting](https://vercel.com/changelog/chatgpt-apps-support-on-vercel), so you can ship MCP endpoints alongside your frontend and use Vercel previews to validate connector behavior before promoting to production.
+[They have announced support for ChatGPT Apps hosting](https://vercel.com/changelog/chatgpt-apps-support-on-vercel), so you can ship MCP endpoints alongside your frontend and use Vercel previews to validate app behavior before promoting to production.
 
 You can use their Next.js [starter template](https://vercel.com/templates/ai/chatgpt-app-with-next-js) to get started.
 
@@ -3476,24 +3489,24 @@ Regardless of platform, make sure `/mcp` stays responsive, supports streaming re
 ## Environment configuration
 
 - **Secrets**: store API keys or OAuth client secrets outside your repo. Use platform-specific secret managers and inject them as environment variables.
-- **Logging**: log tool-call IDs, request latency, and error payloads. This helps debug user reports once the connector is live.
+- **Logging**: log tool-call IDs, request latency, and error payloads. This helps debug user reports once the app is live.
 - **Observability**: monitor CPU, memory, and request counts so you can right-size your deployment.
 
 ## Dogfood and rollout
 
 Before launching broadly:
 
-1. **Gate access**: test your connector in developer mode until you are confident in stability.
+1. **Gate access**: test your app in developer mode until you are confident in stability.
 2. **Run golden prompts**: exercise the discovery prompts you drafted during planning and note precision/recall changes with each release.
 3. **Capture artifacts**: record screenshots or screen captures showing the component in MCP Inspector and ChatGPT for reference.
 
-When you are ready for production, update metadata, confirm auth and storage are configured correctly, and submit your app through the current review flow. Approved apps become apps in ChatGPT or plugins for Codex distribution.
+When you are ready for production, update metadata, confirm auth and storage are configured correctly, and submit a plugin that contains your app through the plugin submission flow.
 
 ## Next steps
 
 - Validate tooling and telemetry with the [Test your integration](https://developers.openai.com/apps-sdk/deploy/testing) guide.
 - Keep a troubleshooting playbook handy via [Troubleshooting](https://developers.openai.com/apps-sdk/deploy/troubleshooting) so on-call responders can quickly diagnose issues.
-- Submit your app through the current review flow. Learn more in the [Submit your app](https://developers.openai.com/apps-sdk/deploy/submission) guide.
+- Submit a plugin that contains your app through the plugin submission flow. Learn more in the [Prepare and maintain an app for plugin submission](https://developers.openai.com/apps-sdk/deploy/submission) guide and the canonical [Submit plugins](https://developers.openai.com/codex/submit-plugins) guide.
 
 ---
 
@@ -3503,36 +3516,45 @@ When you are ready for production, update metadata, confirm auth and storage are
 
 You can test your app in ChatGPT with your account using [developer mode](https://platform.openai.com/docs/guides/developer-mode).
 
-Publishing your app for public access is now available through the submission process. You can learn more in our [ChatGPT app submission guidelines](https://developers.openai.com/apps-sdk/app-submission-guidelines).
+Apps are now submitted and published as plugins. Use developer mode to test
+  your app in ChatGPT; when you are ready for public distribution, submit the
+  plugin through the plugin submission portal. See
+  <a href="/codex/submit-plugins">Submit plugins</a>.
 
-To turn on developer mode, navigate to **Settings → Apps & Connectors → Advanced settings (bottom of the page)**.
+To turn on developer mode, open [ChatGPT](https://chatgpt.com), then go to
+**Settings → Security and login** and turn on **Developer mode**.
 
-From there, you can toggle developer mode if your organization allows it.
+From there, you can toggle developer mode if your organization allows it. If the
+toggle is unavailable, ask your workspace admin to allow developer mode for your
+account or workspace.
 
-Once developer mode is active, you'll see a **Create** button under **Settings → Apps & Connectors**.
+Once developer mode is active, you can create and manage developer-mode apps
+from **Settings → Plugins** or directly at
+[chatgpt.com/plugins](https://chatgpt.com/plugins).
 
 As of November 13th, 2025, ChatGPT Apps are supported on all plans, including
   Business, Enterprise, and Education plans.
 
-## Create a connector
+## Create a developer-mode app
 
-Once you have developer mode enabled, you can create a connector for your app in ChatGPT.
+Once you have developer mode enabled, create a developer-mode app in ChatGPT.
 
-1. Ensure your MCP server is reachable over HTTPS (for local development, use [Secure MCP Tunnel](https://developers.openai.com/api/docs/guides/secure-mcp-tunnels) and select **Tunnel** in connector settings, or you can expose a local server to the public internet via a tool such as [ngrok](https://ngrok.com/) or [Cloudflare Tunnel](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/)).
-2. In ChatGPT, navigate to **Settings → Connectors → Create**.
-3. Provide the metadata for your connector:
-   - **Connector name** – a user-facing title such as _Kanban board_.
-   - **Description** – explain what the connector does and when to use it. The model uses this text during discovery.
-   - **Connector URL** – the public `/mcp` endpoint of your server (for example `https://abc123.ngrok.app/mcp`).
-4. Click **Create**. If the connection succeeds you will see a list of the tools your server advertises. If it fails, refer to the [Testing](https://developers.openai.com/apps-sdk/deploy/testing) guide to debug your app with MCP Inspector or the API Playground.
+1. Ensure your MCP server is reachable over HTTPS (for local development, use [Secure MCP Tunnel](https://developers.openai.com/api/docs/guides/secure-mcp-tunnels) and select **Tunnel** when you create the app, or you can expose a local server to the public internet via a tool such as [ngrok](https://ngrok.com/) or [Cloudflare Tunnel](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/)).
+2. In ChatGPT, open **Settings → Plugins** or go directly to [chatgpt.com/plugins](https://chatgpt.com/plugins).
+3. Select the plus button to create a new developer-mode app.
+4. Provide the app metadata:
+   - **Name** – a user-facing title such as _Kanban board_.
+   - **Description** – explain what the app does and when to use it. The model uses this text during discovery.
+   - **MCP server URL** – the public `/mcp` endpoint of your server (for example `https://abc123.ngrok.app/mcp`).
+5. Click **Create**. If the connection succeeds you will see a list of the tools your server advertises. If it fails, refer to the [Testing](https://developers.openai.com/apps-sdk/deploy/testing) guide to debug your app with MCP Inspector or the API Playground.
 
 ## Try the app
 
-Once your connector is created, you can try it out in a new ChatGPT conversation.
+Once your developer-mode app is created, you can try it out in a new ChatGPT conversation.
 
 1. Open a new chat in ChatGPT.
 2. Click the **+** button near the message composer, and click **More**.
-3. Choose the connector for your app in the list of available tools. This will add your app to the conversation context for the model to use.
+3. Choose your app in the list of available tools. This will add your app to the conversation context for the model to use.
 4. Prompt the model to invoke tools by saying related to your app. For example, “What are my available tasks?” for a Kanban board app.
 
 ChatGPT uses each app's tool annotations and the user's app permission settings to
@@ -3560,68 +3582,89 @@ use separate permission controls.
 
 ## Refreshing metadata
 
-Whenever you change your tools list or descriptions, you can refresh your MCP server's metadata in ChatGPT.
+Whenever you change your tools list or descriptions, refresh your MCP server's metadata in ChatGPT.
 
 1. Update your MCP server and redeploy it (unless you are using a local server).
-2. In **Settings → Connectors**, click into your connector and choose **Refresh**.
+2. Open **Settings → Plugins** or [chatgpt.com/plugins](https://chatgpt.com/plugins), click into your developer-mode app, and choose **Refresh**.
 3. Verify the tool list updates and try a few prompts to test the updated flows.
 
-This refresh flow applies to developer mode connectors. Published apps use reviewed [app version snapshots](https://developers.openai.com/apps-sdk/deploy/submission#how-published-app-versions-work). To update a published app's tools or metadata, scan, submit, and publish a new app version.
+This refresh flow applies to developer-mode apps. Plugins that contain apps use reviewed [app metadata snapshots](https://developers.openai.com/apps-sdk/deploy/submission#how-published-app-metadata-versions-work). To update the app metadata in a published plugin, scan, submit, and publish a new version.
 
 ## Using other clients
 
 You can connect to your MCP server on other clients.
 
 - **API Playground** – visit the [platform playground](https://platform.openai.com/chat), and add your MCP server to the conversation: open **Tools → Add → MCP Server**, and paste the same HTTPS endpoint. This is useful when you want raw request/response logs.
-- **Mobile clients** – once the connector is linked on ChatGPT web, it will be available on ChatGPT mobile apps as well. Test mobile layouts early if your component has custom controls.
+- **Mobile clients** – once the app is linked on ChatGPT web, it will be available on ChatGPT mobile apps as well. Test mobile layouts early if your component has custom controls.
 
-With the connector linked you can move on to validation, experiments, and eventual rollout.
+With the app linked you can move on to validation, experiments, and eventual rollout.
 
 ---
 
-# Submit and maintain your app
+# Prepare and maintain an app for plugin submission
 
-Learn how to submit your app to the ChatGPT Apps Directory and Codex Plugin Directory.
+Prepare an MCP-backed app for public review as part of a plugin.
 
-## App submission overview
+Apps are now submitted and published as plugins. If your plugin contains an
+  app, build the app's MCP server with the Apps SDK, then submit the plugin
+  through the plugin submission portal. See
+  <a href="/codex/submit-plugins">Submit plugins</a> for the source-of-truth
+  submission flow and <a href="/codex/build-app">Build an app</a> for how apps
+  fit into plugins.
 
-Once you have built and [tested your app](https://developers.openai.com/apps-sdk/deploy/testing) in Developer Mode, you can submit it through the current dashboard-based review flow. That flow remains the path to public distribution today. When you publish an approved app, OpenAI creates the plugin for Codex distribution.
+## Prepare an app for plugin submission
 
-Only submit your app if you intend for the resulting plugin to be accessible publicly in the countries you define during submission. For apps you intend to use privately or just within your workspace, use [developer mode](https://platform.openai.com/docs/guides/developer-mode) instead. Submitting an app initiates a review process, and you'll be notified of its status as it moves through review.
+Use this page for the app-specific requirements that apply when a plugin
+contains an MCP-backed app: organization verification, app management
+permissions, MCP server requirements, review snapshots, and version
+maintenance.
 
-Self-serve plugin publishing is coming soon. See the [build plugins guide](https://developers.openai.com/codex/plugins/build) for the packaging model and local testing workflow.
+When your app works in [Developer Mode](https://developers.openai.com/apps-sdk/deploy/testing), submit the
+plugin that contains it for review in the
+[plugin submission portal](https://platform.openai.com/plugins). This page
+covers the app and MCP server requirements for that submission.
 
-_Before submitting, read and ensure your app complies with our [App Submission Guidelines](https://developers.openai.com/apps-sdk/app-submission-guidelines)._
+Only submit the plugin if you intend for it to be publicly available in the
+countries you define during submission. For apps you intend to use privately or
+only within your workspace, use
+[developer mode](https://platform.openai.com/docs/guides/developer-mode)
+instead.
 
-If your app is approved, the resulting app can be listed in ChatGPT or as a plugin in a shared
-directory that users can browse in Codex. Initially, users can discover it in
-one of the following ways:
+Before submitting the plugin, review the [app guidelines](https://developers.openai.com/apps-sdk/app-guidelines)
+for MCP server and app experience expectations, and see
+[Submit plugins](https://developers.openai.com/codex/submit-plugins) for the full plugin submission,
+approval, and publishing flow.
 
-- By clicking a direct link to your app's listing in the directory
-- By searching for your app by name
+For the complete flow, including skills-only plugins, plugins that contain apps,
+review, approval, and publishing, see [Submit plugins](https://developers.openai.com/codex/submit-plugins).
 
-Apps that demonstrate strong real-world utility and high user satisfaction may be eligible for enhanced distribution opportunities—such as directory placement or proactive suggestions.
-
-## Before You Submit: Prerequisites
+## Before you submit the plugin
 
 ### Organization verification
 
-Before submitting an app, complete identity verification in the [OpenAI Platform Dashboard](https://platform.openai.com/settings/organization/general) for the name you plan to publish under in the directory.
+Before submitting a plugin that contains an app, complete identity verification
+in the [OpenAI Platform Dashboard](https://platform.openai.com/settings/organization/general)
+for the name you plan to publish under in the directory.
 
 - **If you want to publish under your own name**, complete **individual verification**.
 - **If you want to publish under a business name**, complete **business verification**.
 
-This is enforced during app review. Publishing under an unverified individual or business name will result in rejection.
+This is enforced during review. Publishing under an unverified individual or
+business name will result in rejection.
 
 ### App management permissions
 
-To create app drafts and submit them for review, you need the `api.apps.write` permission. To view app drafts and review status in the Dashboard, you need the `api.apps.read` permission. Organization owners automatically have both permissions, and can grant them to non-owners through roles in the [OpenAI Platform Dashboard](https://platform.openai.com/settings/organization/roles).
+To create plugin drafts that contain apps and submit them for review, you need
+the `api.apps.write` permission. To view drafts and review status in the
+Dashboard, you need the `api.apps.read` permission. Organization owners
+automatically have both permissions, and can grant them to non-owners through
+roles in the [OpenAI Platform Dashboard](https://platform.openai.com/settings/organization/roles).
 
 ### MCP server requirements
 
 - Your MCP server is hosted on a publicly accessible domain
 - You are not using a local or testing endpoint
-- You defined a [content security policy (CSP)](https://developers.openai.com/apps-sdk/build/mcp-server#content-security-policy-csp) to allow the exact domains you fetch from (this is required to submit your app for security reasons)
+- You defined a [content security policy (CSP)](https://developers.openai.com/apps-sdk/build/mcp-server#content-security-policy-csp) to allow the exact domains the app fetches from (this is required to submit a plugin that contains an app for security reasons)
 
 ### Template MCP server URLs
 
@@ -3645,25 +3688,41 @@ https://{workspace}.example.com/mcp
 https://mcp.example.com/{tenant}/mcp
 ```
 
-## Submitting for review
+## Submit for review
 
-If the prerequisites are met, you can submit your app for review from the [OpenAI Platform Dashboard](http://platform.openai.com/apps-manage).
+If the prerequisites are met, you can submit the plugin that contains your app
+for review from the [plugin submission portal](https://platform.openai.com/plugins).
 
 ### Start the review process
 
-From the dashboard:
+In the plugin submission portal:
 
-1. Add your MCP server details (as well as OAuth credentials if OAuth is selected)
-2. Complete the required fields in the submission form and check all confirmation boxes. You will need to submit your app name, logo, description, company and privacy policy URLs, MCP and tool information, screenshots, test prompts and responses, and localization information.
-3. Click Submit for review. You will receive an email confirming submission with a Case ID which you can reference in any future support requests.
+1. Add your MCP server details (as well as OAuth credentials if OAuth is selected), and then select **Scan Tools**.
+2. Complete the required fields in the submission form and check all confirmation boxes. You will need to provide your app name, logo, description, company and privacy policy URLs, MCP and tool information, test prompts and responses, and localization information. If your app has a UI, you may also provide optional screenshots. Don't provide screenshots for apps without a UI.
+3. Select **Submit for review**.
 
-Each organization can publish multiple unique apps, but only one version of each app may be published at a time and only one version of each app may be in review at a time. If you submit an app but wish to make changes, you should withdraw that submission by selecting “Cancel Review” and resubmit the version draft again instead of creating a new app.
+### Metadata stored during tool scanning
 
-_Note that for now, projects with EU data residency cannot submit apps for review. Please use a project with global data residency to submit your apps. If you don't have one, you can create a new project in your current organization from the OpenAI Dashboard._
+When you select **Scan Tools**, the dashboard imports metadata advertised by your MCP endpoint into the draft. This includes tool names, titles, and descriptions; input and output schemas; security schemes; `_meta` fields; [tool annotations](https://developers.openai.com/apps-sdk/reference#annotations); linked UI resource metadata, including CSP settings; and MCP server `instructions`. The dashboard displays the annotation values provided by your server.
 
-## App review & approval
+Your submission justifications should explain why those server-provided annotation values match each tool's behavior. They don't override the annotations. For example, if your server advertises `readOnlyHint: false`, describing the tool as “functionally read-only” in the justification doesn't make the tool read-only. If the tool is truly read-only, update its server annotation to `readOnlyHint: true`, deploy the change, select **Scan Tools** again, verify the updated value, and then submit.
 
-Once submitted, your app will enter the review queue. You can review the status of the review within the Dashboard and will receive an email notification informing you of any status changes.
+Each organization can publish multiple unique plugins that contain apps. For
+each MCP-backed app, only one version may be published at a time and only one
+version may be in review at a time. If you need to make changes after
+submitting, withdraw that submission by selecting **Cancel Review** and
+resubmit the same version draft.
+
+_Note that for now, projects with EU data residency cannot submit plugins that
+contain apps for review. Please use a project with global data residency. If you
+don't have one, you can create a new project in your current organization from
+the OpenAI Dashboard._
+
+## Review and approval
+
+Once submitted, the plugin will enter the review queue. You can review the
+status within the Dashboard and will receive an email notification informing
+you of any status changes.
 
 ### Reviews and checks
 
@@ -3671,17 +3730,17 @@ We may perform automated scans or manual reviews to understand how your app work
 
 ### Approval, rejection, and appeals
 
-If your app is approved, we will notify you by email. Once approved, you can publish it from the current dashboard flow. When you publish, OpenAI creates a plugin for Codex distribution.
+If your plugin is approved, we will notify you by email. Once approved, you can publish it from the plugin submission portal.
 
-If your app is rejected or removed, you will receive feedback on which checks were unsuccessful. After making the necessary changes, you may resubmit the app for re-review. Alternatively, if you wish to appeal the decision, you can respond back to the email you received. Make sure to include a clear rationale for the appeal along with any new information that will assist us in our review.
+If your plugin is rejected or removed because of the app or MCP server, you will receive feedback on which checks were unsuccessful. After making the necessary changes, you may resubmit the plugin for re-review. Alternatively, if you wish to appeal the decision, you can respond back to the email you received. Make sure to include a clear rationale for the appeal along with any new information that will assist us in our review.
 
 ### Getting help
 
-If you have questions before, during, or after submission, and if your question is not answered in the documentation, contact OpenAI support for further assistance. Ensure that you include your OpenAI case ID (which you'll receive via email after submission) to help us to assist you better.
+If you have questions before, during, or after submission, and if your question is not answered in the documentation, contact OpenAI support for further assistance. Include the app ID shown in the plugin submission portal so the support team can identify your app.
 
-### App review & approval FAQs
+### Review and approval FAQs
 
-**How long does app review take?**
+**How long does review take?**
 
 Review timelines may vary as we continue to build and scale our processes. Please do not contact support to request expedited review, as these requests cannot be accommodated.
 
@@ -3707,90 +3766,119 @@ Review timelines may vary as we continue to build and scale our processes. Pleas
   - **destructiveHint:** Set to `true` if it can cause irreversible outcomes (deleting, overwriting, sending messages/transactions you can't undo, revoking access, destructive admin actions, etc.), even in only select modes, via default parameters, or through indirect side effects. Ensure the justification provided clearly describes what is irreversible and under what conditions, including any safeguards like confirmation steps, dry-run options, or scoping constraints. Otherwise, set to `false`.
   - **openWorldHint:** Set to `true` if it can write to or change publicly visible internet state (e.g., posting to social media/blogs/forums, sending emails/SMS/messages to external recipients, creating public tickets/issues, publishing pages, pushing code/content to public endpoints, submitting forms to third parties, or otherwise affecting systems outside a private/first-party context). Set to `false` only if it operates entirely within closed/private systems (including internal writes) and cannot change the state of the publicly visible internet.
 
-## Publication and Distribution
+## Publication and distribution
 
-### Publish your app
+### Publish the plugin
 
-Once your app is approved, you can publish it from the [OpenAI Platform Dashboard](https://platform.openai.com/apps-manage) by selecting **Publish**. Publishing keeps the current app-based workflow in place. In addition, OpenAI creates a Codex plugin from your approved app.
+Once the plugin is approved, you can publish it from the [plugin submission portal](https://platform.openai.com/plugins) by selecting **Publish**.
 
 ### Discoverability
 
-Once published, users can find your app by:
+Once published, users can find your plugin by:
 
-- Clicking a direct link to your app in the directory. You can find this link next to the “Published” status for an app on the [Platform App Management page](https://platform.openai.com/apps-manage)
-- Searching for your app by name
+- Clicking a direct link to the plugin listing in the directory.
+- Searching for the plugin by name.
 
-Apps that demonstrate strong real-world utility and high user satisfaction may be eligible for enhanced distribution opportunities—such as directory placement or proactive suggestions—but few apps will receive enhanced distribution at publication. There is no process by which to request this at this time.
+Plugins that demonstrate strong real-world utility and high user satisfaction may be eligible for enhanced distribution opportunities—such as directory placement or proactive suggestions—but few plugins will receive enhanced distribution at publication. There is no process by which to request this at this time.
 
 ### Publication and Distribution FAQs
 
-**What happens after my app is approved? Will it be listed in the app directory automatically?**
+**What happens after the plugin is approved? Will it be listed in the plugin directory automatically?**
 
-After your app is approved, you can choose to publish it from the [OpenAI Platform Dashboard](https://platform.openai.com/apps-manage). You must publish for it to be listed in the App Directory and Codex Plugin Directory.
+After the plugin is approved, you can choose to publish it from the [plugin submission portal](https://platform.openai.com/plugins). You must publish before it can appear in the universal plugin directory.
 
-**Why can't I see my app in the directory?**
+**Why can't I see my plugin in the directory?**
 
-Apps will only be visible to users on the App Directory's main pages if they are selected for enhanced distribution. To confirm your app is published, you can search for the app using the verbatim publication name or by clicking the URL to the app's directory page in the [OpenAI Platform Dashboard](https://platform.openai.com/apps-manage)
+Plugins appear on the directory's main pages only if OpenAI selects them for enhanced distribution. To confirm that your plugin is published, search for it using the exact publication name or open its directory URL from the plugin submission portal.
 
-**What should I do if I want to issue a press release or public announcement about my app?**
+**What should I do if I want to issue a press release or public announcement about my plugin?**
 
-Before issuing any press releases or public announcements regarding the launch of your app, please first reach out to [press@openai.com](mailto:press@openai.com) to coordinate with our communications team.
+Before issuing any press releases or public announcements regarding the launch
+of your plugin, please first reach out to
+[press@openai.com](mailto:press@openai.com) to coordinate with our
+communications team.
 
 ## Ongoing Maintenance
 
-### How published app versions work
+### How published app metadata versions work
 
-Treat the metadata exposed by your MCP server as a versioned API contract. When you scan a draft app's MCP endpoint in the OpenAI Platform Dashboard, OpenAI stores the discovered metadata with that draft version. Submitting the version sends that stored snapshot for review. The snapshot includes:
+Treat the metadata exposed by your MCP server as a versioned API contract for
+the app inside the plugin. When you scan the app's MCP endpoint in the plugin
+submission portal, OpenAI stores the discovered metadata with that draft
+version. Submitting the version sends that stored snapshot for review. The
+published app uses this metadata snapshot while tool calls and UI resources
+continue to use your live MCP server.
 
-- The tool list, names, titles, and descriptions
-- Input and output schemas, annotations, and tool security schemes
-- Tool `_meta` fields, including UI resource references and visibility
-- Linked UI resource metadata, including content security policy (CSP) settings
-- MCP server `instructions` returned during initialization
+Use this table to determine how to ship each change:
 
-The snapshot does not freeze your MCP server. Tool calls continue to execute against your live endpoint, and your server continues to return live tool results and business data. UI resource contents and `_meta` returned in tool results also remain live; ChatGPT reads UI resource contents from the snapshotted URI at runtime.
+| Change                                                                                                                                                                                                   | Required action                                                                                                                                                              | When users see the change                                                                                   |
+| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| Tool list, names, titles, descriptions, input or output schemas, annotations, tool security schemes, tool `_meta` fields (including UI resource references and visibility), or MCP server `instructions` | Deploy the change, create or update a draft version, scan the endpoint, submit the version for review, and publish it after approval.                                        | After you publish the approved version. Until then, users continue to use the currently published snapshot. |
+| UI resource URI or linked resource metadata, including content security policy (CSP) settings                                                                                                            | Deploy the change, create or update a draft version, scan the endpoint, submit the version for review, and publish it after approval.                                        | After you publish the approved version.                                                                     |
+| Backward-compatible content update served from the same published UI resource URI                                                                                                                        | Deploy the content update. You don't need to scan, submit, or publish a new version if the URI and published contract remain compatible.                                     | After deployment. ChatGPT may continue serving cached resource contents for up to one hour.                 |
+| Server-only fix or change to live tool results, including result `_meta`, or business data                                                                                                               | Deploy the server change. You don't need to scan, submit, or publish a new version if the change preserves the published contract.                                           | Through your live endpoint after deployment.                                                                |
+| MCP server origin (`scheme`, `hostname`, or `port`)                                                                                                                                                      | To change the origin, create a new app, then complete its scan, submission, review, and publication flow. To change only the endpoint path, use the normal new-version flow. | After you publish the new app or approved version.                                                          |
 
-Deploying a server change does not update the published snapshot. To make new tools or changed metadata available to users, create or update a draft version, scan its MCP endpoint after deploying your changes, submit it for review, receive approval, and publish it. While the new version is in review, users continue to use the currently published snapshot against your live MCP server.
-
-Breaking changes to published apps are not currently supported. For example, removing or renaming a tool, making an input schema incompatible, or changing or removing the content served at a published UI resource URI can break the published version as soon as the server change deploys. Instead, make backward-compatible updates:
+Breaking changes to the app inside a published plugin aren't currently
+supported. Removing or renaming a tool, making a schema incompatible, or
+serving incompatible content at or removing content from a published UI
+resource URI can break the current version as soon as the server change
+deploys. Make backward-compatible updates instead:
 
 1. Add new tools, fields, or UI resources while continuing to honor the published contracts.
-2. Submit the updated metadata as a new app version.
+2. Submit the updated metadata as a new version.
 3. Publish the approved version and keep the old contracts available.
 
 You can deploy server-only fixes without submitting a new version if they preserve the published contract. If a deployment breaks the published version, roll back the server change rather than waiting for a new version to complete review.
 
 ### Submitting new versions for review
 
-Once your app is published, all submitted information is locked for safety. To make any change, create a new draft version of your existing app and resubmit that version for review (do not create a new app). Each resubmission starts a new review. When submitting changes, include a clear description of what changed in the release notes section of the form.
+Once your app is published, its submitted information and reviewed metadata snapshot are locked for safety. To update either, create a new draft version of your existing app and resubmit that version for review (do not create a new app). Each resubmission starts a new review. When submitting changes, include a clear description of what changed in the release notes section of the form.
 
-An app's base MCP server URL cannot change between versions. To use a different base URL, create a new app instead of a new version.
+The app's MCP server origin (`scheme`, `hostname`, or `port`) can't change
+between versions. To use a different origin, submit a new plugin that contains
+the app with the new MCP server origin. You can change the endpoint path in a
+new version of the existing app.
 
-We will review your app again and inform you if the update was approved or rejected via email and in the [OpenAI Platform Dashboard](https://platform.openai.com/apps-manage). Similar to initial reviews, if rejected, you may update and resubmit or appeal the decision.
+We will review the updated app metadata again and inform you if the update was approved or rejected via email and in the [plugin submission portal](https://platform.openai.com/plugins). Similar to initial reviews, if rejected, you may update and resubmit or appeal the decision.
 
-Once your resubmission is approved, you can publish the update which will replace the previous version of your app.
+Once your resubmission is approved, you can publish the update, which will
+replace the previous app version inside the plugin.
 
-If you've made additional changes to your app between submission and approval and want to submit a new version for review, you can cancel the review by selecting “Cancel Review” from the three-dot menu next to the app on the [OpenAI Platform Apps Dashboard](https://platform.openai.com/apps-manage) and resubmit.
+If you've made additional changes to your app between submission and approval and want to submit a new version for review, you can cancel the review from the plugin submission portal and resubmit.
 
-### Changing published app versions and removing your app
+### Changing published app metadata versions and removing the plugin
 
-Once an app is published, you can change the version published by selecting “Unpublish Version” from the three-dot menu next to the currently published app version on the [OpenAI Platform Apps Dashboard](https://platform.openai.com/apps-manage) and selecting “Publish” next to the app version you'd like to publish instead. You can remove the app from public visibility entirely by selecting “Unpublish Version” and not publishing an alternative version.
+Once an app is published as part of a plugin, you can change the published
+version from the [plugin submission portal](https://platform.openai.com/plugins)
+by unpublishing the current version and publishing an approved replacement. You
+can remove the plugin from public visibility by unpublishing the current version
+and not publishing an alternative version.
 
-To remove the app from your organization and ChatGPT entirely, you can select “Delete App” from the three-dot menu next to the app on the [OpenAI Platform Apps Dashboard](https://platform.openai.com/apps-manage).
+To remove the plugin from your organization and ChatGPT entirely, delete it from
+the plugin submission portal.
 
 ### Maintenance requirements
 
-Apps that are inactive, unstable, or non-compliant may be removed. We may reject or remove any app from our services at any time and for any reason without notice, such as for legal or security concerns or policy violations.
+Plugins, including the apps they contain, may be removed if they are inactive,
+unstable, or non-compliant. We may reject or remove any plugin from our services
+at any time and for any reason without notice, such as for legal or security
+concerns or policy violations.
 
 ### Ongoing Maintenance FAQs
 
-**What happens if users report my app as harmful or misleading?**
+**What happens if users report my plugin as harmful or misleading?**
 
-OpenAI reviews user reports and may review or investigate your app. Apps that are identified as violating our policies may be restricted or removed. You may appeal a removal or other enforcement action on your app by following the appeals process described here. You should regularly review and respond to feedback and update your app if issues are found.
+OpenAI reviews user reports and may review or investigate your plugin, including
+any app it contains. Plugins that are identified as violating our policies may
+be restricted or removed. You may appeal a removal or other enforcement action
+by following the appeals process described here. You should regularly review and
+respond to feedback and update your plugin if issues are found.
 
-**How long will app updates take?**
+**How long will updates take?**
 
-Similar to new app submission reviews, we are unable to offer estimated times for reviews for app updates.
+Similar to new reviews, we are unable to offer estimated times for update
+reviews.
 
 ---
 
@@ -3798,7 +3886,7 @@ Similar to new app submission reviews, we are unable to offer estimated times fo
 
 ## Goals
 
-Testing validates that your connector behaves predictably before you expose it to users. Focus on three areas: tool correctness, component UX, and discovery precision.
+Testing validates that your app behaves predictably before you expose it to users. Focus on three areas: tool correctness, component UX, and discovery precision.
 
 ## Unit test your tool handlers
 
@@ -3819,11 +3907,12 @@ Inspector renders components inline and surfaces errors immediately. Capture scr
 
 ## Validate in ChatGPT developer mode
 
-After your connector is reachable over HTTPS:
+After your app's MCP server is reachable over HTTPS:
 
-- Link it in **Settings → Connectors → Developer mode**.
-- Toggle it on in a new conversation and run through your golden prompt set (direct, indirect, negative). Record when the model selects the right tool, what arguments it passed, and whether confirmation prompts appear as expected.
-- Test mobile layouts by invoking the connector in the ChatGPT iOS or Android apps.
+- In [ChatGPT](https://chatgpt.com), open **Settings → Security and login** and turn on **Developer mode**.
+- Open **Settings → Plugins** or [chatgpt.com/plugins](https://chatgpt.com/plugins), select the plus button, and create a developer-mode app that points to your HTTPS `/mcp` endpoint.
+- Toggle the app on in a new conversation and run through your golden prompt set (direct, indirect, negative). Record when the model selects the right tool, what arguments it passed, and whether confirmation prompts appear as expected.
+- Test mobile layouts by invoking the app in the ChatGPT iOS or Android apps.
 
 ## Connect via the API Playground
 
@@ -3841,7 +3930,7 @@ If you need raw logs or want to test without the full ChatGPT UI, open the [API 
 - OAuth or custom auth flows return valid tokens and reject invalid ones with meaningful messages.
 - Discovery behaves as expected across your golden prompts and does not trigger on negative prompts.
 
-Capture findings in a doc so you can compare results release over release. Consistent testing keeps your connector reliable as ChatGPT and your backend evolve.
+Capture findings in a doc so you can compare results release over release. Consistent testing keeps your app reliable as ChatGPT and your backend evolve.
 
 ---
 
@@ -3922,7 +4011,7 @@ For each tool:
 
 ## Evaluate in developer mode
 
-1. Link your connector in ChatGPT developer mode.
+1. In ChatGPT, turn on Developer mode from **Settings → Security and login**, then create a developer-mode app from **Settings → Plugins** or [chatgpt.com/plugins](https://chatgpt.com/plugins).
 2. Run through the golden prompt set and record the outcome: which tool was selected, what arguments were passed, and whether the component rendered.
 3. For each prompt, track precision (did the right tool run?) and recall (did the tool run when it should?).
 
@@ -4283,7 +4372,7 @@ Server-side code has no network restrictions beyond what your hosting environmen
 
 ## Authentication & authorization
 
-- Use OAuth 2.1 authorization-code flows when integrating external accounts. Prefer Client ID Metadata Documents (CIMD) when your authorization server supports CIMD and the connector creator chooses it. Use `none` for public-client token exchange or `private_key_jwt` when your authorization server requires client authentication. Support DCR when the connector creator chooses it or CIMD is not available.
+- Use OAuth 2.1 authorization-code flows when integrating external accounts. Prefer Client ID Metadata Documents (CIMD) when your authorization server supports CIMD and the app creator chooses it. Use `none` for public-client token exchange or `private_key_jwt` when your authorization server requires client authentication. Support DCR when the app creator chooses it or CIMD is not available.
 - Verify and enforce scopes on every tool call. Reject expired or malformed tokens with `401` responses.
 - For built-in identity, avoid storing long-lived secrets; use the provided auth context instead.
 
@@ -5158,7 +5247,7 @@ httpServer.listen(port, () => {
 });
 ```
 
-This snippet also responds to `GET /` for health checks, handles CORS preflight for `/mcp` and nested routes like `/mcp/actions`, and returns `404 Not Found` for OAuth discovery routes you are not using yet. That keeps ChatGPT’s connector wizard from surfacing 502 errors while you iterate without authentication.
+This snippet also responds to `GET /` for health checks, handles CORS preflight for `/mcp` and nested routes like `/mcp/actions`, and returns `404 Not Found` for OAuth discovery routes you are not using yet. That keeps ChatGPT from surfacing 502 errors while you iterate without authentication.
 
 ## Run locally
 
@@ -5212,35 +5301,39 @@ ngrok http <port>
 
 This will give you a public URL like `https://<subdomain>.ngrok.app` that you can use to access your server from ChatGPT.
 
-When you add your connector, provide the public URL with the `/mcp` path (e.g. `https://<subdomain>.ngrok.app/mcp`).
+When you add your app in developer mode, provide the public URL with the `/mcp` path (e.g. `https://<subdomain>.ngrok.app/mcp`).
 
 ## Add your app to ChatGPT
 
 Once you have your MCP server and web component working locally, you can add your app to ChatGPT with the following steps:
 
-1. Enable [developer mode](https://platform.openai.com/docs/guides/developer-mode) under **Settings → Apps & Connectors → Advanced settings** in ChatGPT.
-2. Click the **Create** button to add a connector under **Settings → Connectors** and paste the HTTPS + `/mcp` URL from your tunnel or deployment (e.g. `https://<subdomain>.ngrok.app/mcp`).
-3. Name the connector, provide a short description and click **Create**.
+1. In [ChatGPT](https://chatgpt.com), open **Settings → Security and login** and turn on **Developer mode**.
+2. Open **Settings → Plugins** or [chatgpt.com/plugins](https://chatgpt.com/plugins), and select the plus button to create a developer-mode app.
+3. Paste the HTTPS + `/mcp` URL from your tunnel or deployment (e.g. `https://<subdomain>.ngrok.app/mcp`), name the app, provide a short description, and click **Create**.
 
 <div style={{ width: "50%", margin: "0 auto", display: "block" }}>
-  <img src="https://developers.openai.com/images/apps-sdk/new_connector.jpg"
-    alt="Add your connector to ChatGPT"
-  />
+  <img src="https://developers.openai.com/images/apps-sdk/new_connector.jpg" alt="Add your app to ChatGPT" />
 </div>
 
-4. Open a new chat, add your connector from the **More** menu (accessible after clicking the **+** button), and prompt the model (e.g., “Add a new task to read my book”). ChatGPT will stream tool payloads so you can confirm inputs and outputs.
+4. Open a new chat, add your app from the **More** menu (accessible after clicking the **+** button), and prompt the model (e.g., “Add a new task to read my book”). ChatGPT will stream tool payloads so you can confirm inputs and outputs.
 
-![Add your connector to a conversation](https://developers.openai.com/images/apps-sdk/developer_mode_more.jpg)
+![Add your app to a conversation](https://developers.openai.com/images/apps-sdk/developer_mode_more.jpg)
 
 ## Next steps
 
 From there, you can iterate on the UI/UX, prompts, tool metadata, and the overall experience.
 
-Refresh the connector after each change to the MCP server (tools, metadata,
-  etc.) You can do this by clicking the **Refresh** button in **Settings →
-  Connectors** after selecting your connector.
+Refresh the app after each change to the MCP server (tools, metadata, etc.)
+  You can do this from the app detail page under
+  <strong>Settings → Plugins</strong> or at
+  <a href="https://chatgpt.com/plugins">chatgpt.com/plugins</a>.
 
-When you're preparing for submission, review the [ChatGPT app submission guidelines](https://developers.openai.com/apps-sdk/app-submission-guidelines) and [research your use case](https://developers.openai.com/apps-sdk/plan/use-case). If you're building a UI, you can also review the [design guidelines](https://developers.openai.com/apps-sdk/concepts/design-guidelines).
+When you're preparing for public distribution, remember that apps are now
+submitted and published as plugins. Review
+[Submit plugins](https://developers.openai.com/codex/submit-plugins), the
+[app guidelines](https://developers.openai.com/apps-sdk/app-guidelines), and
+[research your use case](https://developers.openai.com/apps-sdk/plan/use-case). If you're building a UI, you
+can also review the [design guidelines](https://developers.openai.com/apps-sdk/concepts/design-guidelines).
 
 Once you understand the basics, you can leverage the Apps SDK to [build a ChatGPT UI](https://developers.openai.com/apps-sdk/build/chatgpt-ui) using the Apps SDK primitives, [authenticate users](https://developers.openai.com/apps-sdk/build/auth) if needed, and [persist state](https://developers.openai.com/apps-sdk/build/storage).
 
@@ -5356,7 +5449,71 @@ the current app when the helper is available. Use the returned `fileId` with
 `window.openai.getFileDownloadUrl({ fileId })` or in a tool input that uses
 file params.
 
-Tool file references use snake case fields:
+### Define file inputs
+
+To let ChatGPT pass files to a tool, list each top-level file input in
+`_meta["openai/fileParams"]`. Each listed field must resolve to a file object or
+an array of file objects.
+
+Every file object schema must declare all four supported properties:
+
+| Property       | Type     | Declare in `properties` | Include in `required` |
+| -------------- | -------- | :---------------------: | :-------------------: |
+| `download_url` | `string` |           Yes           |          Yes          |
+| `file_id`      | `string` |           Yes           |          Yes          |
+| `mime_type`    | `string` |           Yes           |          No           |
+| `file_name`    | `string` |           Yes           |          No           |
+
+`mime_type` and `file_name` are optional values, but you must declare their
+properties in the schema. The **Scan Tools** step and app submission reject a
+file schema that omits any of the four properties, does not require
+`download_url` and `file_id`, marks either optional property as required, or
+requires a property other than `download_url` or `file_id`. You can declare
+extra optional properties.
+
+This complete tool descriptor accepts one required file input:
+
+```json
+{
+  "name": "analyze_file",
+  "title": "Analyze file",
+  "description": "Analyzes a user-provided file without modifying it.",
+  "inputSchema": {
+    "type": "object",
+    "$defs": {
+      "OpenAIFile": {
+        "type": "object",
+        "properties": {
+          "download_url": { "type": "string" },
+          "file_id": { "type": "string" },
+          "mime_type": { "type": "string" },
+          "file_name": { "type": "string" }
+        },
+        "required": ["download_url", "file_id"],
+        "additionalProperties": false
+      }
+    },
+    "properties": {
+      "file": { "$ref": "#/$defs/OpenAIFile" }
+    },
+    "required": ["file"]
+  },
+  "annotations": {
+    "readOnlyHint": true,
+    "openWorldHint": false,
+    "destructiveHint": false
+  },
+  "_meta": {
+    "openai/fileParams": ["file"]
+  }
+}
+```
+
+To accept more than one file, define the top-level field as an array and use the
+same file object schema in `items`. The tool can require the top-level file
+field independently of the properties required inside each file object.
+
+At runtime, ChatGPT passes file values with snake case fields:
 
 ```json
 {
@@ -5367,8 +5524,8 @@ Tool file references use snake case fields:
 }
 ```
 
-`download_url` and `file_id` are required. `mime_type` and `file_name` are
-optional. Use `file_id` as the `fileId` value for
+ChatGPT always includes `download_url` and `file_id`; it may omit `mime_type`
+and `file_name`. Use `file_id` as the `fileId` value for
 `window.openai.getFileDownloadUrl({ fileId })` when a widget needs a fresh
 temporary download URL.
 
@@ -5493,6 +5650,8 @@ server.registerTool(
 
 Need more background on these fields? Check the [Advanced section of the MCP server guide](https://developers.openai.com/apps-sdk/build/mcp-server#advanced).
 
+<span id="add-component-descriptions" />
+
 ## Component resource `_meta` fields
 
 More detail on these resource settings lives in the [Advanced section of the MCP server guide](https://developers.openai.com/apps-sdk/build/mcp-server#advanced).
@@ -5503,7 +5662,7 @@ Set these keys on the resource template that serves your component (`registerRes
 | ------------------------------------- | :---------------: | --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `_meta.ui.prefersBorder`              | Resource contents | boolean         | Hint that the component should render inside a bordered card when supported.                                                                                                                      |
 | `_meta.ui.csp`                        | Resource contents | object          | Preferred metadata surface for standard widget CSP fields: `connectDomains`, `resourceDomains`, and optional `frameDomains`.                                                                      |
-| `_meta.ui.domain`                     | Resource contents | string (origin) | Dedicated origin for hosted components (required for app submission; must be unique per app). Defaults to `https://web-sandbox.oaiusercontent.com`.                                               |
+| `_meta.ui.domain`                     | Resource contents | string (origin) | Dedicated origin for hosted components (required when submitting a plugin that contains an app; must be unique per app). Defaults to `https://web-sandbox.oaiusercontent.com`.                    |
 | `_meta["openai/widgetDescription"]`   | Resource contents | string          | Human-readable summary surfaced to the model when the component loads, reducing redundant assistant narration.                                                                                    |
 | `_meta["openai/widgetPrefersBorder"]` | Resource contents | boolean         | OpenAI-specific compatibility alias for `_meta.ui.prefersBorder` in ChatGPT.                                                                                                                      |
 | `_meta["openai/widgetCSP"]`           | Resource contents | object          | Legacy ChatGPT compatibility key for widget CSP metadata. Standard CSP fields are superseded by `_meta.ui.csp`, but `redirect_domains` is still required for trusted `openExternal` destinations. |

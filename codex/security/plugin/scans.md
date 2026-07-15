@@ -3,7 +3,7 @@
 Use a Codex Security scan for your first review and for most routine repository
 or component assessments. It runs the complete scan workflow once.
 
-Once you're satisfied with the results, run a [deep scan](https://developers.openai.com/codex/security/plugin/deep-scans)
+Once you're satisfied with the results, run a [deep scan](https://learn.chatgpt.com/docs/security/plugin/deep-scans)
 for a more comprehensive assessment. Deep scans take longer, but they're more
 thorough.
 
@@ -40,10 +40,15 @@ For a large monorepo, start with one meaningful product or service boundary.
 
 </WorkflowSteps>
 
-Repository-specific guidance in `AGENTS.md` can also establish the product
-surfaces, trust boundaries, supported validation commands, and out-of-scope
-areas. Prefer concrete repository context over a generic planning step before
-the scan.
+For persistent repository security guidance, add a `SECURITY.md` at the
+repository root. Use it to describe the threat model, security invariants,
+reportable finding criteria, exclusions, and severity context. For
+directory-specific guidance, add nested `SECURITY.md` files. When policies
+conflict, the file closest to the code takes precedence. Codex Security treats
+this content as policy context, not executable instructions.
+
+Use `AGENTS.md` for supported build and validation commands and other
+repository-specific instructions.
 
 ## Let the phases complete
 
@@ -117,10 +122,10 @@ and `coverage.json` for automation and integrations. You normally don't need to
 open these files yourself.
 
 The findings workspace can also create portable JSON, CSV, and SARIF files. See
-[Export or track findings](https://developers.openai.com/codex/security/plugin/export-findings).
+[Export or track findings](https://learn.chatgpt.com/docs/security/plugin/export-findings).
 
 ## Next step
 
-After a person accepts a finding, use [Fix and verify a finding](https://developers.openai.com/codex/security/plugin/fix-findings)
+After a person accepts a finding, use [Fix and verify a finding](https://learn.chatgpt.com/docs/security/plugin/fix-findings)
 to generate and review one bounded patch. Don't ask Codex to fix every finding
 from a scan in one task.

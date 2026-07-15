@@ -6,13 +6,13 @@ Local mirror of OpenAI developer documentation from [developers.openai.com](http
 
 | | |
 |---|---|
-| **Last scraped** | July 6, 2026 |
-| **Total pages** | 533 |
+| **Last scraped** | July 15, 2026 |
+| **Total pages** | 586 |
 | **Ads** | 15 pages ([llms.txt](https://developers.openai.com/ads/llms.txt)) |
-| **OpenAI API docs** | 154 pages ([llms.txt](https://developers.openai.com/api/docs/llms.txt)) |
-| **OpenAI API reference** | 226 pages ([llms.txt](https://developers.openai.com/api/reference/llms.txt)) |
+| **OpenAI API docs** | 165 pages ([llms.txt](https://developers.openai.com/api/docs/llms.txt)) |
+| **OpenAI API reference** | 238 pages ([llms.txt](https://developers.openai.com/api/reference/llms.txt)) |
 | **Apps SDK** | 26 pages ([llms.txt](https://developers.openai.com/apps-sdk/llms.txt)) |
-| **Codex** | 95 pages ([llms.txt](https://developers.openai.com/codex/llms.txt)) |
+| **Codex** | 125 pages ([llms.txt](https://developers.openai.com/codex/llms.txt)) |
 | **Agentic Commerce** | 15 pages ([llms.txt](https://developers.openai.com/commerce/llms.txt)) |
 | **Workspace Agents** | 2 pages ([llms.txt](https://developers.openai.com/workspace-agents/llms.txt)) |
 
@@ -28,7 +28,7 @@ Local mirror of OpenAI developer documentation from [developers.openai.com](http
 | Directory | Pages |
 |-----------|-------|
 | `(top-level)` | 9 |
-| `guides/` | 129 |
+| `guides/` | 142 |
 | `actions/` | 7 |
 | `assistants/` | 6 |
 | `tutorials/` | 2 |
@@ -40,7 +40,7 @@ Local mirror of OpenAI developer documentation from [developers.openai.com](http
 | Directory | Pages |
 |-----------|-------|
 | `(top-level)` | 2 |
-| `resources/` | 220 |
+| `resources/` | 232 |
 | `responses/` | 1 |
 | `realtime-beta/` | 1 |
 | `chat-completions/` | 1 |
@@ -50,7 +50,7 @@ Local mirror of OpenAI developer documentation from [developers.openai.com](http
 
 | Directory | Pages |
 |-----------|-------|
-| `(top-level)` | 5 |
+| `(top-level)` | 6 |
 | `build/` | 6 |
 | `guides/` | 4 |
 | `deploy/` | 4 |
@@ -61,20 +61,29 @@ Local mirror of OpenAI developer documentation from [developers.openai.com](http
 
 | Directory | Pages |
 |-----------|-------|
-| `(top-level)` | 46 |
+| `(top-level)` | 81 |
+| `enterprise/` | 15 |
 | `app/` | 12 |
 | `security/` | 11 |
+| `config-file/` | 5 |
 | `concepts/` | 5 |
 | `ide/` | 4 |
-| `enterprise/` | 4 |
+| `environments/` | 4 |
+| `agent-configuration/` | 4 |
+| `windows/` | 3 |
+| `third-party/` | 3 |
 | `integrations/` | 3 |
-| `guides/` | 3 |
+| `customization/` | 3 |
 | `cli/` | 3 |
+| `guides/` | 2 |
+| `extend/` | 2 |
 | `cloud/` | 2 |
+| `sandboxing/` | 1 |
+| `reference/` | 1 |
 | `plugins/` | 1 |
 | `memories/` | 1 |
-| `learn/` | 1 |
 | `community/` | 1 |
+| `learn/` | 0 |
 
 ## Agentic Commerce (`commerce/`)
 
@@ -102,6 +111,7 @@ guides
 ├── guides
 │   ├── agent-builder
 │   ├── agents
+│   ├── latest-model
 │   ├── prompting
 │   ├── safety-checks
 │   └── workload-identity-federation
@@ -142,21 +152,30 @@ apps-sdk
 ├── guides
 └── plan
 codex
+├── agent-configuration
 ├── app
 ├── cli
 ├── cloud
 ├── community
 ├── concepts
 │   └── sandboxing
+├── config-file
+├── customization
 ├── enterprise
+├── environments
+├── extend
 ├── guides
 ├── ide
 ├── integrations
 ├── learn
 ├── memories
 ├── plugins
-└── security
-    └── plugin
+├── reference
+├── sandboxing
+├── security
+│   └── plugin
+├── third-party
+└── windows
 commerce
 ├── guides
 └── specs

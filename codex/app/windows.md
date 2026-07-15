@@ -1,48 +1,48 @@
-# Windows
+# ChatGPT desktop app for Windows
 
-The [Codex app for Windows](https://get.microsoft.com/installer/download/9PLM9XGG6VKS?cid=website_cta_psi) gives you one interface for
-working across projects, running parallel agent threads, and reviewing results.
-The Windows app supports core workflows such as worktrees, automations, Git
-functionality, the in-app browser, artifact previews, plugins, and skills.
+The [ChatGPT desktop app for Windows](https://get.microsoft.com/installer/download/9PLM9XGG6VKS?cid=website_cta_psi) gives you one interface for
+working across projects, running parallel tasks, and reviewing results.
+The Windows app supports core workflows such as worktrees, scheduled tasks, Git
+functionality, the built-in browser, file previews, plugins, and skills.
 It runs natively on Windows using PowerShell and the
-[Windows sandbox](https://developers.openai.com/codex/windows#windows-sandbox), or you can configure it to
+[Windows sandbox](https://learn.chatgpt.com/docs/windows/windows-sandbox#windows-sandbox), or you can configure it to
 run in [Windows Subsystem for Linux 2 (WSL2)](#windows-subsystem-for-linux-wsl).
 
 <CodexScreenshot
-  alt="Codex app for Windows showing a project sidebar, active thread, and review pane"
+  alt="ChatGPT desktop app for Windows showing a project sidebar, active task, and review pane"
   lightSrc="/images/codex/windows/codex-windows-light.webp"
   darkSrc="/images/codex/windows/codex-windows-dark.webp"
   variant="no-wallpaper"
   maxHeight="320px"
 />
 
-## Download the Codex app
+## Download the ChatGPT desktop app
 
-Download the [Codex app](https://get.microsoft.com/installer/download/9PLM9XGG6VKS?cid=website_cta_psi) for Windows.
+Download the [ChatGPT desktop app](https://get.microsoft.com/installer/download/9PLM9XGG6VKS?cid=website_cta_psi) for Windows.
 
-Then follow the [quickstart](https://developers.openai.com/codex/quickstart?setup=app) to get started.
+Then follow the [quickstart](https://learn.chatgpt.com/docs/quickstart?setup=app) to get started.
 
-For enterprises, administrators can deploy the app with Microsoft Store app
-distribution through enterprise management tools.
+For enterprise installation and update options, see
+[Deploy the Windows app](https://learn.chatgpt.com/docs/enterprise/windows-deployment).
 
-If you prefer a command-line install path, or need an alternative to opening
-the Microsoft Store UI, run:
+If you prefer a command-line install path, run:
 
 ```powershell
-winget install Codex -s msstore
+winget install --id 9PLM9XGG6VKS -s msstore
 ```
 
 ## Native sandbox
 
-The Codex app on Windows supports a native [Windows sandbox](https://developers.openai.com/codex/windows#windows-sandbox) when the agent runs in PowerShell, and uses Linux sandboxing when you run the agent in [Windows Subsystem for Linux 2 (WSL2)](#windows-subsystem-for-linux-wsl). To apply sandbox protections in either mode, set sandbox permissions to **Default permissions** in the Composer before sending messages to Codex.
+The ChatGPT desktop app on Windows supports a native [Windows sandbox](https://learn.chatgpt.com/docs/windows/windows-sandbox#windows-sandbox) when the agent runs in PowerShell, and uses Linux sandboxing when you run the agent in [Windows Subsystem for Linux 2 (WSL2)](#windows-subsystem-for-linux-wsl). To apply sandbox protections in either mode, select **Ask for approval** beneath the composer before sending messages to Codex.
 
 Running Codex in full access mode means Codex is not limited to your project
   directory and might perform unintentional destructive actions that can lead to
-  data loss. Keep sandbox boundaries in place and use [rules](https://developers.openai.com/codex/rules) for
-  targeted exceptions, or set your [approval policy to
-  never](https://developers.openai.com/codex/agent-approvals-security#run-without-approval-prompts) to have
+  data loss. Keep sandbox boundaries in place and use
+  [rules](https://learn.chatgpt.com/docs/agent-configuration/rules) for targeted exceptions, or set your
+  [approval policy to
+  never](https://learn.chatgpt.com/docs/agent-approvals-security#run-without-approval-prompts) to have
   Codex attempt to solve problems without asking for escalated permissions,
-  based on your [approval and security setup](https://developers.openai.com/codex/agent-approvals-security).
+  based on your [approval and security setup](https://learn.chatgpt.com/docs/agent-approvals-security).
 
 ## Customize for your dev setup
 
@@ -60,7 +60,7 @@ choice takes precedence.
 </div>
 
 <CodexScreenshot
-  alt="Codex app settings showing the default Open In app on Windows"
+  alt="ChatGPT desktop app settings showing the default Open In app on Windows"
   lightSrc="/images/codex/windows/open-in-windows-light.webp"
   darkSrc="/images/codex/windows/open-in-windows-dark.webp"
   maxHeight={520}
@@ -84,13 +84,13 @@ installed, options include:
 - WSL
 
 This change applies only to new terminal sessions. If you already have an
-integrated terminal open, restart the app or start a new thread before
+integrated terminal open, restart the app or start a new task before
 expecting the new default terminal to appear.
 
 </div>
 
 <CodexScreenshot
-  alt="Codex app settings showing the integrated terminal selection on Windows"
+  alt="ChatGPT desktop app settings showing the integrated terminal selection on Windows"
   lightSrc="/images/codex/windows/integrated-shell-light.webp"
   darkSrc="/images/codex/windows/integrated-shell-dark.webp"
   maxHeight={520}
@@ -101,7 +101,7 @@ expecting the new default terminal to appear.
 
 ## Windows Subsystem for Linux (WSL)
 
-By default, the Codex app uses the Windows-native agent. That means the agent
+By default, the ChatGPT desktop app uses the Windows-native Codex agent. That means the agent
 runs commands in PowerShell. The app can still work with projects that live in
 Windows Subsystem for Linux 2 (WSL2) by using the `wsl` CLI when needed.
 
@@ -124,7 +124,7 @@ WSL1 was supported through Codex `0.114`. Starting in Codex `0.115`, the Linux
 sandbox moved to `bubblewrap`, so WSL1 is no longer supported.
 
 <CodexScreenshot
-  alt="Codex app settings showing the agent selector with Windows native and WSL options"
+  alt="ChatGPT desktop app settings showing the agent selector with Windows native and WSL options"
   lightSrc="/images/codex/windows/wsl-select-light.webp"
   darkSrc="/images/codex/windows/wsl-select-dark.webp"
   maxHeight={520}
@@ -141,17 +141,17 @@ terminal, or use WSL for both, depending on your workflow.
 
 Codex works best when a few common developer tools are already installed:
 
-- **Git**: Powers the review panel in the Codex app and lets you inspect or
+- **Git**: Powers the review panel in the ChatGPT desktop app and lets you inspect or
   revert changes.
 - **Node.js**: A common tool that the agent uses to perform tasks more
   efficiently.
 - **Python**: A common tool that the agent uses to perform tasks more
   efficiently.
 - **.NET SDK**: Useful when you want to build native Windows apps.
-- **GitHub CLI**: Powers GitHub-specific functionality in the Codex app.
+- **GitHub CLI**: Powers GitHub-specific functionality in the ChatGPT desktop app.
 
 Install them with the default Windows package manager `winget` by pasting this
-into the [integrated terminal](https://developers.openai.com/codex/app/features#integrated-terminal) or
+into the [integrated terminal](https://learn.chatgpt.com/docs/integrated-terminal) or
 asking Codex to install them:
 
 ```powershell
@@ -172,9 +172,9 @@ version you want.
 
 ### Run commands with elevated permissions
 
-If you need Codex to run commands with elevated permissions, start the Codex app
-itself as an administrator. After installation, open the Start menu, find
-Codex, and choose Run as administrator. The Codex agent inherits that
+If you need Codex to run commands with elevated permissions, start the ChatGPT
+desktop app itself as an administrator. After installation, open the Start menu,
+find the app, and choose **Run as administrator**. The Codex agent inherits that
 permission level.
 
 ### PowerShell execution policy blocks commands
@@ -204,7 +204,7 @@ before changing the policy.
 
 ### Local environment scripts on Windows
 
-If your [local environment](https://developers.openai.com/codex/app/local-environments) uses cross-platform
+If your [local environment](https://learn.chatgpt.com/docs/environments/local-environment) uses cross-platform
 commands such as `npm` scripts, you can keep one shared setup script or
 set of actions for every platform.
 

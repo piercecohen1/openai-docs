@@ -108,7 +108,71 @@ the current app when the helper is available. Use the returned `fileId` with
 `window.openai.getFileDownloadUrl({ fileId })` or in a tool input that uses
 file params.
 
-Tool file references use snake case fields:
+### Define file inputs
+
+To let ChatGPT pass files to a tool, list each top-level file input in
+`_meta["openai/fileParams"]`. Each listed field must resolve to a file object or
+an array of file objects.
+
+Every file object schema must declare all four supported properties:
+
+| Property       | Type     | Declare in `properties` | Include in `required` |
+| -------------- | -------- | :---------------------: | :-------------------: |
+| `download_url` | `string` |           Yes           |          Yes          |
+| `file_id`      | `string` |           Yes           |          Yes          |
+| `mime_type`    | `string` |           Yes           |          No           |
+| `file_name`    | `string` |           Yes           |          No           |
+
+`mime_type` and `file_name` are optional values, but you must declare their
+properties in the schema. The **Scan Tools** step and app submission reject a
+file schema that omits any of the four properties, does not require
+`download_url` and `file_id`, marks either optional property as required, or
+requires a property other than `download_url` or `file_id`. You can declare
+extra optional properties.
+
+This complete tool descriptor accepts one required file input:
+
+```json
+{
+  "name": "analyze_file",
+  "title": "Analyze file",
+  "description": "Analyzes a user-provided file without modifying it.",
+  "inputSchema": {
+    "type": "object",
+    "$defs": {
+      "OpenAIFile": {
+        "type": "object",
+        "properties": {
+          "download_url": { "type": "string" },
+          "file_id": { "type": "string" },
+          "mime_type": { "type": "string" },
+          "file_name": { "type": "string" }
+        },
+        "required": ["download_url", "file_id"],
+        "additionalProperties": false
+      }
+    },
+    "properties": {
+      "file": { "$ref": "#/$defs/OpenAIFile" }
+    },
+    "required": ["file"]
+  },
+  "annotations": {
+    "readOnlyHint": true,
+    "openWorldHint": false,
+    "destructiveHint": false
+  },
+  "_meta": {
+    "openai/fileParams": ["file"]
+  }
+}
+```
+
+To accept more than one file, define the top-level field as an array and use the
+same file object schema in `items`. The tool can require the top-level file
+field independently of the properties required inside each file object.
+
+At runtime, ChatGPT passes file values with snake case fields:
 
 ```json
 {
@@ -119,8 +183,8 @@ Tool file references use snake case fields:
 }
 ```
 
-`download_url` and `file_id` are required. `mime_type` and `file_name` are
-optional. Use `file_id` as the `fileId` value for
+ChatGPT always includes `download_url` and `file_id`; it may omit `mime_type`
+and `file_name`. Use `file_id` as the `fileId` value for
 `window.openai.getFileDownloadUrl({ fileId })` when a widget needs a fresh
 temporary download URL.
 
@@ -245,6 +309,8 @@ server.registerTool(
 
 Need more background on these fields? Check the [Advanced section of the MCP server guide](https://developers.openai.com/apps-sdk/build/mcp-server#advanced).
 
+<span id="add-component-descriptions" />
+
 ## Component resource `_meta` fields
 
 More detail on these resource settings lives in the [Advanced section of the MCP server guide](https://developers.openai.com/apps-sdk/build/mcp-server#advanced).
@@ -255,7 +321,7 @@ Set these keys on the resource template that serves your component (`registerRes
 | ------------------------------------- | :---------------: | --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `_meta.ui.prefersBorder`              | Resource contents | boolean         | Hint that the component should render inside a bordered card when supported.                                                                                                                      |
 | `_meta.ui.csp`                        | Resource contents | object          | Preferred metadata surface for standard widget CSP fields: `connectDomains`, `resourceDomains`, and optional `frameDomains`.                                                                      |
-| `_meta.ui.domain`                     | Resource contents | string (origin) | Dedicated origin for hosted components (required for app submission; must be unique per app). Defaults to `https://web-sandbox.oaiusercontent.com`.                                               |
+| `_meta.ui.domain`                     | Resource contents | string (origin) | Dedicated origin for hosted components (required when submitting a plugin that contains an app; must be unique per app). Defaults to `https://web-sandbox.oaiusercontent.com`.                    |
 | `_meta["openai/widgetDescription"]`   | Resource contents | string          | Human-readable summary surfaced to the model when the component loads, reducing redundant assistant narration.                                                                                    |
 | `_meta["openai/widgetPrefersBorder"]` | Resource contents | boolean         | OpenAI-specific compatibility alias for `_meta.ui.prefersBorder` in ChatGPT.                                                                                                                      |
 | `_meta["openai/widgetCSP"]`           | Resource contents | object          | Legacy ChatGPT compatibility key for widget CSP metadata. Standard CSP fields are superseded by `_meta.ui.csp`, but `redirect_domains` is still required for trusted `openExternal` destinations. |
